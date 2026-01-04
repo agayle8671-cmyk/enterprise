@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpRight, Clock, DollarSign, Users, Activity, MoreHorizontal, ArrowRight, Zap, TrendingUp, Calendar, Target, Award } from "lucide-react";
+import { ArrowUpRight, Clock, DollarSign, Users, Activity, MoreHorizontal, ArrowRight, Zap, TrendingUp, Calendar, Target, Award, Sparkles } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -68,6 +68,29 @@ export default function Home() {
            >
              <ArrowUpRight className="mr-2 h-4 w-4" /> Generate Report
            </Button>
+        </div>
+      </div>
+
+      {/* AI Smart Insight Banner */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 flex items-start gap-4 shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+          <Sparkles className="h-24 w-24 text-blue-600" />
+        </div>
+        <div className="h-10 w-10 rounded-lg bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-700 text-blue-600 z-10">
+          <Zap className="h-5 w-5 fill-blue-600" />
+        </div>
+        <div className="flex-1 z-10">
+          <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+            AI Insight: Optimization Opportunity
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-none">New</Badge>
+          </h3>
+          <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 max-w-3xl">
+            Based on recent "Buyback Loop" data, your <strong>Lead Qualification</strong> agent is handling 80% of volume but has a 12% drop-off rate. Deploying the new "Contextual Follow-up" module could recover ~$4,200 in monthly pipeline value.
+          </p>
+          <div className="mt-3 flex gap-3">
+             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs">Deploy Module</Button>
+             <Button size="sm" variant="ghost" className="h-8 text-xs text-slate-500 hover:text-slate-700">Dismiss</Button>
+          </div>
         </div>
       </div>
 

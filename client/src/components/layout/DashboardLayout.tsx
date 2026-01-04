@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   LayoutDashboard, 
@@ -12,12 +12,15 @@ import {
   ChevronDown,
   User,
   CreditCard,
-  Users
+  Users,
+  Command,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,10 +29,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
 
   const navigation = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -38,12 +43,52 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
+  // Cmd+K to open command palette
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setIsCommandOpen((open) => !open)
+      }
+    }
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
+      {/* Command Palette Mock */}
+      <Dialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
+        <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden bg-white/95 backdrop-blur-xl border-slate-200">
+          <div className="flex items-center px-4 border-b border-slate-100">
+            <Search className="h-5 w-5 text-slate-400 mr-2" />
+            <input 
+              className="flex-1 py-4 bg-transparent outline-none text-lg text-slate-900 placeholder:text-slate-400"
+              placeholder="Type a command or search..."
+            />
+            <div className="text-xs text-slate-400 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50">ESC</div>
+          </div>
+          <div className="p-2">
+            <div className="px-2 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Suggestions</div>
+            <div className="space-y-1">
+               <div className="flex items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 cursor-pointer">
+                 <Rocket className="h-4 w-4 mr-2 text-blue-500" /> Launch New Campaign
+               </div>
+               <div className="flex items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 cursor-pointer">
+                 <Users className="h-4 w-4 mr-2 text-purple-500" /> Invite Team Member
+               </div>
+               <div className="flex items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 cursor-pointer">
+                 <CreditCard className="h-4 w-4 mr-2 text-emerald-500" /> View Billing
+               </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 fixed h-full z-10">
+      <aside className="hidden md:flex flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 fixed h-full z-10 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
-          <div className="h-8 w-8 bg-slate-900 rounded-lg flex items-center justify-center relative overflow-hidden group">
+          <div className="h-8 w-8 bg-slate-900 rounded-lg flex items-center justify-center relative overflow-hidden group shadow-lg shadow-blue-900/20">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white relative z-10">
               <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -56,6 +101,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </span>
         </div>
 
+        <div className="px-4 pt-4">
+           <Button 
+             variant="outline" 
+             className="w-full justify-start text-slate-500 border-slate-200 bg-slate-50/50 hover:bg-slate-100 hover:text-slate-900"
+             onClick={() => setIsCommandOpen(true)}
+           >
+             <Search className="h-4 w-4 mr-2" /> 
+             <span className="flex-1 text-left">Search...</span>
+             <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+               <span className="text-xs">⌘</span>K
+             </kbd>
+           </Button>
+        </div>
+
         <nav className="flex-1 p-4 space-y-1">
           {navigation.map((item) => {
             const isActive = location === item.href;
@@ -64,7 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group cursor-pointer ${
                     isActive
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
+                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/10 translate-x-1"
                       : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                   }`}
                 >
@@ -82,15 +141,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="p-4 border-t border-slate-100 dark:border-slate-800">
           <Link href="/dashboard/buyback">
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-blue-200 transition-colors group">
-              <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-2 flex justify-between">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-blue-200 transition-colors group relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-5">
+                <Sparkles className="h-12 w-12" />
+              </div>
+              <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-2 flex justify-between relative z-10">
                 Buyback Status
                 <span className="text-blue-600 group-hover:underline">View</span>
               </h4>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mb-2">
+              <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mb-2 relative z-10">
                 <div className="bg-emerald-500 h-full w-[65%]" />
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 relative z-10">
                 65% of manual tasks automated
               </p>
             </div>
@@ -99,7 +161,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen bg-slate-50/50">
         {/* Header */}
         <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20 px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -142,12 +204,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </SheetContent>
             </Sheet>
             
-            <div className="hidden md:flex relative w-96">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-              <Input 
-                placeholder="Search clients, agents, or workflows..." 
-                className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg"
-              />
+            {/* Live Users (Enterprise Feature) */}
+            <div className="hidden lg:flex items-center gap-2 pl-4 border-l border-slate-200 h-8">
+               <div className="flex -space-x-2 overflow-hidden">
+                 <Avatar className="inline-block h-6 w-6 ring-2 ring-white">
+                   <AvatarImage src="https://i.pravatar.cc/150?u=1" />
+                   <AvatarFallback>S</AvatarFallback>
+                 </Avatar>
+                 <Avatar className="inline-block h-6 w-6 ring-2 ring-white">
+                   <AvatarImage src="https://i.pravatar.cc/150?u=2" />
+                   <AvatarFallback>M</AvatarFallback>
+                 </Avatar>
+                 <Avatar className="inline-block h-6 w-6 ring-2 ring-white">
+                   <AvatarImage src="https://i.pravatar.cc/150?u=3" />
+                   <AvatarFallback>J</AvatarFallback>
+                 </Avatar>
+               </div>
+               <span className="text-xs text-slate-500 font-medium">3 others online</span>
             </div>
           </div>
 

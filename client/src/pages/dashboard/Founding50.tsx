@@ -1,17 +1,61 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Check, UserPlus, Mail, MessageSquare, ArrowRight } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Check, UserPlus, Mail, MessageSquare, ArrowRight, Filter, 
+  Download, Trash2, MoreHorizontal, ChevronLeft, ChevronRight,
+  Search, SlidersHorizontal, ArrowUpDown
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 
 import { OfferArchitect } from "@/components/dashboard/OfferArchitect";
 import { UtilityBuilder } from "@/components/dashboard/UtilityBuilder";
 import { SocialProofGenerator } from "@/components/dashboard/SocialProofGenerator";
 
 export default function Founding50() {
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const toggleAll = () => {
+    if (isAllSelected) {
+      setSelectedRows([]);
+      setIsAllSelected(false);
+    } else {
+      setSelectedRows([0, 1, 2, 3, 4]);
+      setIsAllSelected(true);
+    }
+  };
+
+  const toggleRow = (index: number) => {
+    if (selectedRows.includes(index)) {
+      setSelectedRows(selectedRows.filter(i => i !== index));
+      setIsAllSelected(false);
+    } else {
+      setSelectedRows([...selectedRows, index]);
+    }
+  };
+
+  const waitlistData = [
+     { name: "Sarah Connor", email: "sarah@skynet.com", company: "SkyNet Systems", rev: "$5M+", score: 98, status: "High Priority", date: "Jan 04, 2026" },
+     { name: "John Wick", email: "j.wick@continental.com", company: "Continental Services", rev: "$2M - $5M", score: 85, status: "Qualified", date: "Jan 03, 2026" },
+     { name: "Bruce Wayne", email: "bruce@wayne.ent", company: "Wayne Enterprises", rev: "$10M+", score: 92, status: "High Priority", date: "Jan 02, 2026" },
+     { name: "Tony Stark", email: "tony@stark.com", company: "Stark Industries", rev: "$50M+", score: 99, status: "VIP", date: "Jan 01, 2026" },
+     { name: "Peter Parker", email: "peter@dailybugle.com", company: "Freelance Photo", rev: "<$100k", score: 45, status: "Nurture", date: "Dec 31, 2025" },
+  ];
+
   return (
-    <div className="space-y-8">
-      {/* ... (Header Section same as before) ... */}
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">The Founding 50 Launchpad</h1>
@@ -31,16 +75,12 @@ export default function Founding50() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* New Utility Builder Widget */}
         <UtilityBuilder />
-        
-        {/* New Social Proof Widget */}
         <SocialProofGenerator />
       </div>
 
       {/* Progress Section */}
       <Card className="border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50">
-      {/* ... (rest of the file) */}
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -71,7 +111,6 @@ export default function Founding50() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Step 1 */}
         <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-900/10 dark:border-emerald-900">
           <CardHeader>
             <div className="h-8 w-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold mb-2">
@@ -100,7 +139,6 @@ export default function Founding50() {
           </CardFooter>
         </Card>
 
-        {/* Step 2 */}
         <Card className="border-blue-200 bg-white shadow-lg ring-1 ring-blue-500/20 dark:bg-slate-900 dark:border-blue-900">
           <CardHeader>
             <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold mb-2">
@@ -131,7 +169,6 @@ export default function Founding50() {
           </CardFooter>
         </Card>
 
-        {/* Step 3 */}
         <Card className="border-slate-200 dark:border-slate-800 opacity-60">
           <CardHeader>
             <div className="h-8 w-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold mb-2">
@@ -155,35 +192,74 @@ export default function Founding50() {
         </Card>
       </div>
 
-      {/* Waitlist Table */}
-      <Card className="border-slate-200 dark:border-slate-800">
-        <CardHeader>
-          <CardTitle>Waitlist & Applicants</CardTitle>
-          <CardDescription>Prioritize high-value prospects.</CardDescription>
+      {/* Enterprise Waitlist Table */}
+      <Card className="border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <CardHeader className="pb-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <CardTitle>Waitlist Management</CardTitle>
+              <CardDescription>Prioritize and qualify high-value prospects.</CardDescription>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {selectedRows.length > 0 && (
+                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 mr-2">
+                  <span className="text-sm text-slate-500">{selectedRows.length} selected</span>
+                  <Button size="sm" variant="outline" className="h-8"><Mail className="h-3.5 w-3.5 mr-2" /> Email</Button>
+                  <Button size="sm" variant="outline" className="h-8 text-red-600 hover:text-red-700"><Trash2 className="h-3.5 w-3.5" /></Button>
+                  <div className="h-4 w-px bg-slate-200 mx-2" />
+                </div>
+              )}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                <Input placeholder="Search leads..." className="pl-8 h-9 w-40 md:w-64" />
+              </div>
+              <Button variant="outline" size="sm" className="h-9"><SlidersHorizontal className="h-3.5 w-3.5 mr-2" /> Filter</Button>
+              <Button variant="outline" size="sm" className="h-9"><Download className="h-3.5 w-3.5 mr-2" /> Export</Button>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <div className="border-t border-slate-100 dark:border-slate-800">
           <div className="relative overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900/50">
+              <thead className="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Company</th>
-                  <th className="px-6 py-3">Revenue</th>
-                  <th className="px-6 py-3">Score</th>
+                  <th className="px-6 py-3 w-4">
+                    <Checkbox 
+                      checked={isAllSelected}
+                      onCheckedChange={toggleAll}
+                    />
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer hover:bg-slate-100 transition-colors group">
+                    <div className="flex items-center gap-1">Name <ArrowUpDown className="h-3 w-3 opacity-0 group-hover:opacity-100" /></div>
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer hover:bg-slate-100 transition-colors group">
+                     <div className="flex items-center gap-1">Company <ArrowUpDown className="h-3 w-3 opacity-0 group-hover:opacity-100" /></div>
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer hover:bg-slate-100 transition-colors group">
+                     <div className="flex items-center gap-1">Revenue <ArrowUpDown className="h-3 w-3 opacity-0 group-hover:opacity-100" /></div>
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer hover:bg-slate-100 transition-colors group">
+                     <div className="flex items-center gap-1">Score <ArrowUpDown className="h-3 w-3 opacity-0 group-hover:opacity-100" /></div>
+                  </th>
                   <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Action</th>
+                  <th className="px-6 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody>
-                {[
-                   { name: "Sarah Connor", company: "SkyNet Systems", rev: "$5M+", score: 98, status: "High Priority" },
-                   { name: "John Wick", company: "Continental Services", rev: "$2M - $5M", score: 85, status: "Qualified" },
-                   { name: "Bruce Wayne", company: "Wayne Ent", rev: "$10M+", score: 92, status: "High Priority" },
-                   { name: "Tony Stark", company: "Stark Ind", rev: "$50M+", score: 99, status: "VIP" },
-                   { name: "Peter Parker", company: "Freelance Photo", rev: "<$100k", score: 45, status: "Nurture" },
-                ].map((row, i) => (
-                  <tr key={i} className="bg-white border-b dark:bg-slate-900 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{row.name}</td>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {waitlistData.map((row, i) => (
+                  <tr key={i} className={`bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${selectedRows.includes(i) ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}>
+                    <td className="px-6 py-4">
+                      <Checkbox 
+                        checked={selectedRows.includes(i)}
+                        onCheckedChange={() => toggleRow(i)}
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-slate-900 dark:text-white">{row.name}</span>
+                        <span className="text-xs text-slate-500">{row.email}</span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-slate-500">{row.company}</td>
                     <td className="px-6 py-4 text-slate-500">{row.rev}</td>
                     <td className="px-6 py-4">
@@ -195,21 +271,49 @@ export default function Founding50() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={row.status === "VIP" || row.status === "High Priority" ? "default" : "secondary"}>
+                      <Badge variant="outline" className={`
+                        ${row.status === "VIP" ? "border-purple-200 text-purple-700 bg-purple-50" : 
+                          row.status === "High Priority" ? "border-emerald-200 text-emerald-700 bg-emerald-50" :
+                          row.status === "Qualified" ? "border-blue-200 text-blue-700 bg-blue-50" :
+                          "border-slate-200 text-slate-600 bg-slate-50"}
+                      `}>
                         {row.status}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4">
-                      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
-                        Review <ArrowRight className="ml-1 h-3 w-3" />
-                      </Button>
+                    <td className="px-6 py-4 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4 text-slate-400" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>Review Application</DropdownMenuItem>
+                          <DropdownMenuItem>Send Email</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-red-600">Reject Lead</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </CardContent>
+          <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="text-sm text-slate-500">
+              Showing <span className="font-medium">1-5</span> of <span className="font-medium">418</span> leads
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" disabled>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </Card>
     </div>
   );
