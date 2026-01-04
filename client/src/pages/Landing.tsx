@@ -46,7 +46,7 @@ export default function Landing() {
               <h1 className="text-[42px] md:text-[56px] font-medium text-slate-900 leading-[1.08] tracking-[-0.02em] mb-6">
                 <WaveText text="Stop trading hours for dollars." />
                 <br />
-                <span className="text-slate-300">
+                <span className="text-transparent" style={{ WebkitTextStroke: '1.5px #1e293b' }}>
                   <WaveText text="Start building a machine." />
                 </span>
               </h1>
