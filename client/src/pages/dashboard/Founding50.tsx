@@ -4,6 +4,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Check, UserPlus, Mail, MessageSquare, ArrowRight } from "lucide-react";
 
+import { OfferArchitect } from "@/components/dashboard/OfferArchitect";
+
 export default function Founding50() {
   return (
     <div className="space-y-8">
@@ -12,10 +14,17 @@ export default function Founding50() {
           <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">The Founding 50 Launchpad</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Validate your high-ticket offer by securing 50 founding members.</p>
         </div>
-        <Button className="bg-slate-900 text-white shadow-lg shadow-slate-900/20">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Manual Member
-        </Button>
+        <div className="flex gap-2">
+          <OfferArchitect>
+            <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
+               Launch Offer Architect
+            </Button>
+          </OfferArchitect>
+          <Button className="bg-slate-900 text-white shadow-lg shadow-slate-900/20">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add Manual Member
+          </Button>
+        </div>
       </div>
 
       {/* Progress Section */}

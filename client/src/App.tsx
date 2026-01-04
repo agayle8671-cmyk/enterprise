@@ -11,6 +11,8 @@ import Home from "@/pages/dashboard/Home";
 import Founding50 from "@/pages/dashboard/Founding50";
 import Buyback from "@/pages/dashboard/Buyback";
 
+import Settings from "@/pages/dashboard/Settings";
+
 function Router() {
   return (
     <Switch>
@@ -34,6 +36,12 @@ function Router() {
       <Route path="/dashboard/buyback">
         <DashboardLayout>
           <Buyback />
+        </DashboardLayout>
+      </Route>
+
+      <Route path="/dashboard/settings">
+        <DashboardLayout>
+          <Settings />
         </DashboardLayout>
       </Route>
 
