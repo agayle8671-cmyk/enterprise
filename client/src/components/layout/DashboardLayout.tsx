@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { WaveText } from "@/components/WaveText";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -97,7 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </svg>
           </div>
           <span className="font-display font-bold text-xl text-slate-900 dark:text-white tracking-tight">
-            Sovereign OS
+            <WaveText text="Sovereign OS" />
           </span>
         </div>
 
@@ -181,7 +182,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       </svg>
                   </div>
                   <span className="font-display font-bold text-xl text-slate-900">
-                    Sovereign OS
+                    <WaveText text="Sovereign OS" />
                   </span>
                 </div>
                 <nav className="p-4 space-y-1">

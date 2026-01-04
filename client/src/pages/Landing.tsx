@@ -15,7 +15,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-7 w-7 bg-slate-900 rounded-md flex items-center justify-center text-white text-sm font-semibold">S</div>
-            <span className="font-semibold text-slate-900">Sovereign</span>
+            <span className="font-semibold text-slate-900"><WaveText text="Sovereign" /></span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-[13px] text-slate-600">
             <a href="#how" className="hover:text-slate-900">How it works</a>
