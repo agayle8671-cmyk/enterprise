@@ -116,33 +116,35 @@ export default function Home() {
       {/* Stats Grid - Enhanced */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { title: "Monthly Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+12.5%", trend: "up", icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50", testId: "monthly-revenue" },
-          { title: "Buyback Hours", value: `${totalTimeSaved} hrs`, change: "+8.2%", trend: "up", icon: Clock, color: "text-purple-600", bg: "bg-purple-50", testId: "buyback-hours" },
-          { title: "Active Leads", value: `${campaign?.currentMembers || 0}`, change: "+24.5%", trend: "up", icon: Users, color: "text-emerald-600", bg: "bg-emerald-50", testId: "active-leads" },
-          { title: "Avg. Deal Value", value: `$${totalRevenue > 0 && campaign?.currentMembers ? Math.round(totalRevenue / campaign.currentMembers).toLocaleString() : '0'}`, change: "+4.1%", trend: "up", icon: Award, color: "text-orange-600", bg: "bg-orange-50", testId: "avg-deal-value" },
+          { title: "Monthly Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+12.5%", trend: "up", icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50", testId: "monthly-revenue", link: "/dashboard/founding-50" },
+          { title: "Buyback Hours", value: `${totalTimeSaved} hrs`, change: "+8.2%", trend: "up", icon: Clock, color: "text-purple-600", bg: "bg-purple-50", testId: "buyback-hours", link: "/dashboard/buyback" },
+          { title: "Active Leads", value: `${campaign?.currentMembers || 0}`, change: "+24.5%", trend: "up", icon: Users, color: "text-emerald-600", bg: "bg-emerald-50", testId: "active-leads", link: "/dashboard/founding-50" },
+          { title: "Avg. Deal Value", value: `$${totalRevenue > 0 && campaign?.currentMembers ? Math.round(totalRevenue / campaign.currentMembers).toLocaleString() : '0'}`, change: "+4.1%", trend: "up", icon: Award, color: "text-orange-600", bg: "bg-orange-50", testId: "avg-deal-value", link: "/dashboard/founding-50" },
         ].map((stat, i) => (
-          <Card key={i} className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-testid={`card-stat-${stat.testId}`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
-                  <stat.icon className="h-6 w-6" />
+          <Link key={i} href={stat.link}>
+            <Card className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer" data-testid={`card-stat-${stat.testId}`}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
+                    <stat.icon className="h-6 w-6" />
+                  </div>
+                  {stat.trend === "up" ? (
+                    <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
+                      <TrendingUp className="h-3 w-3 mr-1" /> {stat.change}
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
+                      <TrendingUp className="h-3 w-3 mr-1 rotate-180" /> {stat.change}
+                    </div>
+                  )}
                 </div>
-                {stat.trend === "up" ? (
-                  <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
-                    <TrendingUp className="h-3 w-3 mr-1" /> {stat.change}
-                  </div>
-                ) : (
-                  <div className="flex items-center text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
-                    <TrendingUp className="h-3 w-3 mr-1 rotate-180" /> {stat.change}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{stat.title}</h3>
-                <div className="text-3xl font-display font-bold text-slate-900 dark:text-white" data-testid={`text-value-${stat.testId}`}>{stat.value}</div>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{stat.title}</h3>
+                  <div className="text-3xl font-display font-bold text-slate-900 dark:text-white" data-testid={`text-value-${stat.testId}`}>{stat.value}</div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
@@ -366,48 +368,79 @@ export default function Home() {
              </div>
           </CardContent>
           <CardFooter className="bg-slate-50/50 border-t border-slate-100 p-4 justify-center">
-             <Button variant="ghost" className="text-sm text-slate-500">View All Decisions</Button>
+             <Link href="/dashboard/buyback">
+               <Button variant="ghost" className="text-sm text-slate-500" data-testid="button-view-all-decisions">
+                 View All Decisions <ArrowRight className="h-4 w-4 ml-1" />
+               </Button>
+             </Link>
           </CardFooter>
         </Card>
 
         {/* Active Contracts (Fintech) */}
         <Card className="col-span-1 border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
            <CardHeader>
-             <CardTitle className="text-xl">Active Contracts</CardTitle>
-             <CardDescription>Embedded payments status.</CardDescription>
+             <div className="flex items-center justify-between">
+               <div>
+                 <CardTitle className="text-xl">Active Contracts</CardTitle>
+                 <CardDescription>Embedded payments status.</CardDescription>
+               </div>
+               <Link href="/dashboard/founding-50">
+                 <Button variant="ghost" size="sm" className="text-slate-500" data-testid="button-view-contracts">
+                   View All <ArrowRight className="h-3 w-3 ml-1" />
+                 </Button>
+               </Link>
+             </div>
            </CardHeader>
            <CardContent className="flex-1 space-y-4">
-             <div className="p-4 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-3 opacity-10">
-                 <DollarSign className="h-24 w-24" />
-               </div>
-               <div className="relative z-10">
-                 <div className="flex justify-between items-start mb-4">
-                   <Badge className="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border-none">Ready to Sign</Badge>
-                   <span className="text-slate-400 text-xs">Sent 2h ago</span>
+             {(contracts || []).length > 0 ? (contracts || []).slice(0, 2).map((contract: any, i: number) => (
+               i === 0 ? (
+                 <div key={contract.id} className="p-4 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow" data-testid={`card-contract-${contract.id}`}>
+                   <div className="absolute top-0 right-0 p-3 opacity-10">
+                     <DollarSign className="h-24 w-24" />
+                   </div>
+                   <div className="relative z-10">
+                     <div className="flex justify-between items-start mb-4">
+                       <Badge className={`${contract.status === 'pending' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'} hover:opacity-80 border-none`}>
+                         {contract.status === 'pending' ? 'Ready to Sign' : contract.status === 'paid' ? 'Paid' : contract.status}
+                       </Badge>
+                       <span className="text-slate-400 text-xs">Active</span>
+                     </div>
+                     <h3 className="font-bold text-lg mb-1" data-testid={`text-contract-name-${contract.id}`}>{contract.clientName}</h3>
+                     <p className="text-3xl font-display font-bold text-white mb-4" data-testid={`text-contract-amount-${contract.id}`}>
+                       ${((contract.amount || 0) / 100).toLocaleString()}
+                     </p>
+                     {contract.status === 'pending' && (
+                       <div className="flex items-center gap-2 text-sm text-slate-300 mb-4">
+                         <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                         Awaiting signature...
+                       </div>
+                     )}
+                     <Button size="sm" variant="secondary" className="w-full" data-testid={`button-contract-action-${contract.id}`}>
+                       {contract.status === 'pending' ? 'Resend Link' : 'View Details'}
+                     </Button>
+                   </div>
                  </div>
-                 <h3 className="font-bold text-lg mb-1">Acme Corp Strategy</h3>
-                 <p className="text-3xl font-display font-bold text-white mb-4">$15,000</p>
-                 <div className="flex items-center gap-2 text-sm text-slate-300 mb-4">
-                   <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                   Client viewing now...
+               ) : (
+                 <div key={contract.id} className="p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-200 transition-colors cursor-pointer" data-testid={`card-contract-${contract.id}`}>
+                    <div className="flex justify-between items-start mb-2">
+                       <h4 className="font-semibold text-slate-900" data-testid={`text-contract-name-${contract.id}`}>{contract.clientName}</h4>
+                       <span className="font-mono text-slate-900 font-bold" data-testid={`text-contract-amount-${contract.id}`}>
+                         ${((contract.amount || 0) / 100).toLocaleString()}
+                       </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500">{contract.status === 'paid' ? 'Deposit Paid' : contract.status}</span>
+                      <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100">
+                        {contract.status === 'paid' ? 'Active' : contract.status}
+                      </Badge>
+                    </div>
                  </div>
-                 <Button size="sm" variant="secondary" className="w-full">
-                   Resend Link
-                 </Button>
+               )
+             )) : (
+               <div className="text-center text-slate-500 py-8">
+                 No active contracts
                </div>
-             </div>
-
-             <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-200 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                   <h4 className="font-semibold text-slate-900">Stark Industries Retainer</h4>
-                   <span className="font-mono text-slate-900 font-bold">$8,500</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500">Deposit Paid</span>
-                  <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100">Active</Badge>
-                </div>
-             </div>
+             )}
            </CardContent>
         </Card>
       </div>
