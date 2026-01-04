@@ -46,7 +46,7 @@ export default function Landing() {
               <h1 className="text-[42px] md:text-[56px] font-medium text-slate-900 leading-[1.08] tracking-[-0.02em] mb-6">
                 <WaveText text="Stop trading hours for dollars." />
                 <br />
-                <span className="text-transparent" style={{ WebkitTextStroke: '1.5px #1e293b' }}>
+                <span className="text-transparent" style={{ WebkitTextStroke: '2px #0f172a' }}>
                   <WaveText text="Start building a machine." />
                 </span>
               </h1>
@@ -74,7 +74,7 @@ export default function Landing() {
             </div>
             
             {/* Product visual - Apple-style card */}
-            <div className="relative hidden lg:block">
+            <div className="relative hidden lg:block animate-subtle-float">
               <div className="bg-white/80 backdrop-blur-xl rounded-[24px] border border-white/60 p-7 shadow-[0_25px_50px_-20px_rgba(0,0,0,0.15)]">
                 <div className="flex items-center justify-between mb-7">
                   <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export default function Landing() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
-            <div className="space-y-4">
+            <div className="space-y-4 animate-subtle-float">
               <div className="text-[56px] font-light text-slate-100 leading-none">01</div>
               <h3 className="text-[17px] font-medium text-slate-900">Audit your week</h3>
               <p className="text-[15px] text-slate-500 leading-[1.7]">
@@ -149,7 +149,7 @@ export default function Landing() {
                 You'll see exactly what's stealing your time.
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 animate-subtle-float-delayed">
               <div className="text-[56px] font-light text-slate-100 leading-none">02</div>
               <h3 className="text-[17px] font-medium text-slate-900">Deploy agents</h3>
               <p className="text-[15px] text-slate-500 leading-[1.7]">
@@ -157,7 +157,7 @@ export default function Landing() {
                 They only ping you when they need a decision.
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 animate-subtle-float-delayed-2">
               <div className="text-[56px] font-light text-slate-100 leading-none">03</div>
               <h3 className="text-[17px] font-medium text-slate-900">Focus on what matters</h3>
               <p className="text-[15px] text-slate-500 leading-[1.7]">
@@ -204,22 +204,22 @@ export default function Landing() {
             </div>
             <div className="bg-[#FBFBFD] rounded-[20px] border border-slate-200/60 p-8 shadow-[0_20px_40px_-25px_rgba(0,0,0,0.1)]">
               <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-rose-50/80 border border-rose-100/60 rounded-2xl p-6">
+                <div className="bg-rose-50/80 border border-rose-100/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-rose-500 font-medium mb-2 uppercase tracking-wider">Replace</div>
                   <div className="text-[18px] font-medium text-slate-900">AI Agents</div>
                   <div className="text-[13px] text-slate-400 mt-1">Admin, email, research</div>
                 </div>
-                <div className="bg-emerald-50/80 border border-emerald-100/60 rounded-2xl p-6">
+                <div className="bg-emerald-50/80 border border-emerald-100/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-emerald-500 font-medium mb-2 uppercase tracking-wider">Produce</div>
                   <div className="text-[18px] font-medium text-slate-900">You</div>
                   <div className="text-[13px] text-slate-400 mt-1">Strategy, sales, creative</div>
                 </div>
-                <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6">
+                <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">Delegate</div>
                   <div className="text-[17px] font-medium text-slate-600">Team / VA</div>
                   <div className="text-[13px] text-slate-400 mt-1">Support, operations</div>
                 </div>
-                <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6">
+                <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">Invest</div>
                   <div className="text-[17px] font-medium text-slate-600">Systems</div>
                   <div className="text-[13px] text-slate-400 mt-1">Training, tools, processes</div>
@@ -257,7 +257,7 @@ export default function Landing() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <Card className="border-slate-200/70 rounded-[20px] shadow-[0_10px_40px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_50px_-25px_rgba(0,0,0,0.15)] transition-shadow duration-500" data-testid="card-pricing-starter">
+            <Card className="border-slate-200/70 rounded-[20px] shadow-[0_10px_40px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_50px_-25px_rgba(0,0,0,0.15)] transition-all duration-500 hover:-translate-y-1 glow-hover" data-testid="card-pricing-starter">
               <CardContent className="p-8">
                 <div className="mb-6">
                   <h3 className="text-[17px] font-medium text-slate-900 mb-1">Starter</h3>
@@ -281,7 +281,7 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-900 bg-slate-900 text-white rounded-[20px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.4)]" data-testid="card-pricing-pro">
+            <Card className="border-slate-900 bg-slate-900 text-white rounded-[20px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-25px_rgba(0,0,0,0.5)]" data-testid="card-pricing-pro">
               <CardContent className="p-8">
                 <div className="mb-6">
                   <h3 className="text-[17px] font-medium mb-1">Pro</h3>

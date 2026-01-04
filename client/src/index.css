@@ -218,3 +218,57 @@
 .animate-wave-letter {
   animation: wave-letter 3s ease-in-out infinite;
 }
+
+/* Subtle float animation for tiles */
+@keyframes subtle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-subtle-float {
+  animation: subtle-float 6s ease-in-out infinite;
+}
+
+.animate-subtle-float-delayed {
+  animation: subtle-float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-subtle-float-delayed-2 {
+  animation: subtle-float 6s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+/* Tilt card effect */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+}
+
+.tilt-card:hover {
+  transform: perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg)) scale(1.02);
+}
+
+/* Glow effect on hover */
+.glow-hover {
+  position: relative;
+}
+
+.glow-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(15, 23, 42, 0.04), transparent 40%);
+  pointer-events: none;
+}
+
+.glow-hover:hover::after {
+  opacity: 1;
+}
