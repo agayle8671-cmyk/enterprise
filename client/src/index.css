@@ -202,3 +202,17 @@
     @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-blue-200;
   }
 }
+
+/* Subtle AI shimmer animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out forwards;
+}

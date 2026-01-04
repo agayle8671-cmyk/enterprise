@@ -2,10 +2,64 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowRight, Check, ChevronDown, Play } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function AnimatedText({ text, className = "" }: { text: string; className?: string }) {
+  const [displayedChars, setDisplayedChars] = useState(0);
+  const [showCursor, setShowCursor] = useState(true);
+  
+  useEffect(() => {
+    if (displayedChars < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedChars(prev => prev + 1);
+      }, 35 + Math.random() * 25);
+      return () => clearTimeout(timeout);
+    } else {
+      const cursorTimeout = setTimeout(() => setShowCursor(false), 1500);
+      return () => clearTimeout(cursorTimeout);
+    }
+  }, [displayedChars, text.length]);
+
+  return (
+    <span className={className}>
+      {text.slice(0, displayedChars)}
+      {showCursor && displayedChars < text.length && (
+        <span className="inline-block w-[2px] h-[1em] bg-slate-400 ml-0.5 animate-pulse align-middle" />
+      )}
+    </span>
+  );
+}
+
+function ShimmerText({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    const timeout = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timeout);
+  }, [delay]);
+
+  return (
+    <span 
+      className={`relative inline-block transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}
+    >
+      <span className="relative">
+        {children}
+        <span 
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer"
+          style={{ animationDelay: `${delay + 800}ms` }}
+        />
+      </span>
+    </span>
+  );
+}
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [heroLoaded, setHeroLoaded] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setHeroLoaded(true), 100);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white font-sans antialiased">
@@ -41,11 +95,13 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-sm text-slate-500 mb-6">For consultants & agency owners</p>
+              <p className={`text-sm text-slate-500 mb-6 transition-opacity duration-500 ${heroLoaded ? 'opacity-100' : 'opacity-0'}`}>For consultants & agency owners</p>
               <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 leading-[1.15] tracking-tight mb-6">
-                Stop trading hours for dollars.
+                <AnimatedText text="Stop trading hours for dollars." />
                 <br />
-                <span className="text-slate-400">Start building a machine.</span>
+                <ShimmerText delay={1200}>
+                  <span className="text-slate-400">Start building a machine.</span>
+                </ShimmerText>
               </h1>
               <p className="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
                 Sovereign helps you identify what to automate, what to delegate, 
