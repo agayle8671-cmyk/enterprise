@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 export function WaveText({ text, className = "" }: { text: string; className?: string }) {
+  const [isAnimating, setIsAnimating] = useState(false);
   const words = text.split(' ');
   let globalIndex = 0;
   
@@ -9,7 +12,7 @@ export function WaveText({ text, className = "" }: { text: string; className?: s
       return (
         <span 
           key={charIdx} 
-          className="inline-block animate-wave-letter"
+          className={`inline-block ${isAnimating ? 'animate-wave-letter' : ''}`}
           style={{ animationDelay: `${delay}s` }}
         >
           {char}
@@ -26,5 +29,13 @@ export function WaveText({ text, className = "" }: { text: string; className?: s
     );
   });
 
-  return <span className={className}>{wordElements}</span>;
+  return (
+    <span 
+      className={className}
+      onMouseEnter={() => setIsAnimating(true)}
+      onMouseLeave={() => setIsAnimating(false)}
+    >
+      {wordElements}
+    </span>
+  );
 }
