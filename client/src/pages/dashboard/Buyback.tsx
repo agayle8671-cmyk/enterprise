@@ -4,9 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { PlayCircle, PauseCircle, Settings, Activity, Clock, ArrowRight, Plus } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useAgents, useUpdateAgent } from "@/lib/api";
 
 export default function Buyback() {
   const { toast } = useToast();
+  const { data: agents, isLoading } = useAgents();
+  const updateAgent = useUpdateAgent();
 
   const handleDeployAgent = () => {
     toast({
@@ -24,6 +27,28 @@ export default function Buyback() {
     });
   };
 
+  const toggleAgentStatus = async (agentId: number, currentStatus: string) => {
+    const newStatus = currentStatus === "Running" ? "Paused" : "Running";
+    await updateAgent.mutateAsync({ id: agentId, status: newStatus });
+    toast({
+      title: newStatus === "Running" ? "Agent Resumed" : "Agent Paused",
+      description: `Agent has been ${newStatus.toLowerCase()}.`,
+      duration: 2000,
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="h-8 w-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  const totalTimeSaved = agents?.reduce((sum: number, agent: any) => sum + (agent.timeSaved || 0), 0) || 0;
+  const hours = Math.floor(totalTimeSaved / 60);
+  const minutes = totalTimeSaved % 60;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -34,8 +59,8 @@ export default function Buyback() {
         <div className="flex gap-4">
            <Card className="bg-slate-900 text-white border-none shadow-lg px-4 py-2 flex items-center gap-3">
              <div className="text-right">
-               <p className="text-xs text-slate-400 uppercase font-semibold">Time Saved Today</p>
-               <p className="text-xl font-bold font-mono">04:12:35</p>
+               <p className="text-xs text-slate-400 uppercase font-semibold">Time Saved Total</p>
+               <p className="text-xl font-bold font-mono" data-testid="text-time-saved">{String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:00</p>
              </div>
              <Activity className="h-8 w-8 text-emerald-400" />
            </Card>
@@ -108,28 +133,40 @@ export default function Buyback() {
             <CardDescription>Manage your digital workforce.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             {[
-               { name: "Inbox Zero Agent", role: "Administrative", status: "Running", uptime: "99.8%", color: "bg-blue-500" },
-               { name: "Content Repurposer", role: "Marketing", status: "Running", uptime: "98.2%", color: "bg-purple-500" },
-               { name: "Lead Enricher", role: "Sales", status: "Paused", uptime: "0%", color: "bg-slate-400" },
-               { name: "Invoice Chaser", role: "Finance", status: "Running", uptime: "100%", color: "bg-emerald-500" },
-             ].map((agent, i) => (
-               <div key={i} className="flex items-center justify-between p-4 rounded-lg border border-slate-100 bg-white hover:border-slate-200 transition-colors">
+             {(agents || []).map((agent: any) => (
+               <div key={agent.id} className="flex items-center justify-between p-4 rounded-lg border border-slate-100 bg-white hover:border-slate-200 transition-colors" data-testid={`card-agent-${agent.id}`}>
                  <div className="flex items-center gap-4">
                    <div className={`h-10 w-10 rounded-lg ${agent.color} flex items-center justify-center text-white font-bold shadow-md`}>
                      {agent.name.charAt(0)}
                    </div>
                    <div>
-                     <p className="font-semibold text-slate-900">{agent.name}</p>
-                     <p className="text-sm text-slate-500">{agent.role}</p>
+                     <p className="font-semibold text-slate-900" data-testid={`text-agent-name-${agent.id}`}>{agent.name}</p>
+                     <p className="text-sm text-slate-500" data-testid={`text-agent-role-${agent.id}`}>{agent.role}</p>
                    </div>
                  </div>
                  <div className="flex items-center gap-4">
-                   <Badge variant={agent.status === "Running" ? "default" : "secondary"} className={agent.status === "Running" ? "bg-emerald-50 hover:bg-emerald-600" : ""}>
+                   <Badge 
+                     variant={agent.status === "Running" ? "default" : "secondary"} 
+                     className={agent.status === "Running" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+                     data-testid={`badge-agent-status-${agent.id}`}
+                   >
                      {agent.status}
                    </Badge>
+                   <span className="text-xs text-slate-500" data-testid={`text-agent-uptime-${agent.id}`}>{agent.uptime}</span>
+                   <Button 
+                     variant="ghost" 
+                     size="icon"
+                     onClick={() => toggleAgentStatus(agent.id, agent.status)}
+                     data-testid={`button-agent-toggle-${agent.id}`}
+                   >
+                     {agent.status === "Running" ? (
+                       <PauseCircle className="h-5 w-5 text-slate-400 hover:text-slate-600" />
+                     ) : (
+                       <PlayCircle className="h-5 w-5 text-emerald-500 hover:text-emerald-600" />
+                     )}
+                   </Button>
                    <Link href="/dashboard/settings">
-                     <Button variant="ghost" size="icon">
+                     <Button variant="ghost" size="icon" data-testid={`button-agent-settings-${agent.id}`}>
                        <Settings className="h-4 w-4 text-slate-400" />
                      </Button>
                    </Link>

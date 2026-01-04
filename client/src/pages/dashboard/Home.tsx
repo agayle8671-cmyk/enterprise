@@ -5,6 +5,7 @@ import { ArrowUpRight, Clock, DollarSign, Users, Activity, MoreHorizontal, Arrow
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useDashboardStats, useAgents, useDecisions, useContracts } from "@/lib/api";
 
 const revenueData = [
   { name: 'Mon', value: 4200, prev: 3800 },
@@ -42,6 +43,10 @@ const performanceData = [
 
 export default function Home() {
   const { toast } = useToast();
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
+  const { data: agents, isLoading: agentsLoading } = useAgents();
+  const { data: decisions, isLoading: decisionsLoading } = useDecisions();
+  const { data: contracts, isLoading: contractsLoading } = useContracts();
 
   const handleGenerateReport = () => {
     toast({
@@ -50,6 +55,20 @@ export default function Home() {
       duration: 3000,
     });
   };
+
+  // Loading state
+  if (statsLoading || agentsLoading || decisionsLoading || contractsLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="h-8 w-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  const campaign = stats?.campaigns?.[0];
+  const totalRevenue = (campaign?.totalRevenue || 0) / 100;
+  const activeLeadsCount = stats?.totalCampaigns || 0;
+  const totalTimeSaved = stats?.totalTimeSaved || 0;
 
   return (
     <div className="space-y-8">
@@ -97,30 +116,30 @@ export default function Home() {
       {/* Stats Grid - Enhanced */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { title: "Monthly Revenue", value: "$42,593", change: "+12.5%", trend: "up", icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50" },
-          { title: "Buyback Hours", value: "142 hrs", change: "+8.2%", trend: "up", icon: Clock, color: "text-purple-600", bg: "bg-purple-50" },
-          { title: "Active Leads", value: "64", change: "-2.4%", trend: "down", icon: Users, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { title: "Avg. Deal Value", value: "$8,500", change: "+4.1%", trend: "up", icon: Award, color: "text-orange-600", bg: "bg-orange-50" },
+          { title: "Monthly Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+12.5%", trend: "up", icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50", testId: "monthly-revenue" },
+          { title: "Buyback Hours", value: `${totalTimeSaved} hrs`, change: "+8.2%", trend: "up", icon: Clock, color: "text-purple-600", bg: "bg-purple-50", testId: "buyback-hours" },
+          { title: "Active Leads", value: `${campaign?.currentMembers || 0}`, change: "+24.5%", trend: "up", icon: Users, color: "text-emerald-600", bg: "bg-emerald-50", testId: "active-leads" },
+          { title: "Avg. Deal Value", value: `$${totalRevenue > 0 && campaign?.currentMembers ? Math.round(totalRevenue / campaign.currentMembers).toLocaleString() : '0'}`, change: "+4.1%", trend: "up", icon: Award, color: "text-orange-600", bg: "bg-orange-50", testId: "avg-deal-value" },
         ].map((stat, i) => (
-          <Card key={i} className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <Card key={i} className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-testid={`card-stat-${stat.testId}`}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
                   <stat.icon className="h-6 w-6" />
                 </div>
                 {stat.trend === "up" ? (
-                  <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
                     <TrendingUp className="h-3 w-3 mr-1" /> {stat.change}
                   </div>
                 ) : (
-                  <div className="flex items-center text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
+                  <div className="flex items-center text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
                     <TrendingUp className="h-3 w-3 mr-1 rotate-180" /> {stat.change}
                   </div>
                 )}
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{stat.title}</h3>
-                <div className="text-3xl font-display font-bold text-slate-900 dark:text-white">{stat.value}</div>
+                <div className="text-3xl font-display font-bold text-slate-900 dark:text-white" data-testid={`text-value-${stat.testId}`}>{stat.value}</div>
               </div>
             </CardContent>
           </Card>

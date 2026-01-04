@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -22,37 +22,55 @@ import { Input } from "@/components/ui/input";
 import { OfferArchitect } from "@/components/dashboard/OfferArchitect";
 import { UtilityBuilder } from "@/components/dashboard/UtilityBuilder";
 import { SocialProofGenerator } from "@/components/dashboard/SocialProofGenerator";
+import { useCampaigns, useLeads, useDeleteLead } from "@/lib/api";
 
 export default function Founding50() {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  const { data: campaigns, isLoading: campaignsLoading } = useCampaigns();
+  const campaign = campaigns?.[0]; // Get the first campaign
+  const { data: leads, isLoading: leadsLoading } = useLeads(campaign?.id);
+  const deleteLead = useDeleteLead();
+
   const toggleAll = () => {
+    if (!leads) return;
     if (isAllSelected) {
       setSelectedRows([]);
       setIsAllSelected(false);
     } else {
-      setSelectedRows([0, 1, 2, 3, 4]);
+      setSelectedRows(leads.map((lead: any) => lead.id));
       setIsAllSelected(true);
     }
   };
 
-  const toggleRow = (index: number) => {
-    if (selectedRows.includes(index)) {
-      setSelectedRows(selectedRows.filter(i => i !== index));
+  const toggleRow = (id: number) => {
+    if (selectedRows.includes(id)) {
+      setSelectedRows(selectedRows.filter(i => i !== id));
       setIsAllSelected(false);
     } else {
-      setSelectedRows([...selectedRows, index]);
+      setSelectedRows([...selectedRows, id]);
     }
   };
 
-  const waitlistData = [
-     { name: "Sarah Connor", email: "sarah@skynet.com", company: "SkyNet Systems", rev: "$5M+", score: 98, status: "High Priority", date: "Jan 04, 2026" },
-     { name: "John Wick", email: "j.wick@continental.com", company: "Continental Services", rev: "$2M - $5M", score: 85, status: "Qualified", date: "Jan 03, 2026" },
-     { name: "Bruce Wayne", email: "bruce@wayne.ent", company: "Wayne Enterprises", rev: "$10M+", score: 92, status: "High Priority", date: "Jan 02, 2026" },
-     { name: "Tony Stark", email: "tony@stark.com", company: "Stark Industries", rev: "$50M+", score: 99, status: "VIP", date: "Jan 01, 2026" },
-     { name: "Peter Parker", email: "peter@dailybugle.com", company: "Freelance Photo", rev: "<$100k", score: 45, status: "Nurture", date: "Dec 31, 2025" },
-  ];
+  const handleDeleteSelected = async () => {
+    for (const id of selectedRows) {
+      await deleteLead.mutateAsync(id);
+    }
+    setSelectedRows([]);
+    setIsAllSelected(false);
+  };
+
+  // Loading state
+  if (campaignsLoading || leadsLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="h-8 w-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  const waitlistData = leads || [];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -85,26 +103,31 @@ export default function Founding50() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Campaign Progress</h2>
-              <p className="text-slate-500">Goal: 50 Founding Members</p>
+              <p className="text-slate-500">Goal: {campaign?.goalMembers || 50} Founding Members</p>
             </div>
             <div className="text-right">
-              <span className="text-4xl font-display font-bold text-blue-600">32</span>
-              <span className="text-xl text-slate-400 font-medium">/50</span>
+              <span className="text-4xl font-display font-bold text-blue-600">{campaign?.currentMembers || 0}</span>
+              <span className="text-xl text-slate-400 font-medium">/{campaign?.goalMembers || 50}</span>
             </div>
           </div>
-          <Progress value={64} className="h-3 bg-slate-100 dark:bg-slate-800" />
+          <Progress 
+            value={((campaign?.currentMembers || 0) / (campaign?.goalMembers || 50)) * 100} 
+            className="h-3 bg-slate-100 dark:bg-slate-800" 
+          />
           <div className="grid grid-cols-3 gap-8 mt-8">
              <div>
                <p className="text-sm font-medium text-slate-500 mb-1">Total Revenue</p>
-               <p className="text-2xl font-bold text-slate-900 dark:text-white">$160,000</p>
+               <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                 ${((campaign?.totalRevenue || 0) / 100).toLocaleString()}
+               </p>
              </div>
              <div>
                <p className="text-sm font-medium text-slate-500 mb-1">Conversion Rate</p>
-               <p className="text-2xl font-bold text-emerald-600">24.5%</p>
+               <p className="text-2xl font-bold text-emerald-600">{campaign?.conversionRate || '0'}%</p>
              </div>
              <div>
                <p className="text-sm font-medium text-slate-500 mb-1">Waitlist Size</p>
-               <p className="text-2xl font-bold text-slate-900 dark:text-white">418</p>
+               <p className="text-2xl font-bold text-slate-900 dark:text-white">{campaign?.waitlistSize || 0}</p>
              </div>
           </div>
         </CardContent>
@@ -203,9 +226,19 @@ export default function Founding50() {
             <div className="flex flex-wrap items-center gap-2">
               {selectedRows.length > 0 && (
                 <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 mr-2">
-                  <span className="text-sm text-slate-500">{selectedRows.length} selected</span>
-                  <Button size="sm" variant="outline" className="h-8"><Mail className="h-3.5 w-3.5 mr-2" /> Email</Button>
-                  <Button size="sm" variant="outline" className="h-8 text-red-600 hover:text-red-700"><Trash2 className="h-3.5 w-3.5" /></Button>
+                  <span className="text-sm text-slate-500" data-testid="text-selected-count">{selectedRows.length} selected</span>
+                  <Button size="sm" variant="outline" className="h-8" data-testid="button-email-selected">
+                    <Mail className="h-3.5 w-3.5 mr-2" /> Email
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-8 text-red-600 hover:text-red-700" 
+                    onClick={handleDeleteSelected}
+                    data-testid="button-delete-selected"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                   <div className="h-4 w-px bg-slate-200 mx-2" />
                 </div>
               )}
@@ -246,28 +279,29 @@ export default function Founding50() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {waitlistData.map((row, i) => (
-                  <tr key={i} className={`bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${selectedRows.includes(i) ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}>
+                {waitlistData.map((row: any) => (
+                  <tr key={row.id} className={`bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${selectedRows.includes(row.id) ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`} data-testid={`row-lead-${row.id}`}>
                     <td className="px-6 py-4">
                       <Checkbox 
-                        checked={selectedRows.includes(i)}
-                        onCheckedChange={() => toggleRow(i)}
+                        checked={selectedRows.includes(row.id)}
+                        onCheckedChange={() => toggleRow(row.id)}
+                        data-testid={`checkbox-lead-${row.id}`}
                       />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-slate-900 dark:text-white">{row.name}</span>
-                        <span className="text-xs text-slate-500">{row.email}</span>
+                        <span className="font-medium text-slate-900 dark:text-white" data-testid={`text-lead-name-${row.id}`}>{row.name}</span>
+                        <span className="text-xs text-slate-500" data-testid={`text-lead-email-${row.id}`}>{row.email}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-500">{row.company}</td>
-                    <td className="px-6 py-4 text-slate-500">{row.rev}</td>
+                    <td className="px-6 py-4 text-slate-500" data-testid={`text-lead-company-${row.id}`}>{row.company}</td>
+                    <td className="px-6 py-4 text-slate-500" data-testid={`text-lead-revenue-${row.id}`}>{row.revenue}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                           <div className={`h-full ${row.score > 90 ? 'bg-emerald-500' : row.score > 70 ? 'bg-blue-500' : 'bg-orange-500'}`} style={{ width: `${row.score}%` }}></div>
                         </div>
-                        <span className="text-xs font-medium">{row.score}</span>
+                        <span className="text-xs font-medium" data-testid={`text-lead-score-${row.id}`}>{row.score}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -276,14 +310,14 @@ export default function Founding50() {
                           row.status === "High Priority" ? "border-emerald-200 text-emerald-700 bg-emerald-50" :
                           row.status === "Qualified" ? "border-blue-200 text-blue-700 bg-blue-50" :
                           "border-slate-200 text-slate-600 bg-slate-50"}
-                      `}>
+                      `} data-testid={`badge-lead-status-${row.id}`}>
                         {row.status}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" data-testid={`button-lead-actions-${row.id}`}>
                             <MoreHorizontal className="h-4 w-4 text-slate-400" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -291,7 +325,9 @@ export default function Founding50() {
                           <DropdownMenuItem>Review Application</DropdownMenuItem>
                           <DropdownMenuItem>Send Email</DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">Reject Lead</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600" onClick={() => deleteLead.mutate(row.id)}>
+                            Reject Lead
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
@@ -302,7 +338,7 @@ export default function Founding50() {
           </div>
           <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div className="text-sm text-slate-500">
-              Showing <span className="font-medium">1-5</span> of <span className="font-medium">418</span> leads
+              Showing <span className="font-medium">1-{waitlistData.length}</span> of <span className="font-medium">{campaign?.waitlistSize || waitlistData.length}</span> leads
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" disabled>
