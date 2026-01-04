@@ -9,7 +9,10 @@ import {
   Menu,
   Bell,
   Search,
-  ChevronDown
+  ChevronDown,
+  User,
+  CreditCard,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,9 +42,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 fixed h-full z-10">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
-          <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
-            S
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+          <div className="h-8 w-8 bg-slate-900 rounded-lg flex items-center justify-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white relative z-10">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
           <span className="font-display font-bold text-xl text-slate-900 dark:text-white tracking-tight">
             Sovereign OS
@@ -73,15 +81,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-100 dark:border-slate-700">
-            <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-2">Buyback Status</h4>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mb-2">
-              <div className="bg-emerald-500 h-full w-[65%]" />
+          <Link href="/dashboard/buyback">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-blue-200 transition-colors group">
+              <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-2 flex justify-between">
+                Buyback Status
+                <span className="text-blue-600 group-hover:underline">View</span>
+              </h4>
+              <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mb-2">
+                <div className="bg-emerald-500 h-full w-[65%]" />
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                65% of manual tasks automated
+              </p>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              65% of manual tasks automated
-            </p>
-          </div>
+          </Link>
         </div>
       </aside>
 
@@ -98,8 +111,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
                 <div className="p-6 border-b border-slate-100 flex items-center gap-2">
-                  <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
-                    S
+                  <div className="h-8 w-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold">
+                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                   </div>
                   <span className="font-display font-bold text-xl text-slate-900">
                     Sovereign OS
@@ -110,7 +127,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <Link key={item.name} href={item.href}>
                       <div
                         onClick={() => setIsMobileOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
+                        className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                           location === item.href
                             ? "bg-slate-900 text-white"
                             : "text-slate-600 hover:bg-slate-100"
@@ -142,7 +159,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 hover:bg-slate-50 p-1.5 rounded-lg transition-colors outline-none">
+                <button className="flex items-center gap-2 hover:bg-slate-50 p-1.5 rounded-lg transition-colors outline-none cursor-pointer">
                   <Avatar className="h-8 w-8 border border-slate-200">
                     <AvatarImage src="https://github.com/shadcn.png" />
                     <AvatarFallback>JD</AvatarFallback>
@@ -157,12 +174,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Team</DropdownMenuItem>
+                <Link href="/dashboard/settings">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4 text-slate-400" />
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/dashboard/settings">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <CreditCard className="mr-2 h-4 w-4 text-slate-400" />
+                    Billing
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/dashboard/settings">
+                   <DropdownMenuItem className="cursor-pointer">
+                    <Users className="mr-2 h-4 w-4 text-slate-400" />
+                    Team
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <Link href="/auth">
-                  <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                  <DropdownMenuItem className="text-red-600 focus:text-red-600 cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
                   </DropdownMenuItem>

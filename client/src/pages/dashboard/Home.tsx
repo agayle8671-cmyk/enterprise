@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, Clock, DollarSign, Users, Activity, MoreHorizontal, ArrowRight, Zap, TrendingUp, Calendar, Target, Award } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 const revenueData = [
   { name: 'Mon', value: 4200, prev: 3800 },
@@ -39,6 +41,16 @@ const performanceData = [
 ];
 
 export default function Home() {
+  const { toast } = useToast();
+
+  const handleGenerateReport = () => {
+    toast({
+      title: "Report Generated",
+      description: "January 2026 performance report has been sent to your email.",
+      duration: 3000,
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-end">
@@ -50,7 +62,10 @@ export default function Home() {
            <Button variant="outline" className="hidden md:flex">
              <Calendar className="mr-2 h-4 w-4" /> Jan 2026
            </Button>
-           <Button className="bg-slate-900 text-white shadow-lg shadow-slate-900/20">
+           <Button 
+             className="bg-slate-900 text-white shadow-lg shadow-slate-900/20"
+             onClick={handleGenerateReport}
+           >
              <ArrowUpRight className="mr-2 h-4 w-4" /> Generate Report
            </Button>
         </div>
@@ -248,7 +263,9 @@ export default function Home() {
             <CardTitle className="text-xl">Recent Task Automations</CardTitle>
             <CardDescription>Live feed of the "Buyback Loop" in action.</CardDescription>
           </div>
-          <Button variant="outline" size="sm" className="bg-white hover:bg-slate-50">View All Logs</Button>
+          <Link href="/dashboard/buyback">
+            <Button variant="outline" size="sm" className="bg-white hover:bg-slate-50 cursor-pointer">View All Logs</Button>
+          </Link>
         </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y divide-slate-100 dark:divide-slate-800">

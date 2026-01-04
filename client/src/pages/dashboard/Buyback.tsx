@@ -1,9 +1,29 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PlayCircle, PauseCircle, Settings, Activity, Clock, ArrowRight } from "lucide-react";
+import { PlayCircle, PauseCircle, Settings, Activity, Clock, ArrowRight, Plus } from "lucide-react";
+import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Buyback() {
+  const { toast } = useToast();
+
+  const handleDeployAgent = () => {
+    toast({
+      title: "Agent Deployment Initiated",
+      description: "Allocating server resources for new autonomous agent...",
+      duration: 3000,
+    });
+  };
+
+  const handleDeployFix = () => {
+    toast({
+      title: "Workflow Fix Applied",
+      description: "Schedule Bot has been activated for your calendar.",
+      duration: 3000,
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -105,18 +125,23 @@ export default function Buyback() {
                    </div>
                  </div>
                  <div className="flex items-center gap-4">
-                   <Badge variant={agent.status === "Running" ? "default" : "secondary"} className={agent.status === "Running" ? "bg-emerald-500 hover:bg-emerald-600" : ""}>
+                   <Badge variant={agent.status === "Running" ? "default" : "secondary"} className={agent.status === "Running" ? "bg-emerald-50 hover:bg-emerald-600" : ""}>
                      {agent.status}
                    </Badge>
-                   <Button variant="ghost" size="icon">
-                     <Settings className="h-4 w-4 text-slate-400" />
-                   </Button>
+                   <Link href="/dashboard/settings">
+                     <Button variant="ghost" size="icon">
+                       <Settings className="h-4 w-4 text-slate-400" />
+                     </Button>
+                   </Link>
                  </div>
                </div>
              ))}
              
-             <Button className="w-full mt-4 border-dashed border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:border-slate-300">
-               + Deploy New Agent
+             <Button 
+               className="w-full mt-4 border-dashed border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:border-slate-300"
+               onClick={handleDeployAgent}
+             >
+               <Plus className="mr-2 h-4 w-4" /> Deploy New Agent
              </Button>
           </CardContent>
         </Card>
@@ -136,7 +161,7 @@ export default function Buyback() {
                You spent <span className="text-white font-bold">4.5 hours</span> this week coordinating meetings. Deploy the "Schedule Bot" to reclaim this time immediately.
              </p>
            </div>
-           <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 whitespace-nowrap">
+           <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 whitespace-nowrap" onClick={handleDeployFix}>
              Deploy Fix <ArrowRight className="ml-2 h-4 w-4" />
            </Button>
         </CardContent>
