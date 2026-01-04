@@ -5,6 +5,7 @@ import { PlayCircle, PauseCircle, Settings, Activity, Clock, ArrowRight, Plus } 
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useAgents, useUpdateAgent } from "@/lib/api";
+import { WaveText } from "@/components/WaveText";
 
 export default function Buyback() {
   const { toast } = useToast();
@@ -53,7 +54,7 @@ export default function Buyback() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Buyback Autopilot</h1>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="Buyback Autopilot" /></h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your fleet of autonomous agents and reclaim your time.</p>
         </div>
         <div className="flex gap-4">

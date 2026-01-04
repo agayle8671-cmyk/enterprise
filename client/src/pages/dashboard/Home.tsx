@@ -6,6 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardStats, useAgents, useDecisions, useContracts } from "@/lib/api";
+import { WaveText } from "@/components/WaveText";
 
 const revenueData = [
   { name: 'Mon', value: 4200, prev: 3800 },
@@ -74,7 +75,7 @@ export default function Home() {
     <div className="space-y-8">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Dashboard Overview</h1>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="Dashboard Overview" /></h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Welcome back, James. Here's your agency's performance at a glance.</p>
         </div>
         <div className="flex gap-2">

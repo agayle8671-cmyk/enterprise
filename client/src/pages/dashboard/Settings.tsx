@@ -11,13 +11,14 @@ import {
   CreditCard, Globe, Lock, Mail, User, Zap, Bell, Shield, 
   Users, Key, Activity, Search, FileText, Download, Filter 
 } from "lucide-react";
+import { WaveText } from "@/components/WaveText";
 
 export default function Settings() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Settings & Administration</h1>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="Settings & Administration" /></h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your organization, team permissions, and security compliance.</p>
         </div>
         <Button variant="outline" className="gap-2">

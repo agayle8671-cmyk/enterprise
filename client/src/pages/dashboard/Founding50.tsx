@@ -23,6 +23,7 @@ import { OfferArchitect } from "@/components/dashboard/OfferArchitect";
 import { UtilityBuilder } from "@/components/dashboard/UtilityBuilder";
 import { SocialProofGenerator } from "@/components/dashboard/SocialProofGenerator";
 import { useCampaigns, useLeads, useDeleteLead } from "@/lib/api";
+import { WaveText } from "@/components/WaveText";
 
 export default function Founding50() {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
@@ -76,7 +77,7 @@ export default function Founding50() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">The Founding 50 Launchpad</h1>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="The Founding 50 Launchpad" /></h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Validate your high-ticket offer by securing 50 founding members.</p>
         </div>
         <div className="flex gap-2">
