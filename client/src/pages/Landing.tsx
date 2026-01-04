@@ -6,12 +6,15 @@ import { useState } from "react";
 
 function WaveText({ text, className = "" }: { text: string; className?: string }) {
   return (
-    <span className={className}>
+    <span className={`inline ${className}`} style={{ wordSpacing: 'normal' }}>
       {text.split('').map((char, i) => (
         <span 
           key={i} 
           className="inline-block animate-wave-letter"
-          style={{ animationDelay: `${i * 0.05}s` }}
+          style={{ 
+            animationDelay: `${i * 0.05}s`,
+            width: char === ' ' ? '0.25em' : 'auto'
+          }}
         >
           {char === ' ' ? '\u00A0' : char}
         </span>
