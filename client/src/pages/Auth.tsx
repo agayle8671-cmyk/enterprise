@@ -112,6 +112,26 @@ export default function Auth() {
             </Button>
           </form>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-slate-500">Or continue with</span>
+            </div>
+          </div>
+
+          <Button 
+            variant="outline" 
+            type="button" 
+            className="w-full h-11 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
+            onClick={() => {
+                setLocation("/dashboard");
+            }}
+          >
+            Admin Fast Track
+          </Button>
+
           <p className="text-center text-sm text-slate-500">
             Don't have an account?{" "}
             <Link href="/" className="font-semibold text-blue-600 hover:text-blue-500">
