@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, ThumbsUp, Star, RefreshCw, Copy, CheckCircle } from "lucide-react";
-import generatedImage from "@assets/generated_images/glassmorphic_testimonial_card_profile_picture_of_a_professional_5_stars_quote_bubbles_clean_typography_blurred_background_premium_design.png";
+import generatedImage from "@assets/generated_images/glassmorphic_card_with_profile_picture_and_5_star_rating.png";
 
 export function SocialProofGenerator() {
   return (

@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Hammer, Calculator, Search, FileText, ArrowRight, Code } from "lucide-react";
-import generatedImage from "@assets/generated_images/interface_mockup_of_an_roi_calculator_tool_clean_white_and_blue_theme_sliders_for_input_area_chart_showing_growth_data_grid_minimalist_saas_aesthetic_high_resolution.png";
+import generatedImage from "@assets/generated_images/clean_minimalist_dashboard_with_roi_chart_and_sliders.png";
 
 export function UtilityBuilder() {
   return (
