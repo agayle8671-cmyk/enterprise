@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { ArrowRight, Check, ChevronDown, Play } from "lucide-react";
 import { useState } from "react";
 import { WaveText } from "@/components/WaveText";
+import { MusicalType } from "@/components/TypewriterText";
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -141,25 +142,40 @@ export default function Landing() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
-            <div className="space-y-4 animate-subtle-float">
+            <div className="space-y-4 group">
               <div className="text-[56px] font-light text-slate-100 leading-none">01</div>
-              <h3 className="text-[17px] font-medium text-slate-900">Audit your week</h3>
+              <h3 className="text-[17px] font-medium text-slate-900 h-7">
+                <MusicalType 
+                  words={["Audit your week", "Map your time", "Find the waste"]} 
+                  baseDelay={0}
+                />
+              </h3>
               <p className="text-[15px] text-slate-500 leading-[1.7]">
                 We map every task to our DRIP framework: Delegate, Replace, Invest, or Produce. 
                 You'll see exactly what's stealing your time.
               </p>
             </div>
-            <div className="space-y-4 animate-subtle-float-delayed">
+            <div className="space-y-4 group">
               <div className="text-[56px] font-light text-slate-100 leading-none">02</div>
-              <h3 className="text-[17px] font-medium text-slate-900">Deploy agents</h3>
+              <h3 className="text-[17px] font-medium text-slate-900 h-7">
+                <MusicalType 
+                  words={["Deploy agents", "Automate tasks", "Work smarter"]} 
+                  baseDelay={800}
+                />
+              </h3>
               <p className="text-[15px] text-slate-500 leading-[1.7]">
                 For tasks in the "Replace" quadrant, we spin up AI agents that handle them 24/7. 
                 They only ping you when they need a decision.
               </p>
             </div>
-            <div className="space-y-4 animate-subtle-float-delayed-2">
+            <div className="space-y-4 group">
               <div className="text-[56px] font-light text-slate-100 leading-none">03</div>
-              <h3 className="text-[17px] font-medium text-slate-900">Focus on what matters</h3>
+              <h3 className="text-[17px] font-medium text-slate-900 h-7">
+                <MusicalType 
+                  words={["Focus on what matters", "Do meaningful work", "Grow your business"]} 
+                  baseDelay={1600}
+                />
+              </h3>
               <p className="text-[15px] text-slate-500 leading-[1.7]">
                 Strategy. Relationships. Creative work. The stuff that actually grows 
                 your business. That's where you should be spending your time.

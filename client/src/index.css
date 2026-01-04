@@ -272,3 +272,42 @@
 .glow-hover:hover::after {
   opacity: 1;
 }
+
+/* Typewriter cursor blink */
+@keyframes cursorBlink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-blink {
+  animation: cursorBlink 1s ease-in-out infinite;
+}
+
+/* Letter drop animation for musical typing effect */
+@keyframes letterDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Letter fade out for deletion */
+@keyframes letterFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
