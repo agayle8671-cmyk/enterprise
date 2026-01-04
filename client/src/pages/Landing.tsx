@@ -4,11 +4,18 @@ import { Link } from "wouter";
 import { ArrowRight, Check, ChevronDown, Play } from "lucide-react";
 import { useState } from "react";
 
-function IntelligenceText({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function WaveText({ text, className = "" }: { text: string; className?: string }) {
   return (
-    <span className={`relative inline-block ${className}`}>
-      <span className="relative z-10">{children}</span>
-      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-200/50 to-transparent animate-intelligence-scan" />
+    <span className={className}>
+      {text.split('').map((char, i) => (
+        <span 
+          key={i} 
+          className="inline-block animate-wave-letter"
+          style={{ animationDelay: `${i * 0.05}s` }}
+        >
+          {char === ' ' ? '\u00A0' : char}
+        </span>
+      ))}
     </span>
   );
 }
@@ -52,9 +59,11 @@ export default function Landing() {
             <div>
               <p className="text-sm text-slate-500 mb-6">For consultants & agency owners</p>
               <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 leading-[1.15] tracking-tight mb-6">
-                <IntelligenceText>Stop trading hours for dollars.</IntelligenceText>
+                <WaveText text="Stop trading hours for dollars." />
                 <br />
-                <span className="text-slate-400">Start building a machine.</span>
+                <span className="text-slate-400">
+                  <WaveText text="Start building a machine." />
+                </span>
               </h1>
               <p className="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
                 Sovereign helps you identify what to automate, what to delegate, 
@@ -137,7 +146,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="max-w-2xl mb-16">
             <h2 className="text-3xl font-semibold text-slate-900 mb-4">
-              <IntelligenceText>You're probably spending 60% of your time</IntelligenceText> on work that doesn't grow your business.
+              You're probably spending 60% of your time on work that doesn't grow your business.
             </h2>
             <p className="text-lg text-slate-600 leading-relaxed">
               Email, scheduling, research, follow-ups, content, invoicing—it all adds up. 
@@ -182,7 +191,7 @@ export default function Landing() {
             <div>
               <p className="text-sm text-slate-500 mb-4">The DRIP Matrix</p>
               <h2 className="text-3xl font-semibold text-slate-900 mb-6">
-                A framework for deciding <IntelligenceText>what deserves your attention</IntelligenceText>
+                A framework for deciding what deserves your attention
               </h2>
               <p className="text-slate-600 leading-relaxed mb-8">
                 Every task falls into one of four categories based on two factors: 
@@ -347,7 +356,7 @@ export default function Landing() {
       <section className="py-24 bg-slate-900">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-semibold text-white mb-4">
-            Ready to see <IntelligenceText className="text-white">where your time actually goes?</IntelligenceText>
+            Ready to see where your time actually goes?
           </h2>
           <p className="text-slate-400 mb-8">
             Start with a free time audit. Takes 10 minutes. No credit card required.

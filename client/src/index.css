@@ -203,24 +203,18 @@
   }
 }
 
-/* Subtle AI intelligence scan animation - continuous */
-@keyframes intelligence-scan {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  20% {
+/* Subtle letter wave animation - continuous */
+@keyframes wave-letter {
+  0%, 100% {
+    transform: translateY(0);
     opacity: 1;
   }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
+  50% {
+    transform: translateY(-2px);
+    opacity: 0.8;
   }
 }
 
-.animate-intelligence-scan {
-  animation: intelligence-scan 4s ease-in-out infinite;
+.animate-wave-letter {
+  animation: wave-letter 3s ease-in-out infinite;
 }
