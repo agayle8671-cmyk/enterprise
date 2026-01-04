@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpRight, Clock, DollarSign, Users, Activity, MoreHorizontal, ArrowRight, Zap, TrendingUp, Calendar, Target, Award, Sparkles } from "lucide-react";
+import { ArrowUpRight, Clock, DollarSign, Users, Activity, MoreHorizontal, ArrowRight, Zap, TrendingUp, Calendar, Target, Award, Sparkles, FileText, Check } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -279,60 +279,119 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* Recent Activity Table - Enhanced */}
-      <Card className="border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between bg-slate-50/50 border-b border-slate-100 dark:bg-slate-900/50 dark:border-slate-800">
-          <div>
-            <CardTitle className="text-xl">Recent Task Automations</CardTitle>
-            <CardDescription>Live feed of the "Buyback Loop" in action.</CardDescription>
-          </div>
-          <Link href="/dashboard/buyback">
-            <Button variant="outline" size="sm" className="bg-white hover:bg-slate-50 cursor-pointer">View All Logs</Button>
-          </Link>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="divide-y divide-slate-100 dark:divide-slate-800">
-            {[
-              { task: "Client Onboarding Sequence", agent: "Onboarding Bot", time: "2 mins ago", status: "Completed", saved: "45 mins", cost: "$0.12" },
-              { task: "Weekly Report Generation", agent: "Analytics Agent", time: "1 hour ago", status: "Completed", saved: "1.5 hours", cost: "$0.45" },
-              { task: "Lead Qualification (Batch #402)", agent: "Sales Bot", time: "3 hours ago", status: "Processing", saved: "Pending", cost: "$1.20" },
-              { task: "Invoice Reconciliation", agent: "Finance Bot", time: "5 hours ago", status: "Completed", saved: "2 hours", cost: "$0.08" },
-              { task: "Competitor Analysis Scrape", agent: "Research Bot", time: "8 hours ago", status: "Completed", saved: "4 hours", cost: "$2.50" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-4 group hover:bg-slate-50 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-sm transition-all border border-transparent group-hover:border-slate-200">
-                    <Zap className="h-5 w-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900 dark:text-white">{item.task}</p>
-                    <div className="flex items-center gap-2">
-                       <p className="text-sm text-slate-500">via <span className="font-medium text-slate-700">{item.agent}</span></p>
-                       <span className="text-slate-300">•</span>
-                       <p className="text-xs text-slate-400">{item.time}</p>
-                    </div>
-                  </div>
+      {/* Decision Feed & Active Contracts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* The Decision Feed (Editor Mode) */}
+        <Card className="col-span-1 lg:col-span-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 dark:bg-slate-900/50 dark:border-slate-800">
+             <div className="flex items-center justify-between">
+               <div>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-blue-600" />
+                    Decision Feed
+                  </CardTitle>
+                  <CardDescription>Approve agent actions. You are the Editor, not the Worker.</CardDescription>
+               </div>
+               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                 3 Pending
+               </Badge>
+             </div>
+          </CardHeader>
+          <CardContent className="p-0">
+             <div className="divide-y divide-slate-100 dark:divide-slate-800">
+               {[
+                 { 
+                   title: "Outreach Campaign Draft", 
+                   agent: "Sales Bot", 
+                   desc: "Drafted 50 personalized LinkedIn messages for the 'SaaS Founders' list. Ready for review.",
+                   time: "10m ago",
+                   type: "Review"
+                 },
+                 { 
+                   title: "Client Reply: Scope Creep", 
+                   agent: "Inbox Sentinel", 
+                   desc: "Client X asked for extra revisions. I drafted a polite refusal citing the MSA. Approve to send?",
+                   time: "32m ago",
+                   type: "Decision"
+                 },
+                 { 
+                   title: "Weekly Report Generation", 
+                   agent: "Analytics Agent", 
+                   desc: "Compiled Jan 2026 performance report. PDF ready for distribution.",
+                   time: "1h ago",
+                   type: "Review"
+                 }
+               ].map((item, i) => (
+                 <div key={i} className="p-6 hover:bg-slate-50 transition-colors flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                   <div className="flex items-start gap-4">
+                      <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${item.type === 'Decision' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                        {item.type === 'Decision' ? <Zap className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-slate-900">{item.title}</h4>
+                          <span className="text-xs text-slate-400">• {item.time}</span>
+                        </div>
+                        <p className="text-sm text-slate-600 max-w-xl">{item.desc}</p>
+                        <p className="text-xs text-slate-500">Proposed by <span className="font-medium text-slate-700">{item.agent}</span></p>
+                      </div>
+                   </div>
+                   <div className="flex items-center gap-2 w-full md:w-auto pl-14 md:pl-0">
+                     <Button variant="outline" size="sm" className="text-slate-500 hover:text-slate-700">Reject</Button>
+                     <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+                       <Check className="h-4 w-4 mr-1.5" /> Approve
+                     </Button>
+                   </div>
+                 </div>
+               ))}
+             </div>
+          </CardContent>
+          <CardFooter className="bg-slate-50/50 border-t border-slate-100 p-4 justify-center">
+             <Button variant="ghost" className="text-sm text-slate-500">View All Decisions</Button>
+          </CardFooter>
+        </Card>
+
+        {/* Active Contracts (Fintech) */}
+        <Card className="col-span-1 border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+           <CardHeader>
+             <CardTitle className="text-xl">Active Contracts</CardTitle>
+             <CardDescription>Embedded payments status.</CardDescription>
+           </CardHeader>
+           <CardContent className="flex-1 space-y-4">
+             <div className="p-4 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg relative overflow-hidden group">
+               <div className="absolute top-0 right-0 p-3 opacity-10">
+                 <DollarSign className="h-24 w-24" />
+               </div>
+               <div className="relative z-10">
+                 <div className="flex justify-between items-start mb-4">
+                   <Badge className="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border-none">Ready to Sign</Badge>
+                   <span className="text-slate-400 text-xs">Sent 2h ago</span>
+                 </div>
+                 <h3 className="font-bold text-lg mb-1">Acme Corp Strategy</h3>
+                 <p className="text-3xl font-display font-bold text-white mb-4">$15,000</p>
+                 <div className="flex items-center gap-2 text-sm text-slate-300 mb-4">
+                   <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                   Client viewing now...
+                 </div>
+                 <Button size="sm" variant="secondary" className="w-full">
+                   Resend Link
+                 </Button>
+               </div>
+             </div>
+
+             <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-200 transition-colors">
+                <div className="flex justify-between items-start mb-2">
+                   <h4 className="font-semibold text-slate-900">Stark Industries Retainer</h4>
+                   <span className="font-mono text-slate-900 font-bold">$8,500</span>
                 </div>
-                <div className="flex items-center gap-8">
-                  <div className="text-right hidden md:block">
-                    <p className="text-xs text-slate-400 font-medium uppercase tracking-wide">Est. Cost</p>
-                    <p className="text-sm font-medium text-slate-600">{item.cost}</p>
-                  </div>
-                  <div className="text-right w-24">
-                    <p className="text-sm font-bold text-emerald-600">-{item.saved}</p>
-                    <Badge variant="outline" className="text-[10px] h-5 px-1.5 border-slate-200 text-slate-500 font-normal">
-                      {item.status}
-                    </Badge>
-                  </div>
-                  <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-blue-600">
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500">Deposit Paid</span>
+                  <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100">Active</Badge>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+             </div>
+           </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

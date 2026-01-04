@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sparkles, ArrowRight, Check, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
 export function OfferArchitect({ children }: { children: React.ReactNode }) {
@@ -135,6 +136,26 @@ export function OfferArchitect({ children }: { children: React.ReactNode }) {
                    </h3>
                 </div>
               </Card>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                   <Label>Methodology Map (The Mechanism)</Label>
+                   <Badge variant="outline" className="text-xs font-normal border-blue-200 text-blue-700 bg-blue-50">AI Generated</Badge>
+                </div>
+                <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 overflow-x-auto">
+                   {["Audit", "Strategy", "Execution", "Optimization", "Scale"].map((step, i) => (
+                     <div key={i} className="flex items-center gap-2 min-w-fit">
+                       <div className="flex flex-col items-center gap-2">
+                         <div className="h-20 w-32 rounded-lg bg-white border border-slate-300 shadow-sm flex flex-col items-center justify-center p-2 text-center hover:border-blue-400 transition-colors cursor-pointer group">
+                           <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold mb-1 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">{i + 1}</div>
+                           <span className="text-xs font-bold text-slate-700">{step} Protocol</span>
+                         </div>
+                       </div>
+                       {i < 4 && <ArrowRight className="h-4 w-4 text-slate-300" />}
+                     </div>
+                   ))}
+                </div>
+              </div>
 
               <div className="space-y-3">
                 <Label>Core Deliverables</Label>
