@@ -74,15 +74,23 @@ export const insertAgentSchema = createInsertSchema(agents).omit({ id: true, cre
 export type InsertAgent = z.infer<typeof insertAgentSchema>;
 export type Agent = typeof agents.$inferSelect;
 
-// Decision Feed Items
+// Decision Feed Items (1:3:1 Pattern)
+// 1 Problem, 3 Options, 1 Recommendation
 export const decisions = pgTable("decisions", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
   agentId: integer("agent_id").references(() => agents.id),
+  agentName: text("agent_name"),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  type: text("type").notNull(),
-  status: text("status").notNull().default("pending"),
+  type: text("type").notNull(), // 'email', 'proposal', 'automation', 'scheduling'
+  priority: text("priority").notNull().default("medium"), // 'low', 'medium', 'high', 'urgent'
+  // 1:3:1 Pattern fields
+  options: text("options"), // JSON array of 3 options
+  recommendation: integer("recommendation").default(0), // Index of recommended option (0-2)
+  selectedOption: integer("selected_option"), // Which option was chosen
+  status: text("status").notNull().default("pending"), // 'pending', 'approved', 'rejected', 'expired'
+  metadata: text("metadata"), // Additional JSON data
   createdAt: timestamp("created_at").defaultNow().notNull(),
   resolvedAt: timestamp("resolved_at"),
 });
@@ -120,3 +128,21 @@ export const auditLogs = pgTable("audit_logs", {
 export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({ id: true, createdAt: true });
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 export type AuditLog = typeof auditLogs.$inferSelect;
+
+// Time Tracking Entries (DRIP Matrix)
+export const timeEntries = pgTable("time_entries", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  task: text("task").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'delegate', 'replace', 'invest', 'produce'
+  duration: integer("duration").notNull(), // in minutes
+  energyLevel: integer("energy_level"), // 1-10 scale
+  hourlyValue: integer("hourly_value"), // estimated value in cents
+  date: timestamp("date").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTimeEntrySchema = createInsertSchema(timeEntries).omit({ id: true, createdAt: true });
+export type InsertTimeEntry = z.infer<typeof insertTimeEntrySchema>;
+export type TimeEntry = typeof timeEntries.$inferSelect;

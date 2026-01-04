@@ -1,17 +1,18 @@
-import type { Express } from "express";
+import type { Express, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCampaignSchema, insertLeadSchema, insertAgentSchema, insertDecisionSchema, insertContractSchema } from "@shared/schema";
+import { aiService } from "./services/ai";
+import { insertCampaignSchema, insertLeadSchema, insertAgentSchema, insertDecisionSchema, insertContractSchema, insertTimeEntrySchema } from "@shared/schema";
 import { ZodError } from "zod";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+
   // Helper to get current user ID (using session user or default for development)
   const getUserId = (req: any) => req.user?.id || "demo-user-id";
-  
+
   // Campaigns
   app.get("/api/campaigns", async (req, res) => {
     try {
@@ -71,7 +72,7 @@ export async function registerRoutes(
     try {
       const data = insertLeadSchema.parse(req.body);
       const lead = await storage.createLead(data);
-      
+
       // Update campaign stats
       const campaign = await storage.getCampaign(data.campaignId);
       if (campaign) {
@@ -79,7 +80,7 @@ export async function registerRoutes(
           waitlistSize: campaign.waitlistSize + 1
         });
       }
-      
+
       res.status(201).json(lead);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -151,6 +152,31 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete agent" });
+    }
+  });
+
+  // Time Audit
+  app.get("/api/time-entries", async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const entries = await storage.getTimeEntries(userId);
+      res.json(entries);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch time entries" });
+    }
+  });
+
+  app.post("/api/time-entries", async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const data = insertTimeEntrySchema.parse({ ...req.body, userId });
+      const entry = await storage.createTimeEntry(data);
+      res.status(201).json(entry);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ error: "Invalid data", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create time entry" });
     }
   });
 
@@ -228,18 +254,18 @@ export async function registerRoutes(
   app.get("/api/dashboard/stats", async (req, res) => {
     try {
       const userId = getUserId(req);
-      
+
       const campaigns = await storage.getCampaignsByUserId(userId);
       const agents = await storage.getAgentsByUserId(userId);
       const decisions = await storage.getPendingDecisionsByUserId(userId);
       const contracts = await storage.getContractsByUserId(userId);
-      
+
       // Calculate total time saved
       const totalTimeSaved = agents.reduce((sum, agent) => sum + (agent.timeSaved || 0), 0);
-      
+
       // Active contracts
       const activeContracts = contracts.filter(c => c.status === "pending" || c.status === "signed");
-      
+
       res.json({
         totalCampaigns: campaigns.length,
         totalAgents: agents.length,
@@ -250,6 +276,109 @@ export async function registerRoutes(
       });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch dashboard stats" });
+    }
+  });
+
+  // ==========================================================================
+  // AI ROUTES - Command Center & Agent APIs
+  // ==========================================================================
+
+  // Chat with Command Center AI
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { message, sessionId, agentType = 'command_center' } = req.body;
+
+      if (!message || !sessionId) {
+        return res.status(400).json({ error: "Message and sessionId are required" });
+      }
+
+      const response = await aiService.chat(sessionId, message, agentType);
+      res.json({ response, sessionId });
+    } catch (error) {
+      console.error("AI chat error:", error);
+      res.status(500).json({ error: "Failed to generate AI response" });
+    }
+  });
+
+  // Streaming chat endpoint (Server-Sent Events)
+  app.post("/api/ai/chat/stream", async (req, res) => {
+    try {
+      const { message, sessionId, agentType = 'command_center' } = req.body;
+
+      if (!message || !sessionId) {
+        return res.status(400).json({ error: "Message and sessionId are required" });
+      }
+
+      // Set up SSE headers
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+
+      await aiService.streamChat(
+        sessionId,
+        message,
+        {
+          onChunk: (chunk) => {
+            res.write(`data: ${JSON.stringify({ type: 'chunk', content: chunk })}\n\n`);
+          },
+          onComplete: (fullResponse) => {
+            res.write(`data: ${JSON.stringify({ type: 'complete', content: fullResponse })}\n\n`);
+            res.end();
+          },
+          onError: (error) => {
+            res.write(`data: ${JSON.stringify({ type: 'error', content: error.message })}\n\n`);
+            res.end();
+          }
+        },
+        agentType
+      );
+    } catch (error) {
+      console.error("AI stream error:", error);
+      res.status(500).json({ error: "Failed to stream AI response" });
+    }
+  });
+
+  // DRIP Matrix analysis
+  app.post("/api/ai/analyze-drip", async (req, res) => {
+    try {
+      const { taskDescription } = req.body;
+
+      if (!taskDescription) {
+        return res.status(400).json({ error: "Task description is required" });
+      }
+
+      const analysis = await aiService.analyzeDRIP(taskDescription);
+      res.json(analysis);
+    } catch (error) {
+      console.error("DRIP analysis error:", error);
+      res.status(500).json({ error: "Failed to analyze task" });
+    }
+  });
+
+  // Generate email reply options (for Inbox Sentinel)
+  app.post("/api/ai/email-replies", async (req, res) => {
+    try {
+      const { emailContent } = req.body;
+
+      if (!emailContent) {
+        return res.status(400).json({ error: "Email content is required" });
+      }
+
+      const replies = await aiService.generateEmailReplies(emailContent);
+      res.json(replies);
+    } catch (error) {
+      console.error("Email reply generation error:", error);
+      res.status(500).json({ error: "Failed to generate email replies" });
+    }
+  });
+
+  // Clear AI conversation history
+  app.delete("/api/ai/history/:sessionId", async (req, res) => {
+    try {
+      aiService.clearHistory(req.params.sessionId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to clear history" });
     }
   });
 

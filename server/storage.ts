@@ -1,5 +1,5 @@
 import { db } from "./db/index";
-import { 
+import {
   type User, type InsertUser,
   type Campaign, type InsertCampaign,
   type Lead, type InsertLead,
@@ -7,7 +7,8 @@ import {
   type Decision, type InsertDecision,
   type Contract, type InsertContract,
   type AuditLog, type InsertAuditLog,
-  users, campaigns, leads, agents, decisions, contracts, auditLogs
+  type TimeEntry, type InsertTimeEntry,
+  users, campaigns, leads, agents, decisions, contracts, auditLogs, timeEntries
 } from "@shared/schema";
 import { eq, desc, and } from "drizzle-orm";
 
@@ -52,6 +53,10 @@ export interface IStorage {
   // Audit Logs
   getAuditLogsByUserId(userId: string, limit?: number): Promise<AuditLog[]>;
   createAuditLog(log: InsertAuditLog): Promise<AuditLog>;
+
+  // Time Entries
+  getTimeEntries(userId: string): Promise<TimeEntry[]>;
+  createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -195,6 +200,18 @@ export class DatabaseStorage implements IStorage {
     const [newLog] = await db.insert(auditLogs).values(log).returning();
     return newLog;
   }
+
+  // Time Entries
+  async getTimeEntries(userId: string): Promise<TimeEntry[]> {
+    return await db.select().from(timeEntries).where(eq(timeEntries.userId, userId)).orderBy(desc(timeEntries.createdAt));
+  }
+
+  async createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry> {
+    const [newEntry] = await db.insert(timeEntries).values(entry).returning();
+    return newEntry;
+  }
 }
+
+
 
 export const storage = new DatabaseStorage();

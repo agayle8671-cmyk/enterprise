@@ -1,405 +1,504 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { BentoGrid, BentoItem } from "@/components/ui/BentoGrid";
 import { Link } from "wouter";
-import { ArrowRight, Check, ChevronDown, Play } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Play, Bot, Zap, Users, LineChart, Sparkles, Timer, Shield, Cpu } from "lucide-react";
 import { useState } from "react";
 import { WaveText } from "@/components/WaveText";
 import { MusicalType } from "@/components/TypewriterText";
+import { motion } from "framer-motion";
+import { PHYSICS } from "@/lib/animation-constants";
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-[#FBFBFD] font-sans antialiased">
-      {/* Navigation - Apple-style minimal */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl z-50 border-b border-slate-200/50">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-10 h-12 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 bg-slate-900 rounded-lg flex items-center justify-center text-white text-sm font-medium">S</div>
-            <span className="font-medium text-[15px] text-slate-900"><WaveText text="Sovereign" /></span>
+    <div className="min-h-screen bg-background font-sans antialiased overflow-x-hidden">
+      {/* Animated background gradient */}
+      <div className="fixed inset-0 bg-mesh pointer-events-none opacity-60" />
+
+      {/* Navigation - Floating Glass */}
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-50">
+        <motion.div
+          className="liquid-glass-subtle px-6 py-3 flex items-center justify-between"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={PHYSICS.screenTransition}
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-primary/30">
+              S
+            </div>
+            <span className="font-semibold text-lg text-foreground">Sovereign</span>
           </div>
-          <div className="hidden md:flex items-center gap-7 text-[13px] text-slate-500">
-            <a href="#how" className="hover:text-slate-900 transition-colors">How it works</a>
-            <a href="#pricing" className="hover:text-slate-900 transition-colors">Pricing</a>
-            <a href="#customers" className="hover:text-slate-900 transition-colors">Customers</a>
+          <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
+            <a href="#how" className="hover:text-foreground transition-colors">How it works</a>
+            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+            <a href="#customers" className="hover:text-foreground transition-colors">Customers</a>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/auth">
-              <Button variant="ghost" size="sm" className="text-[13px] text-slate-500 hover:text-slate-900 hover:bg-transparent" data-testid="button-login">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" disablePhysics>
                 Sign in
               </Button>
             </Link>
             <Link href="/auth">
-              <Button size="sm" className="text-[13px] bg-slate-900 hover:bg-slate-800 rounded-full px-4 h-8" data-testid="button-get-started">
+              <Button size="sm" className="bg-gradient-primary text-white rounded-full px-5 shadow-lg shadow-primary/25">
                 Get started
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </nav>
 
-      {/* Hero - Apple-style generous spacing */}
-      <section className="pt-28 pb-20 md:pt-36 md:pb-28">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-10">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <p className="text-[13px] text-slate-400 mb-5 tracking-wide uppercase">For consultants & agency owners</p>
-              <h1 className="text-[42px] md:text-[56px] font-medium text-slate-900 leading-[1.08] tracking-[-0.02em] mb-6">
-                <WaveText text="Stop trading hours for dollars." />
+      {/* Hero - Dramatic Dark */}
+      <section className="relative min-h-screen flex items-center pt-24 pb-20">
+        {/* Hero glow effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-glow opacity-40 blur-3xl pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto px-6 md:px-10 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...PHYSICS.screenTransition, delay: 0.2 }}
+            >
+              <motion.div
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ ...PHYSICS.interaction, delay: 0.3 }}
+              >
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium text-primary">AI-Powered Automation</span>
+              </motion.div>
+
+              <h1 className="text-display text-foreground mb-6">
+                Stop trading
                 <br />
-                <span className="text-transparent h-[1.2em] block" style={{ WebkitTextStroke: '2px #0f172a' }}>
-                  <MusicalType 
-                    words={["Start building a machine.", "Start scaling with AI.", "Start owning your time."]} 
-                    baseDelay={500}
-                  />
-                </span>
+                <span className="text-gradient-hero">hours for dollars.</span>
               </h1>
-              <p className="text-[17px] text-slate-500 leading-[1.65] mb-10 max-w-md">
-                Sovereign helps you identify what to automate, what to delegate, 
-                and what deserves your attention. Most users reclaim 10+ hours 
+
+              <p className="text-body-large mb-10 max-w-lg">
+                Sovereign helps you identify what to automate, what to delegate,
+                and what deserves your attention. Most users reclaim
+                <span className="text-foreground font-semibold"> 10+ hours </span>
                 in their first month.
               </p>
-              <div className="flex items-center gap-5 mb-6">
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
                 <Link href="/auth">
-                  <Button size="lg" className="bg-slate-900 hover:bg-slate-800 h-12 px-7 rounded-full text-[15px] font-medium shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] transition-all duration-300" data-testid="button-hero-cta">
+                  <Button size="lg" className="bg-gradient-primary text-white h-14 px-8 rounded-full text-base font-medium shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 transition-all">
                     Start free trial
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <button className="flex items-center gap-2.5 text-[14px] text-slate-500 hover:text-slate-900 transition-colors" data-testid="button-watch-demo">
-                  <div className="h-9 w-9 rounded-full border border-slate-200 flex items-center justify-center bg-white shadow-sm">
-                    <Play className="h-3.5 w-3.5 ml-0.5 text-slate-600" />
+                <button className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
+                  <div className="h-12 w-12 rounded-full liquid-glass-subtle flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Play className="h-4 w-4 ml-0.5" />
                   </div>
-                  Watch demo
+                  <span className="text-sm font-medium">Watch demo</span>
                 </button>
               </div>
-              <p className="text-[12px] text-slate-400 tracking-wide">
+
+              <p className="text-caption">
                 No credit card required · 14-day trial · Cancel anytime
               </p>
-            </div>
-            
-            {/* Product visual - Apple-style card */}
-            <div className="relative hidden lg:block animate-subtle-float">
-              <div className="bg-white/80 backdrop-blur-xl rounded-[24px] border border-white/60 p-7 shadow-[0_25px_50px_-20px_rgba(0,0,0,0.15)]">
-                <div className="flex items-center justify-between mb-7">
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 bg-slate-900 rounded-xl"></div>
+            </motion.div>
+
+            {/* Hero Card - Floating Glass */}
+            <motion.div
+              className="relative hidden lg:block"
+              initial={{ opacity: 0, x: 60, rotateY: -15 }}
+              animate={{ opacity: 1, x: 0, rotateY: 0 }}
+              transition={{ ...PHYSICS.screenTransition, delay: 0.4 }}
+            >
+              <div className="liquid-glass-heavy p-8 float-glow">
+                {/* Glow accent */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/30 rounded-full blur-3xl" />
+
+                <div className="flex items-center justify-between mb-8 relative">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 bg-gradient-primary rounded-2xl shadow-lg shadow-primary/30" />
                     <div>
-                      <div className="text-[14px] font-medium text-slate-900">This week</div>
-                      <div className="text-[12px] text-slate-400">Jan 1 – Jan 7, 2026</div>
+                      <div className="text-base font-semibold text-foreground">This week</div>
+                      <div className="text-sm text-muted-foreground">Jan 1 – Jan 7, 2026</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[28px] font-semibold text-slate-900 tracking-tight">12.5 hrs</div>
-                    <div className="text-[12px] text-emerald-500 font-medium">reclaimed</div>
+                    <div className="text-4xl font-bold text-foreground tracking-tight">12.5 hrs</div>
+                    <div className="text-sm font-medium text-success">reclaimed</div>
                   </div>
                 </div>
-                <div className="space-y-2.5">
+
+                <div className="space-y-3 relative">
                   {[
-                    { task: "Email triage", time: "4.2 hrs", status: "Automated" },
-                    { task: "Lead research", time: "3.8 hrs", status: "Automated" },
-                    { task: "Invoice follow-ups", time: "2.1 hrs", status: "Automated" },
-                    { task: "Content repurposing", time: "2.4 hrs", status: "Automated" },
+                    { task: "Email triage", time: "4.2 hrs", icon: Bot },
+                    { task: "Lead research", time: "3.8 hrs", icon: Cpu },
+                    { task: "Invoice follow-ups", time: "2.1 hrs", icon: Timer },
+                    { task: "Content repurposing", time: "2.4 hrs", icon: Sparkles },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between py-3 px-4 bg-slate-50/80 rounded-xl">
-                      <span className="text-[14px] text-slate-700">{item.task}</span>
+                    <motion.div
+                      key={i}
+                      className="flex items-center justify-between py-4 px-5 glass-card"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ ...PHYSICS.interaction, delay: 0.6 + i * 0.1 }}
+                    >
                       <div className="flex items-center gap-3">
-                        <span className="text-[13px] text-slate-400">{item.time}</span>
-                        <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-medium">{item.status}</span>
+                        <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center">
+                          <item.icon className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{item.task}</span>
                       </div>
-                    </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">{item.time}</span>
+                        <span className="text-xs font-medium text-success bg-success/15 px-3 py-1.5 rounded-full">
+                          Automated
+                        </span>
+                      </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Social proof - Minimal */}
-      <section className="py-10 border-y border-slate-100/80">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <p className="text-[13px] text-slate-400">Trusted by 200+ operators running $50K–$5M agencies</p>
-            <div className="flex items-center gap-10 text-slate-200">
-              <span className="text-[15px] font-medium tracking-wide">Acme</span>
-              <span className="text-[15px] font-medium tracking-wide">Vertex</span>
-              <span className="text-[15px] font-medium tracking-wide">Nexus</span>
-              <span className="text-[15px] font-medium tracking-wide">Scale</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Problem/Solution - Apple-style generous spacing */}
-      <section className="py-28" id="how">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-10">
-          <div className="max-w-xl mb-20">
-            <h2 className="text-[32px] md:text-[40px] font-medium text-slate-900 leading-[1.15] tracking-[-0.02em] mb-5">
-              You're probably spending 60% of your time on work that doesn't grow your business.
-            </h2>
-            <p className="text-[17px] text-slate-500 leading-[1.7]">
-              Email, scheduling, research, follow-ups, content, invoicing—it all adds up. 
-              Sovereign helps you see exactly where your time goes, then systematically 
-              eliminates or automates the tasks that drain you.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="space-y-4 group">
-              <div className="text-[56px] font-light text-slate-100 leading-none">01</div>
-              <h3 className="text-[17px] font-medium text-slate-900 h-7">
-                <MusicalType 
-                  words={["Audit your week", "Map your time", "Find the waste"]} 
-                  baseDelay={0}
-                />
-              </h3>
-              <p className="text-[15px] text-slate-500 leading-[1.7]">
-                We map every task to our DRIP framework: Delegate, Replace, Invest, or Produce. 
-                You'll see exactly what's stealing your time.
-              </p>
-            </div>
-            <div className="space-y-4 group">
-              <div className="text-[56px] font-light text-slate-100 leading-none">02</div>
-              <h3 className="text-[17px] font-medium text-slate-900 h-7">
-                <MusicalType 
-                  words={["Deploy agents", "Automate tasks", "Work smarter"]} 
-                  baseDelay={800}
-                />
-              </h3>
-              <p className="text-[15px] text-slate-500 leading-[1.7]">
-                For tasks in the "Replace" quadrant, we spin up AI agents that handle them 24/7. 
-                They only ping you when they need a decision.
-              </p>
-            </div>
-            <div className="space-y-4 group">
-              <div className="text-[56px] font-light text-slate-100 leading-none">03</div>
-              <h3 className="text-[17px] font-medium text-slate-900 h-7">
-                <MusicalType 
-                  words={["Focus on what matters", "Do meaningful work", "Grow your business"]} 
-                  baseDelay={1600}
-                />
-              </h3>
-              <p className="text-[15px] text-slate-500 leading-[1.7]">
-                Strategy. Relationships. Creative work. The stuff that actually grows 
-                your business. That's where you should be spending your time.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Feature highlight - Apple-style */}
-      <section className="py-28 bg-white">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-10">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <p className="text-[12px] text-slate-400 mb-4 uppercase tracking-widest">The DRIP Matrix</p>
-              <h2 className="text-[32px] md:text-[36px] font-medium text-slate-900 leading-[1.15] tracking-[-0.02em] mb-6">
-                A framework for deciding what deserves your attention
-              </h2>
-              <p className="text-[16px] text-slate-500 leading-[1.7] mb-8">
-                Every task falls into one of four categories based on two factors: 
-                how much energy it costs you, and how much value it creates. 
-                The matrix makes the right choice obvious.
-              </p>
-              <div className="space-y-4">
-                {[
-                  { label: "Delegate", desc: "Low value, but someone else can do it" },
-                  { label: "Replace", desc: "Low value, and AI can handle it entirely" },
-                  { label: "Invest", desc: "High value, but draining—find leverage" },
-                  { label: "Produce", desc: "High value, high energy—this is your zone" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="h-7 w-7 rounded-lg bg-slate-900 text-white text-[11px] flex items-center justify-center font-medium">
-                      {item.label[0]}
-                    </div>
-                    <div className="pt-0.5">
-                      <span className="font-medium text-[15px] text-slate-900">{item.label}</span>
-                      <span className="text-[15px] text-slate-400"> — {item.desc}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-[#FBFBFD] rounded-[20px] border border-slate-200/60 p-8 shadow-[0_20px_40px_-25px_rgba(0,0,0,0.1)]">
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-rose-50/80 border border-rose-100/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
-                  <div className="text-[10px] text-rose-500 font-medium mb-2 uppercase tracking-wider">Replace</div>
-                  <div className="text-[18px] font-medium text-slate-900 h-7">
-                    <MusicalType words={["AI Agents", "Automation", "Workflows"]} baseDelay={0} />
-                  </div>
-                  <div className="text-[13px] text-slate-400 mt-1">Admin, email, research</div>
-                </div>
-                <div className="bg-emerald-50/80 border border-emerald-100/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
-                  <div className="text-[10px] text-emerald-500 font-medium mb-2 uppercase tracking-wider">Produce</div>
-                  <div className="text-[18px] font-medium text-slate-900 h-7">
-                    <MusicalType words={["You", "Your genius", "High value"]} baseDelay={600} />
-                  </div>
-                  <div className="text-[13px] text-slate-400 mt-1">Strategy, sales, creative</div>
-                </div>
-                <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
-                  <div className="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">Delegate</div>
-                  <div className="text-[17px] font-medium text-slate-600 h-7">
-                    <MusicalType words={["Team / VA", "Outsource", "Contractors"]} baseDelay={1200} />
-                  </div>
-                  <div className="text-[13px] text-slate-400 mt-1">Support, operations</div>
-                </div>
-                <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
-                  <div className="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">Invest</div>
-                  <div className="text-[17px] font-medium text-slate-600 h-7">
-                    <MusicalType words={["Systems", "Templates", "Processes"]} baseDelay={1800} />
-                  </div>
-                  <div className="text-[13px] text-slate-400 mt-1">Training, tools, processes</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonial - Apple-style centered */}
-      <section className="py-28 bg-[#FBFBFD]" id="customers">
-        <div className="max-w-3xl mx-auto px-8 md:px-10 text-center">
-          <p className="text-[24px] md:text-[28px] text-slate-600 leading-[1.5] font-light mb-10">
-            "I was working 60-hour weeks and burning out. Within two months of using Sovereign, 
-            I'd automated 15 hours of weekly busywork and doubled my close rate because I 
-            finally had time to focus on sales calls."
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-11 w-11 rounded-full bg-gradient-to-br from-slate-200 to-slate-300"></div>
-            <div className="text-left">
-              <div className="font-medium text-[15px] text-slate-900">Marcus Johnson</div>
-              <div className="text-[13px] text-slate-400">Founder, Scale Studio · $1.2M ARR</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing - Apple-style clean */}
-      <section className="py-28 bg-white" id="pricing">
-        <div className="max-w-[1000px] mx-auto px-8 md:px-10">
-          <div className="text-center mb-16">
-            <h2 className="text-[32px] md:text-[40px] font-medium text-slate-900 tracking-[-0.02em] mb-4">
-              <MusicalType words={["Simple pricing", "Fair pricing", "Transparent pricing"]} baseDelay={0} />
-            </h2>
-            <p className="text-[17px] text-slate-400">Start free. Upgrade when you're ready.</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <Card className="border-slate-200/70 rounded-[20px] shadow-[0_10px_40px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_50px_-25px_rgba(0,0,0,0.15)] transition-all duration-500 hover:-translate-y-1 glow-hover" data-testid="card-pricing-starter">
-              <CardContent className="p-8">
-                <div className="mb-6">
-                  <h3 className="text-[17px] font-medium text-slate-900 mb-1">Starter</h3>
-                  <p className="text-[13px] text-slate-400">For solo operators getting started</p>
-                </div>
-                <div className="mb-6">
-                  <span className="text-[40px] font-medium text-slate-900 tracking-tight">$197</span>
-                  <span className="text-[15px] text-slate-400">/month</span>
-                </div>
-                <Link href="/auth">
-                  <Button variant="outline" className="w-full mb-6 rounded-full h-11 text-[14px] border-slate-200" data-testid="button-pricing-starter">
-                    Start free trial
-                  </Button>
-                </Link>
-                <ul className="space-y-3 text-[14px] text-slate-500">
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-300" /> Time audit dashboard</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-300" /> 3 AI agents</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-300" /> DRIP Matrix analysis</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-300" /> Email support</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-slate-900 bg-slate-900 text-white rounded-[20px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-25px_rgba(0,0,0,0.5)]" data-testid="card-pricing-pro">
-              <CardContent className="p-8">
-                <div className="mb-6">
-                  <h3 className="text-[17px] font-medium mb-1">Pro</h3>
-                  <p className="text-[13px] text-slate-400">For agencies scaling beyond the founder</p>
-                </div>
-                <div className="mb-6">
-                  <span className="text-[40px] font-medium tracking-tight">$497</span>
-                  <span className="text-[15px] text-slate-400">/month</span>
-                </div>
-                <Link href="/auth">
-                  <Button className="w-full mb-6 bg-white text-slate-900 hover:bg-slate-100 rounded-full h-11 text-[14px]" data-testid="button-pricing-pro">
-                    Start free trial
-                  </Button>
-                </Link>
-                <ul className="space-y-3 text-[14px] text-slate-300">
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-500" /> Everything in Starter</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-500" /> Unlimited AI agents</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-500" /> Team seats (up to 5)</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-500" /> Client portal</li>
-                  <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-slate-500" /> Priority support</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ - Apple-style minimal */}
-      <section className="py-28 bg-[#FBFBFD]">
-        <div className="max-w-2xl mx-auto px-8 md:px-10">
-          <h2 className="text-[28px] font-medium text-slate-900 mb-12 text-center tracking-[-0.02em]">
-            <MusicalType words={["Questions", "Answers", "FAQ"]} baseDelay={0} />
-          </h2>
-          <div className="space-y-0 border-t border-slate-200/60">
-            {[
-              { q: "What exactly are AI agents?", a: "They're automated workflows that handle specific tasks—email triage, lead research, content repurposing, etc. They run in the background and only notify you when they need a decision." },
-              { q: "How long does setup take?", a: "Most users complete their time audit and deploy their first agent within an hour. We guide you through the whole process." },
-              { q: "Can I cancel anytime?", a: "Yes. No contracts, no commitments. Cancel with one click and you won't be charged again." },
-              { q: "Do you integrate with my existing tools?", a: "We integrate with most CRMs, calendars, and communication tools. If something's missing, let us know—we ship new integrations weekly." },
-            ].map((faq, i) => (
-              <div key={i} className="border-b border-slate-200/60" data-testid={`faq-${i}`}>
-                <button 
-                  className="w-full py-5 flex items-center justify-between text-left"
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+      {/* Social Proof - Glowing logos */}
+      <section className="py-16 border-y border-border/30">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <p className="text-sm text-muted-foreground">Trusted by 200+ operators running $50K–$5M agencies</p>
+            <div className="flex items-center gap-12">
+              {["Acme", "Vertex", "Nexus", "Scale"].map((name, i) => (
+                <motion.span
+                  key={name}
+                  className="text-lg font-semibold text-muted/50 hover:text-muted-foreground transition-colors cursor-default"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
                 >
-                  <span className="font-medium text-[15px] text-slate-900">{faq.q}</span>
-                  <ChevronDown className={`h-4 w-4 text-slate-300 transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
-                </button>
-                {openFaq === i && (
-                  <p className="pb-5 text-[15px] text-slate-500 leading-[1.7]">{faq.a}</p>
-                )}
-              </div>
+                  {name}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem/Solution - 3 Steps */}
+      <section className="py-28" id="how">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
+          <motion.div
+            className="max-w-2xl mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={PHYSICS.screenTransition}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-headline text-foreground mb-6">
+              You're probably spending 60% of your time on work that
+              <span className="text-gradient-hero"> doesn't grow your business.</span>
+            </h2>
+            <p className="text-body-large">
+              Email, scheduling, research, follow-ups—it all adds up.
+              Sovereign helps you see exactly where your time goes, then systematically
+              eliminates the tasks that drain you.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { num: "01", title: "Audit your week", desc: "We map every task to our DRIP framework. You'll see exactly what's stealing your time." },
+              { num: "02", title: "Deploy AI agents", desc: "For tasks in the \"Replace\" quadrant, we spin up AI agents that handle them 24/7." },
+              { num: "03", title: "Focus on what matters", desc: "Strategy. Relationships. Creative work. The stuff that actually grows your business." },
+            ].map((step, i) => (
+              <motion.div
+                key={i}
+                className="glass-card p-8 relative group"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ ...PHYSICS.screenTransition, delay: i * 0.15 }}
+                viewport={{ once: true }}
+              >
+                <div className="absolute -top-4 -left-4 text-7xl font-bold text-primary/10 group-hover:text-primary/20 transition-colors">
+                  {step.num}
+                </div>
+                <h3 className="text-title text-foreground mb-3 relative">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed relative">{step.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA - Apple-style */}
-      <section className="py-28 bg-slate-900">
-        <div className="max-w-2xl mx-auto px-8 md:px-10 text-center">
-          <h2 className="text-[32px] md:text-[40px] font-medium text-white tracking-[-0.02em] mb-5">
-            <MusicalType 
-              words={["Ready to see where your time actually goes?", "Ready to reclaim your week?", "Ready to work smarter?"]} 
-              baseDelay={0}
-            />
-          </h2>
-          <p className="text-[17px] text-slate-400 mb-10">
-            Start with a free time audit. Takes 10 minutes. No credit card required.
-          </p>
-          <Link href="/auth">
-            <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 h-12 px-8 rounded-full text-[15px] font-medium shadow-[0_4px_14px_0_rgba(255,255,255,0.2)]" data-testid="button-final-cta">
-              Start free trial <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+      {/* DRIP Matrix - Dramatic Feature Section */}
+      <section className="py-28 relative">
+        <div className="absolute inset-0 bg-gradient-glow opacity-30 pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto px-6 md:px-10 relative">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={PHYSICS.screenTransition}
+              viewport={{ once: true }}
+            >
+              <p className="text-caption text-primary mb-4">The DRIP Matrix</p>
+              <h2 className="text-headline text-foreground mb-6">
+                A framework for deciding what deserves your attention
+              </h2>
+              <p className="text-body-large mb-10">
+                Every task falls into one of four categories.
+                The matrix makes the right choice obvious.
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  { label: "Delegate", desc: "Low value, but someone else can do it", icon: Users, color: "text-muted-foreground" },
+                  { label: "Replace", desc: "Low value, and AI can handle it", icon: Bot, color: "text-destructive" },
+                  { label: "Invest", desc: "High value, but draining—find leverage", icon: LineChart, color: "text-warning" },
+                  { label: "Produce", desc: "High value, high energy—your zone", icon: Zap, color: "text-success" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="flex items-center gap-4 p-4 rounded-xl hover:bg-card/50 transition-colors"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ ...PHYSICS.interaction, delay: i * 0.1 }}
+                    viewport={{ once: true }}
+                  >
+                    <div className={`h-10 w-10 rounded-xl bg-card flex items-center justify-center ${item.color}`}>
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">{item.label}</span>
+                      <span className="text-muted-foreground"> — {item.desc}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* DRIP Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { quadrant: "Replace", icon: Bot, gradient: "from-destructive/20 to-destructive/5", text: "text-destructive", titles: ["AI Agents", "Automation"], sub: "Email, admin, research" },
+                { quadrant: "Produce", icon: Zap, gradient: "from-success/20 to-success/5", text: "text-success", titles: ["You", "Your genius"], sub: "Strategy, sales, creative" },
+                { quadrant: "Delegate", icon: Users, gradient: "from-muted/20 to-muted/5", text: "text-muted-foreground", titles: ["Team / VA", "Contractors"], sub: "Support, operations" },
+                { quadrant: "Invest", icon: LineChart, gradient: "from-warning/20 to-warning/5", text: "text-warning", titles: ["Systems", "Templates"], sub: "Training, tools" },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  className={`glass-card p-6 bg-gradient-to-br ${item.gradient} glow-border`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.03, y: -4 }}
+                  transition={PHYSICS.interaction}
+                  viewport={{ once: true }}
+                >
+                  <div className={`flex items-center gap-2 mb-3 ${item.text}`}>
+                    <item.icon className="h-4 w-4" />
+                    <span className="text-xs font-semibold uppercase tracking-wider">{item.quadrant}</span>
+                  </div>
+                  <div className="text-xl font-bold text-foreground mb-1">
+                    <MusicalType words={item.titles} baseDelay={i * 500} />
+                  </div>
+                  <div className="text-sm text-muted-foreground">{item.sub}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Footer - Apple-style minimal */}
-      <footer className="py-10 bg-slate-950 text-slate-400">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2.5">
-              <div className="h-6 w-6 bg-slate-800 rounded-lg flex items-center justify-center text-white text-[10px] font-medium">S</div>
-              <span className="text-[13px] text-slate-500">© 2026 Sovereign</span>
+      {/* Testimonial - Centered Quote */}
+      <section className="py-28" id="customers">
+        <div className="max-w-3xl mx-auto px-6 md:px-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={PHYSICS.screenTransition}
+            viewport={{ once: true }}
+          >
+            <p className="text-2xl md:text-3xl text-foreground leading-relaxed font-light mb-10">
+              "I was working 60-hour weeks and burning out. Within two months of using Sovereign,
+              I'd automated <span className="text-primary font-medium">15 hours of weekly busywork</span> and doubled my close rate."
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <div className="h-12 w-12 rounded-full bg-gradient-primary shadow-lg shadow-primary/30" />
+              <div className="text-left">
+                <div className="font-semibold text-foreground">Marcus Johnson</div>
+                <div className="text-sm text-muted-foreground">Founder, Scale Studio · $1.2M ARR</div>
+              </div>
             </div>
-            <div className="flex items-center gap-8 text-[13px]">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
-              <a href="#" className="hover:text-white transition-colors">Twitter</a>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Pricing - Glass Cards */}
+      <section className="py-28" id="pricing">
+        <div className="max-w-4xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-16">
+            <h2 className="text-headline text-foreground mb-4">Simple pricing</h2>
+            <p className="text-body-large">Start free. Upgrade when you're ready.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Starter */}
+            <motion.div
+              className="glass-card p-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={PHYSICS.screenTransition}
+              viewport={{ once: true }}
+            >
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-foreground mb-1">Starter</h3>
+                <p className="text-sm text-muted-foreground">For solo operators</p>
+              </div>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-foreground">$197</span>
+                <span className="text-muted-foreground">/month</span>
+              </div>
+              <Link href="/auth">
+                <Button variant="outline" className="w-full mb-6 h-12 rounded-full border-border/50">
+                  Start free trial
+                </Button>
+              </Link>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {["Time audit dashboard", "3 AI agents", "DRIP Matrix analysis", "Email support"].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <Check className="h-4 w-4 text-muted" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Pro - Highlighted */}
+            <motion.div
+              className="liquid-glass-heavy p-8 relative glow-border animate-glow-pulse"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ ...PHYSICS.screenTransition, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="text-xs font-semibold bg-gradient-primary text-white px-4 py-1.5 rounded-full shadow-lg shadow-primary/30">
+                  Most Popular
+                </span>
+              </div>
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-foreground mb-1">Pro</h3>
+                <p className="text-sm text-muted-foreground">For agencies scaling up</p>
+              </div>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-foreground">$497</span>
+                <span className="text-muted-foreground">/month</span>
+              </div>
+              <Link href="/auth">
+                <Button className="w-full mb-6 h-12 rounded-full bg-gradient-primary text-white shadow-lg shadow-primary/30">
+                  Start free trial
+                </Button>
+              </Link>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {["Everything in Starter", "Unlimited AI agents", "Team seats (up to 5)", "Client portal", "Priority support"].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <Check className="h-4 w-4 text-primary" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-28">
+        <div className="max-w-2xl mx-auto px-6 md:px-10">
+          <h2 className="text-2xl font-semibold text-foreground mb-12 text-center">Questions?</h2>
+          <div className="space-y-0 border-t border-border/30">
+            {[
+              { q: "What exactly are AI agents?", a: "They're automated workflows that handle specific tasks—email triage, lead research, content repurposing. They run 24/7 and only notify you when they need a decision." },
+              { q: "How long does setup take?", a: "Most users complete their time audit and deploy their first agent within an hour. We guide you through the whole process." },
+              { q: "Can I cancel anytime?", a: "Yes. No contracts, no commitments. Cancel with one click." },
+              { q: "Do you integrate with my existing tools?", a: "We integrate with most CRMs, calendars, and communication tools. We ship new integrations weekly." },
+            ].map((faq, i) => (
+              <motion.div
+                key={i}
+                className="border-b border-border/30"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: i * 0.05 }}
+                viewport={{ once: true }}
+              >
+                <button
+                  className="w-full py-5 flex items-center justify-between text-left group"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <span className="font-medium text-foreground group-hover:text-primary transition-colors">{faq.q}</span>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                {openFaq === i && (
+                  <motion.p
+                    className="pb-5 text-muted-foreground leading-relaxed"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    transition={PHYSICS.interaction}
+                  >
+                    {faq.a}
+                  </motion.p>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA - Gradient Background */}
+      <section className="py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-primary opacity-10" />
+        <div className="absolute inset-0 bg-gradient-glow opacity-40" />
+
+        <div className="max-w-2xl mx-auto px-6 md:px-10 text-center relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={PHYSICS.screenTransition}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-headline text-foreground mb-6">
+              Ready to reclaim your time?
+            </h2>
+            <p className="text-body-large mb-10">
+              Start with a free time audit. Takes 10 minutes. No credit card required.
+            </p>
+            <Link href="/auth">
+              <Button size="lg" className="bg-gradient-primary text-white h-14 px-10 rounded-full text-base font-medium shadow-xl shadow-primary/30">
+                Start free trial <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-10 border-t border-border/30">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="h-6 w-6 bg-gradient-primary rounded-lg" />
+              <span className="text-sm text-muted-foreground">© 2026 Sovereign</span>
+            </div>
+            <div className="flex items-center gap-8 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+              <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
             </div>
           </div>
         </div>

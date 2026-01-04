@@ -51,13 +51,74 @@ async function seed() {
   ]).onConflictDoNothing();
   console.log("✓ Created agents");
 
-  // Create decisions
+  // Create decisions with 1:3:1 pattern
   await db.insert(decisions).values([
-    { userId: "demo-user-id", agentId: null, title: "Outreach Campaign Draft", description: "Drafted 50 personalized LinkedIn messages for the 'SaaS Founders' list. Ready for review.", type: "Review", status: "pending" },
-    { userId: "demo-user-id", agentId: null, title: "Client Reply: Scope Creep", description: "Client X asked for extra revisions. I drafted a polite refusal citing the MSA. Approve to send?", type: "Decision", status: "pending" },
-    { userId: "demo-user-id", agentId: null, title: "Weekly Report Generation", description: "Compiled Jan 2026 performance report. PDF ready for distribution.", type: "Review", status: "pending" },
+    {
+      userId: "demo-user-id",
+      agentId: null,
+      agentName: "Inbox Sentinel",
+      title: "Client Reply: Scope Creep Request",
+      description: "Client X asked for extra revisions outside the original scope. I've analyzed the situation and prepared three response options.",
+      type: "email",
+      priority: "high",
+      options: JSON.stringify([
+        { label: "Politely Decline", description: "Cite the MSA and offer to create a separate proposal for the additional work at standard rates." },
+        { label: "Offer Compromise", description: "Accept one minor revision but clearly state this is a one-time exception. Document for future reference." },
+        { label: "Schedule Discussion", description: "Propose a call to discuss the underlying needs and potentially upsell to a larger engagement." }
+      ]),
+      recommendation: 0,
+      status: "pending"
+    },
+    {
+      userId: "demo-user-id",
+      agentId: null,
+      agentName: "Content Alchemist",
+      title: "Blog Post Draft Ready",
+      description: "I've repurposed your 45-minute podcast episode into a 2,000-word blog post. Ready for your review.",
+      type: "proposal",
+      priority: "medium",
+      options: JSON.stringify([
+        { label: "Publish Now", description: "Post is polished and SEO-optimized. Schedule for tomorrow at 9 AM EST." },
+        { label: "Request Edits", description: "I'll revise based on your feedback. Typical turnaround is 2 hours." },
+        { label: "Transform Format", description: "Convert this into a LinkedIn carousel or Twitter thread instead." }
+      ]),
+      recommendation: 0,
+      status: "pending"
+    },
+    {
+      userId: "demo-user-id",
+      agentId: null,
+      agentName: "The Dossier",
+      title: "Pre-Call Brief: Acme Corp",
+      description: "Your call with Sarah from Acme Corp is in 2 hours. I've compiled research on their recent funding, tech stack, and potential pain points.",
+      type: "scheduling",
+      priority: "urgent",
+      options: JSON.stringify([
+        { label: "Review Brief", description: "Open the full dossier with talking points and objection handlers." },
+        { label: "Quick Summary", description: "Get a 2-minute voice summary of key points before the call." },
+        { label: "Reschedule", description: "I'll draft a professional reschedule email citing a conflict." }
+      ]),
+      recommendation: 0,
+      status: "pending"
+    },
+    {
+      userId: "demo-user-id",
+      agentId: null,
+      agentName: "Invoice Chaser",
+      title: "Overdue Invoice: Wayne Enterprises",
+      description: "Invoice #2847 ($15,000) is now 14 days overdue. I've prepared escalation options.",
+      type: "automation",
+      priority: "high",
+      options: JSON.stringify([
+        { label: "Send Friendly Reminder", description: "Automated but personalized follow-up email. Maintains relationship." },
+        { label: "Escalate to Decision Maker", description: "CC the finance director based on my research of their org chart." },
+        { label: "Apply Late Fee", description: "Send formal notice with 2% late fee as per contract terms." }
+      ]),
+      recommendation: 0,
+      status: "pending"
+    },
   ]).onConflictDoNothing();
-  console.log("✓ Created decisions");
+  console.log("✓ Created decisions with 1:3:1 options");
 
   // Create contracts
   await db.insert(contracts).values([
