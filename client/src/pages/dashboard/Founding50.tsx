@@ -5,10 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Check, UserPlus, Mail, MessageSquare, ArrowRight } from "lucide-react";
 
 import { OfferArchitect } from "@/components/dashboard/OfferArchitect";
+import { UtilityBuilder } from "@/components/dashboard/UtilityBuilder";
+import { SocialProofGenerator } from "@/components/dashboard/SocialProofGenerator";
 
 export default function Founding50() {
   return (
     <div className="space-y-8">
+      {/* ... (Header Section same as before) ... */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">The Founding 50 Launchpad</h1>
@@ -27,8 +30,17 @@ export default function Founding50() {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* New Utility Builder Widget */}
+        <UtilityBuilder />
+        
+        {/* New Social Proof Widget */}
+        <SocialProofGenerator />
+      </div>
+
       {/* Progress Section */}
       <Card className="border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50">
+      {/* ... (rest of the file) */}
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-4">
             <div>
