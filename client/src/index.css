@@ -203,16 +203,24 @@
   }
 }
 
-/* Subtle AI shimmer animation */
-@keyframes shimmer {
+/* Subtle AI intelligence scan animation - continuous */
+@keyframes intelligence-scan {
   0% {
     transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
   }
   100% {
     transform: translateX(100%);
+    opacity: 0;
   }
 }
 
-.animate-shimmer {
-  animation: shimmer 2s ease-in-out forwards;
+.animate-intelligence-scan {
+  animation: intelligence-scan 4s ease-in-out infinite;
 }

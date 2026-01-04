@@ -2,64 +2,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowRight, Check, ChevronDown, Play } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-function AnimatedText({ text, className = "" }: { text: string; className?: string }) {
-  const [displayedChars, setDisplayedChars] = useState(0);
-  const [showCursor, setShowCursor] = useState(true);
-  
-  useEffect(() => {
-    if (displayedChars < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedChars(prev => prev + 1);
-      }, 35 + Math.random() * 25);
-      return () => clearTimeout(timeout);
-    } else {
-      const cursorTimeout = setTimeout(() => setShowCursor(false), 1500);
-      return () => clearTimeout(cursorTimeout);
-    }
-  }, [displayedChars, text.length]);
-
+function IntelligenceText({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={className}>
-      {text.slice(0, displayedChars)}
-      {showCursor && displayedChars < text.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-slate-400 ml-0.5 animate-pulse align-middle" />
-      )}
-    </span>
-  );
-}
-
-function ShimmerText({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
-  const [isVisible, setIsVisible] = useState(false);
-  
-  useEffect(() => {
-    const timeout = setTimeout(() => setIsVisible(true), delay);
-    return () => clearTimeout(timeout);
-  }, [delay]);
-
-  return (
-    <span 
-      className={`relative inline-block transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}
-    >
-      <span className="relative">
-        {children}
-        <span 
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer"
-          style={{ animationDelay: `${delay + 800}ms` }}
-        />
-      </span>
+    <span className={`relative inline-block ${className}`}>
+      <span className="relative z-10">{children}</span>
+      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-200/50 to-transparent animate-intelligence-scan" />
     </span>
   );
 }
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [heroLoaded, setHeroLoaded] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => setHeroLoaded(true), 100);
-  }, []);
 
   return (
     <div className="min-h-screen bg-white font-sans antialiased">
@@ -95,13 +50,11 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <p className={`text-sm text-slate-500 mb-6 transition-opacity duration-500 ${heroLoaded ? 'opacity-100' : 'opacity-0'}`}>For consultants & agency owners</p>
+              <p className="text-sm text-slate-500 mb-6">For consultants & agency owners</p>
               <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 leading-[1.15] tracking-tight mb-6">
-                <AnimatedText text="Stop trading hours for dollars." />
+                <IntelligenceText>Stop trading hours for dollars.</IntelligenceText>
                 <br />
-                <ShimmerText delay={1200}>
-                  <span className="text-slate-400">Start building a machine.</span>
-                </ShimmerText>
+                <span className="text-slate-400">Start building a machine.</span>
               </h1>
               <p className="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
                 Sovereign helps you identify what to automate, what to delegate, 
@@ -184,7 +137,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="max-w-2xl mb-16">
             <h2 className="text-3xl font-semibold text-slate-900 mb-4">
-              You're probably spending 60% of your time on work that doesn't grow your business.
+              <IntelligenceText>You're probably spending 60% of your time</IntelligenceText> on work that doesn't grow your business.
             </h2>
             <p className="text-lg text-slate-600 leading-relaxed">
               Email, scheduling, research, follow-ups, content, invoicing—it all adds up. 
@@ -229,7 +182,7 @@ export default function Landing() {
             <div>
               <p className="text-sm text-slate-500 mb-4">The DRIP Matrix</p>
               <h2 className="text-3xl font-semibold text-slate-900 mb-6">
-                A framework for deciding what deserves your attention
+                A framework for deciding <IntelligenceText>what deserves your attention</IntelligenceText>
               </h2>
               <p className="text-slate-600 leading-relaxed mb-8">
                 Every task falls into one of four categories based on two factors: 
@@ -394,7 +347,7 @@ export default function Landing() {
       <section className="py-24 bg-slate-900">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-semibold text-white mb-4">
-            Ready to see where your time actually goes?
+            Ready to see <IntelligenceText className="text-white">where your time actually goes?</IntelligenceText>
           </h2>
           <p className="text-slate-400 mb-8">
             Start with a free time audit. Takes 10 minutes. No credit card required.
