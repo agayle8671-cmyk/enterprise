@@ -57,80 +57,79 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
+    <div className="min-h-screen bg-[#F5F7FA] dark:bg-slate-950 flex">
       {/* Command Palette Mock */}
       <Dialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
-        <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden bg-white/95 backdrop-blur-xl border-slate-200">
-          <div className="flex items-center px-4 border-b border-slate-100">
+        <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden bg-white/95 backdrop-blur-xl border-slate-200/60 rounded-2xl shadow-[0_25px_50px_-20px_rgba(0,0,0,0.25)]">
+          <div className="flex items-center px-4 border-b border-slate-100/60">
             <Search className="h-5 w-5 text-slate-400 mr-2" />
             <input 
-              className="flex-1 py-4 bg-transparent outline-none text-lg text-slate-900 placeholder:text-slate-400"
+              className="flex-1 py-4 bg-transparent outline-none text-[15px] text-slate-900 placeholder:text-slate-400"
               placeholder="Type a command or search..."
             />
-            <div className="text-xs text-slate-400 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50">ESC</div>
+            <div className="text-[10px] text-slate-400 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50">ESC</div>
           </div>
           <div className="p-2">
-            <div className="px-2 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Suggestions</div>
-            <div className="space-y-1">
-               <div className="flex items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 cursor-pointer">
-                 <Rocket className="h-4 w-4 mr-2 text-blue-500" /> Launch New Campaign
+            <div className="px-2 py-1.5 text-[10px] font-medium text-slate-400 uppercase tracking-wider">Suggestions</div>
+            <div className="space-y-0.5">
+               <div className="flex items-center px-3 py-2.5 text-[14px] text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                 <Rocket className="h-4 w-4 mr-2.5 text-slate-400" /> Launch New Campaign
                </div>
-               <div className="flex items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 cursor-pointer">
-                 <Users className="h-4 w-4 mr-2 text-purple-500" /> Invite Team Member
+               <div className="flex items-center px-3 py-2.5 text-[14px] text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                 <Users className="h-4 w-4 mr-2.5 text-slate-400" /> Invite Team Member
                </div>
-               <div className="flex items-center px-3 py-2 text-sm text-slate-700 rounded-md hover:bg-slate-100 cursor-pointer">
-                 <CreditCard className="h-4 w-4 mr-2 text-emerald-500" /> View Billing
+               <div className="flex items-center px-3 py-2.5 text-[14px] text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                 <CreditCard className="h-4 w-4 mr-2.5 text-slate-400" /> View Billing
                </div>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 fixed h-full z-10 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
-          <div className="h-8 w-8 bg-slate-900 rounded-lg flex items-center justify-center relative overflow-hidden group shadow-lg shadow-blue-900/20">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white relative z-10">
+      {/* Sidebar - Apple-style Desktop */}
+      <aside className="hidden md:flex flex-col w-60 border-r border-slate-200/50 dark:border-slate-800 bg-white/90 backdrop-blur-xl dark:bg-slate-900 fixed h-full z-10 shadow-[12px_0_40px_-20px_rgba(0,0,0,0.08)]">
+        <div className="p-5 border-b border-slate-100/60 dark:border-slate-800 flex items-center gap-3">
+          <div className="h-8 w-8 bg-slate-900 rounded-xl flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 text-white">
               <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="font-display font-bold text-xl text-slate-900 dark:text-white tracking-tight">
+          <span className="font-medium text-[17px] text-slate-900 dark:text-white tracking-[-0.01em]">
             <WaveText text="Sovereign OS" />
           </span>
         </div>
 
-        <div className="px-4 pt-4">
+        <div className="px-3 pt-4">
            <Button 
              variant="outline" 
-             className="w-full justify-start text-slate-500 border-slate-200 bg-slate-50/50 hover:bg-slate-100 hover:text-slate-900"
+             className="w-full justify-start text-[13px] text-slate-400 border-slate-200/60 bg-slate-50/50 hover:bg-slate-100 hover:text-slate-600 rounded-xl h-9"
              onClick={() => setIsCommandOpen(true)}
            >
              <Search className="h-4 w-4 mr-2" /> 
              <span className="flex-1 text-left">Search...</span>
-             <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+             <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-slate-200 bg-white px-1.5 font-mono text-[10px] font-medium text-slate-400">
                <span className="text-xs">⌘</span>K
              </kbd>
            </Button>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1">
           {navigation.map((item) => {
             const isActive = location === item.href;
             return (
               <Link key={item.name} href={item.href}>
                 <div
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group cursor-pointer ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-300 group cursor-pointer ${
                     isActive
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/10 translate-x-1"
-                      : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                      ? "bg-slate-900 text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.2)]"
+                      : "text-slate-500 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                   }`}
                 >
                   <item.icon
                     className={`h-4 w-4 ${
-                      isActive ? "text-blue-400" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                      isActive ? "text-white/70" : "text-slate-400 group-hover:text-slate-500"
                     }`}
                   />
                   {item.name}
@@ -140,20 +139,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="p-3 border-t border-slate-100/60 dark:border-slate-800">
           <Link href="/dashboard/buyback">
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-blue-200 transition-colors group relative overflow-hidden">
+            <div className="bg-slate-50/80 dark:bg-slate-800 rounded-xl p-4 border border-slate-100/60 dark:border-slate-700 cursor-pointer hover:border-slate-200 transition-all duration-300 group relative overflow-hidden">
               <div className="absolute top-0 right-0 p-2 opacity-5">
-                <Sparkles className="h-12 w-12" />
+                <Sparkles className="h-10 w-10" />
               </div>
-              <h4 className="text-xs font-semibold text-slate-900 dark:text-white mb-2 flex justify-between relative z-10">
+              <h4 className="text-[11px] font-medium text-slate-500 dark:text-white mb-2.5 flex justify-between relative z-10 uppercase tracking-wider">
                 Buyback Status
-                <span className="text-blue-600 group-hover:underline">View</span>
+                <span className="text-slate-400 group-hover:text-slate-600 transition-colors normal-case tracking-normal">View</span>
               </h4>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mb-2 relative z-10">
-                <div className="bg-emerald-500 h-full w-[65%]" />
+              <div className="w-full bg-slate-200/80 dark:bg-slate-700 h-1 rounded-full overflow-hidden mb-2 relative z-10">
+                <div className="bg-slate-900 h-full w-[65%] rounded-full" />
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 relative z-10">
+              <p className="text-[12px] text-slate-400 dark:text-slate-400 relative z-10">
                 65% of manual tasks automated
               </p>
             </div>
@@ -161,10 +160,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen bg-slate-50/50">
+      {/* Main Content - Apple-style */}
+      <main className="flex-1 md:ml-60 flex flex-col min-h-screen bg-[#F5F7FA]">
         {/* Header */}
-        <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20 px-6 flex items-center justify-between">
+        <header className="h-14 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800 sticky top-0 z-20 px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
               <SheetTrigger asChild>
@@ -278,9 +277,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Page Content */}
-        <div className="flex-1 p-6 md:p-8 overflow-y-auto">
-          <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Page Content - Apple-style generous padding */}
+        <div className="flex-1 px-8 md:px-10 py-8 md:py-10 overflow-y-auto">
+          <div className="max-w-[1180px] mx-auto space-y-10 animate-in fade-in duration-300">
             {children}
           </div>
         </div>

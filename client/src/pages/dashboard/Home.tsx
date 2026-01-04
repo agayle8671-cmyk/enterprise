@@ -72,18 +72,18 @@ export default function Home() {
   const totalTimeSaved = stats?.totalTimeSaved || 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="Dashboard Overview" /></h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Welcome back, James. Here's your agency's performance at a glance.</p>
+          <h1 className="text-[28px] font-medium text-slate-900 dark:text-white tracking-[-0.02em]"><WaveText text="Dashboard Overview" /></h1>
+          <p className="text-[15px] text-slate-400 dark:text-slate-500 mt-1.5">Welcome back, James. Here's your agency's performance at a glance.</p>
         </div>
-        <div className="flex gap-2">
-           <Button variant="outline" className="hidden md:flex">
+        <div className="flex gap-3">
+           <Button variant="outline" className="hidden md:flex h-9 text-[13px] border-slate-200/70 text-slate-500 rounded-lg">
              <Calendar className="mr-2 h-4 w-4" /> Jan 2026
            </Button>
            <Button 
-             className="bg-slate-900 text-white shadow-lg shadow-slate-900/20"
+             className="bg-slate-900 text-white h-9 text-[13px] rounded-lg shadow-[0_4px_14px_0_rgba(0,0,0,0.1)]"
              onClick={handleGenerateReport}
            >
              <ArrowUpRight className="mr-2 h-4 w-4" /> Generate Report
@@ -91,57 +91,57 @@ export default function Home() {
         </div>
       </div>
 
-      {/* AI Smart Insight Banner */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 flex items-start gap-4 shadow-sm relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-          <Sparkles className="h-24 w-24 text-blue-600" />
+      {/* AI Smart Insight Banner - Apple-style */}
+      <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-5 flex items-start gap-4 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.08)] relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+          <Sparkles className="h-28 w-28 text-slate-900" />
         </div>
-        <div className="h-10 w-10 rounded-lg bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-700 text-blue-600 z-10">
-          <Zap className="h-5 w-5 fill-blue-600" />
+        <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 text-slate-600 z-10">
+          <Zap className="h-5 w-5" />
         </div>
         <div className="flex-1 z-10">
-          <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+          <h3 className="font-medium text-[15px] text-slate-900 dark:text-white flex items-center gap-2">
             AI Insight: Optimization Opportunity
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-none">New</Badge>
+            <Badge variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-200 border-none text-[10px] px-2 py-0.5">New</Badge>
           </h3>
-          <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 max-w-3xl">
-            Based on recent "Buyback Loop" data, your <strong>Lead Qualification</strong> agent is handling 80% of volume but has a 12% drop-off rate. Deploying the new "Contextual Follow-up" module could recover ~$4,200 in monthly pipeline value.
+          <p className="text-slate-500 text-[14px] mt-1.5 max-w-3xl leading-relaxed">
+            Based on recent "Buyback Loop" data, your <strong className="text-slate-700">Lead Qualification</strong> agent is handling 80% of volume but has a 12% drop-off rate. Deploying the new "Contextual Follow-up" module could recover ~$4,200 in monthly pipeline value.
           </p>
-          <div className="mt-3 flex gap-3">
-             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs">Deploy Module</Button>
-             <Button size="sm" variant="ghost" className="h-8 text-xs text-slate-500 hover:text-slate-700">Dismiss</Button>
+          <div className="mt-4 flex gap-3">
+             <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-white h-8 text-[12px] rounded-lg px-4">Deploy Module</Button>
+             <Button size="sm" variant="ghost" className="h-8 text-[12px] text-slate-400 hover:text-slate-600">Dismiss</Button>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid - Enhanced */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid - Apple-style */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { title: "Monthly Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+12.5%", trend: "up", icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50", testId: "monthly-revenue", link: "/dashboard/founding-50" },
-          { title: "Buyback Hours", value: `${totalTimeSaved} hrs`, change: "+8.2%", trend: "up", icon: Clock, color: "text-purple-600", bg: "bg-purple-50", testId: "buyback-hours", link: "/dashboard/buyback" },
-          { title: "Active Leads", value: `${campaign?.currentMembers || 0}`, change: "+24.5%", trend: "up", icon: Users, color: "text-emerald-600", bg: "bg-emerald-50", testId: "active-leads", link: "/dashboard/founding-50" },
-          { title: "Avg. Deal Value", value: `$${totalRevenue > 0 && campaign?.currentMembers ? Math.round(totalRevenue / campaign.currentMembers).toLocaleString() : '0'}`, change: "+4.1%", trend: "up", icon: Award, color: "text-orange-600", bg: "bg-orange-50", testId: "avg-deal-value", link: "/dashboard/founding-50" },
+          { title: "Monthly Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+12.5%", trend: "up", icon: DollarSign, testId: "monthly-revenue", link: "/dashboard/founding-50" },
+          { title: "Buyback Hours", value: `${totalTimeSaved} hrs`, change: "+8.2%", trend: "up", icon: Clock, testId: "buyback-hours", link: "/dashboard/buyback" },
+          { title: "Active Leads", value: `${campaign?.currentMembers || 0}`, change: "+24.5%", trend: "up", icon: Users, testId: "active-leads", link: "/dashboard/founding-50" },
+          { title: "Avg. Deal Value", value: `$${totalRevenue > 0 && campaign?.currentMembers ? Math.round(totalRevenue / campaign.currentMembers).toLocaleString() : '0'}`, change: "+4.1%", trend: "up", icon: Award, testId: "avg-deal-value", link: "/dashboard/founding-50" },
         ].map((stat, i) => (
           <Link key={i} href={stat.link}>
-            <Card className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer" data-testid={`card-stat-${stat.testId}`}>
+            <Card className="border-slate-200/50 dark:border-slate-800 rounded-2xl shadow-[0_4px_20px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_40px_-20px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-500 cursor-pointer bg-white" data-testid={`card-stat-${stat.testId}`}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
-                    <stat.icon className="h-6 w-6" />
+                  <div className="p-2.5 rounded-xl border border-slate-200/60 bg-white text-slate-400">
+                    <stat.icon className="h-5 w-5" />
                   </div>
                   {stat.trend === "up" ? (
-                    <div className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
+                    <div className="flex items-center text-[11px] font-medium text-slate-500 bg-slate-100/80 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
                       <TrendingUp className="h-3 w-3 mr-1" /> {stat.change}
                     </div>
                   ) : (
-                    <div className="flex items-center text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
+                    <div className="flex items-center text-[11px] font-medium text-slate-500 bg-slate-100/80 px-2 py-1 rounded-full" data-testid={`badge-change-${stat.testId}`}>
                       <TrendingUp className="h-3 w-3 mr-1 rotate-180" /> {stat.change}
                     </div>
                   )}
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">{stat.title}</h3>
-                  <div className="text-3xl font-display font-bold text-slate-900 dark:text-white" data-testid={`text-value-${stat.testId}`}>{stat.value}</div>
+                  <h3 className="text-[12px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">{stat.title}</h3>
+                  <div className="text-[28px] font-medium text-slate-900 dark:text-white tracking-tight" data-testid={`text-value-${stat.testId}`}>{stat.value}</div>
                 </div>
               </CardContent>
             </Card>
