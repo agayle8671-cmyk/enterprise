@@ -47,8 +47,11 @@ export default function Landing() {
               <h1 className="text-[42px] md:text-[56px] font-medium text-slate-900 leading-[1.08] tracking-[-0.02em] mb-6">
                 <WaveText text="Stop trading hours for dollars." />
                 <br />
-                <span className="text-transparent" style={{ WebkitTextStroke: '2px #0f172a' }}>
-                  <WaveText text="Start building a machine." />
+                <span className="text-transparent h-[1.2em] block" style={{ WebkitTextStroke: '2px #0f172a' }}>
+                  <MusicalType 
+                    words={["Start building a machine.", "Start scaling with AI.", "Start owning your time."]} 
+                    baseDelay={500}
+                  />
                 </span>
               </h1>
               <p className="text-[17px] text-slate-500 leading-[1.65] mb-10 max-w-md">
@@ -222,22 +225,30 @@ export default function Landing() {
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="bg-rose-50/80 border border-rose-100/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-rose-500 font-medium mb-2 uppercase tracking-wider">Replace</div>
-                  <div className="text-[18px] font-medium text-slate-900">AI Agents</div>
+                  <div className="text-[18px] font-medium text-slate-900 h-7">
+                    <MusicalType words={["AI Agents", "Automation", "Workflows"]} baseDelay={0} />
+                  </div>
                   <div className="text-[13px] text-slate-400 mt-1">Admin, email, research</div>
                 </div>
                 <div className="bg-emerald-50/80 border border-emerald-100/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-emerald-500 font-medium mb-2 uppercase tracking-wider">Produce</div>
-                  <div className="text-[18px] font-medium text-slate-900">You</div>
+                  <div className="text-[18px] font-medium text-slate-900 h-7">
+                    <MusicalType words={["You", "Your genius", "High value"]} baseDelay={600} />
+                  </div>
                   <div className="text-[13px] text-slate-400 mt-1">Strategy, sales, creative</div>
                 </div>
                 <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">Delegate</div>
-                  <div className="text-[17px] font-medium text-slate-600">Team / VA</div>
+                  <div className="text-[17px] font-medium text-slate-600 h-7">
+                    <MusicalType words={["Team / VA", "Outsource", "Contractors"]} baseDelay={1200} />
+                  </div>
                   <div className="text-[13px] text-slate-400 mt-1">Support, operations</div>
                 </div>
                 <div className="bg-slate-50/80 border border-slate-200/60 rounded-2xl p-6 glow-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-default">
                   <div className="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">Invest</div>
-                  <div className="text-[17px] font-medium text-slate-600">Systems</div>
+                  <div className="text-[17px] font-medium text-slate-600 h-7">
+                    <MusicalType words={["Systems", "Templates", "Processes"]} baseDelay={1800} />
+                  </div>
                   <div className="text-[13px] text-slate-400 mt-1">Training, tools, processes</div>
                 </div>
               </div>
@@ -268,7 +279,9 @@ export default function Landing() {
       <section className="py-28 bg-white" id="pricing">
         <div className="max-w-[1000px] mx-auto px-8 md:px-10">
           <div className="text-center mb-16">
-            <h2 className="text-[32px] md:text-[40px] font-medium text-slate-900 tracking-[-0.02em] mb-4">Simple pricing</h2>
+            <h2 className="text-[32px] md:text-[40px] font-medium text-slate-900 tracking-[-0.02em] mb-4">
+              <MusicalType words={["Simple pricing", "Fair pricing", "Transparent pricing"]} baseDelay={0} />
+            </h2>
             <p className="text-[17px] text-slate-400">Start free. Upgrade when you're ready.</p>
           </div>
 
@@ -328,7 +341,9 @@ export default function Landing() {
       {/* FAQ - Apple-style minimal */}
       <section className="py-28 bg-[#FBFBFD]">
         <div className="max-w-2xl mx-auto px-8 md:px-10">
-          <h2 className="text-[28px] font-medium text-slate-900 mb-12 text-center tracking-[-0.02em]">Questions</h2>
+          <h2 className="text-[28px] font-medium text-slate-900 mb-12 text-center tracking-[-0.02em]">
+            <MusicalType words={["Questions", "Answers", "FAQ"]} baseDelay={0} />
+          </h2>
           <div className="space-y-0 border-t border-slate-200/60">
             {[
               { q: "What exactly are AI agents?", a: "They're automated workflows that handle specific tasks—email triage, lead research, content repurposing, etc. They run in the background and only notify you when they need a decision." },
@@ -357,7 +372,10 @@ export default function Landing() {
       <section className="py-28 bg-slate-900">
         <div className="max-w-2xl mx-auto px-8 md:px-10 text-center">
           <h2 className="text-[32px] md:text-[40px] font-medium text-white tracking-[-0.02em] mb-5">
-            Ready to see where your time actually goes?
+            <MusicalType 
+              words={["Ready to see where your time actually goes?", "Ready to reclaim your week?", "Ready to work smarter?"]} 
+              baseDelay={0}
+            />
           </h2>
           <p className="text-[17px] text-slate-400 mb-10">
             Start with a free time audit. Takes 10 minutes. No credit card required.
