@@ -12,18 +12,20 @@ process.on("uncaughtException", (err, origin) => {
 });
 
 process.on("SIGTERM", () => {
-  log("🛑 [SIGTERM] Railway is killing the container. Cleaning up...");
+  console.log("🛑 [SIGTERM] Railway is killing the container. Cleaning up...");
   process.exit(0);
 });
 
-// Heartbeat to prove the process is alive
-setInterval(() => {
-  console.log(`💓 [ALIVE] ${new Date().toISOString()}`);
-}, 1000);
+export function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true,
+  });
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
 
 const app = express();
 
-// ABSOLUTE FIRST ROUTE: Health Check 
+// 1. REGISTER HEALTH CHECK IMMEDIATELY
 app.get("/health", (_req, res) => {
   console.log("🔔 [HEALTH] Priority check passed");
   res.status(200).send("OK");
@@ -31,86 +33,36 @@ app.get("/health", (_req, res) => {
 
 const httpServer = createServer(app);
 
-declare module "http" {
-  interface IncomingMessage {
-    rawBody: unknown;
-  }
-}
-
-app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
-
+app.use(express.json({ verify: (req, _res, buf) => { (req as any).rawBody = buf; } }));
 app.use(express.urlencoded({ extended: false }));
 
-export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
-console.log("🚀 [BOOT] Server modules loaded.");
-
-app.use((req, res, next) => {
-  log(`Incoming: ${req.method} ${req.url}`);
-  next();
-});
-
+// 2. START LISTENING BEFORE ANYTHING ELSE
 const port = parseInt(process.env.PORT || "5000", 10);
+httpServer.listen(port, "0.0.0.0", () => {
+  log(`🚀 SERVER BIND SUCCESSFUL ON PORT ${port}`);
+});
+
+// Heartbeat to prove the process is alive
+setInterval(() => {
+  console.log(`💓 [ALIVE] ${new Date().toISOString()}`);
+}, 5000); // 5 seconds is enough
 
 (async () => {
   try {
-    log("⏳ Initializing routes...");
+    log("⏳ STEP 1: Registering routes...");
     await registerRoutes(httpServer, app);
+    log("✅ STEP 1: Routes registered.");
 
+    log("⏳ STEP 2: Setting up static/vite...");
     if (process.env.NODE_ENV === "production") {
       serveStatic(app);
     } else {
       const { setupVite } = await import("./vite");
       await setupVite(httpServer, app);
     }
+    log("✅ STEP 2: Static/Vite ready.");
 
-    // Single source of truth for listening
-    httpServer.listen(port, "0.0.0.0", () => {
-      log(`🚀 Server listening on port ${port}`);
-    });
-
-    log("✅ Server initialization complete.");
+    log("🎉 ALL SERVICES INITIALIZED.");
 
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
@@ -120,12 +72,6 @@ const port = parseInt(process.env.PORT || "5000", 10);
     });
 
   } catch (error) {
-    console.error("❌ CRITICAL: Server failed to initialize services:", error);
-    // Bind anyway so Railway doesn't kill the container immediately
-    if (!httpServer.listening) {
-      httpServer.listen(port, "0.0.0.0", () => {
-        log(`⚠️ Emergency listener active on port ${port}`);
-      });
-    }
+    console.error("❌ CRITICAL INITIALIZATION ERROR:", error);
   }
 })();
