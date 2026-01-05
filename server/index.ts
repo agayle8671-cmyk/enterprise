@@ -4,6 +4,13 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 
 const app = express();
+
+// ABSOLUTE FIRST ROUTE: Health Check (Must be before any heavy imports or middleware)
+app.get("/health", (_req, res) => {
+  console.log("🔔 [HEALTH] Priority check passed");
+  res.status(200).send("OK");
+});
+
 const httpServer = createServer(app);
 
 declare module "http" {
@@ -59,12 +66,7 @@ app.use((req, res, next) => {
   next();
 });
 
-console.log("🚀 [BOOT] Server process starting...");
-
-app.get("/health", (_req, res) => {
-  console.log("🔔 [HEALTH] Ping received");
-  res.status(200).send("OK");
-});
+console.log("🚀 [BOOT] Server modules loaded.");
 
 app.use((req, res, next) => {
   log(`Incoming: ${req.method} ${req.url}`);
