@@ -1,9 +1,12 @@
 /**
  * AI Service Layer
  * 
- * Mock implementation - Will be replaced with Google Cloud Vertex AI
- * after Phase 8 is complete.
+ * Hybrid implementation:
+ * - Uses Google Cloud Vertex AI (Gemini Pro) if credentials are present
+ * - Falls back to Mock implementation if credentials are missing or API fails
  */
+
+import { VertexAI, GenerativeModel, GenerateContentResult } from '@google-cloud/vertexai';
 
 export interface AIMessage {
     role: 'user' | 'assistant' | 'system';
@@ -86,12 +89,12 @@ When the user asks to do something, determine if it should be:
 Respond conversationally but be action-oriented. Offer to create decisions, spawn agents, or automate tasks.`,
 };
 
-// Mock responses for demonstration
+// Mock responses for demonstration (Fallback)
 const MOCK_RESPONSES: Record<string, string[]> = {
     greeting: [
-        "Welcome to Sovereign OS! I'm your Command Center AI. How can I help you buy back your time today?",
-        "Hello! I'm here to help you operate your business more efficiently. What would you like to tackle?",
-        "Good to see you! Let me help you identify and eliminate Time Assassins. What's on your plate?",
+        "Welcome to Sovereign OS! I'm your Command Center AI. How can I help you buy back your time today? (Mock Mode)",
+        "Hello! I'm here to help you operate your business more efficiently. What would you like to tackle? (Mock Mode)",
+        "Good to see you! Let me help you identify and eliminate Time Assassins. What's on your plate? (Mock Mode)",
     ],
     automation: [
         "I can help automate that! Based on the DRIP Matrix, this sounds like a 'Replace' task - low value but energy-draining. Should I:\n\n1. **Create an email automation workflow** for this\n2. **Deploy the Inbox Sentinel** to handle it\n3. **Set up a template** for quick responses\n\n**My recommendation**: Option 2 - The Inbox Sentinel can handle this 24/7 and only ping you for complex decisions.",
@@ -112,9 +115,9 @@ const MOCK_RESPONSES: Record<string, string[]> = {
 
 /**
  * Get a mock response based on the user's input
- * This will be replaced with Vertex AI
  */
 function getMockResponse(input: string): string {
+    console.log("[AI] Using Mock Response Fallback");
     const lowerInput = input.toLowerCase();
 
     if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey') || lowerInput.includes('start')) {
@@ -138,10 +141,40 @@ function getMockResponse(input: string): string {
 
 /**
  * AI Service class
- * Currently using mock responses - will be swapped for Vertex AI
  */
 export class AIService {
     private conversationHistory: Map<string, AIMessage[]> = new Map();
+    private vertexAI: VertexAI | null = null;
+    private generativeModel: GenerativeModel | null = null;
+    private isInitialized = false;
+
+    constructor() {
+        this.initializeVertexAI();
+    }
+
+    private initializeVertexAI() {
+        try {
+            const project = process.env.GOOGLE_CLOUD_PROJECT_ID;
+            const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+
+            if (project) {
+                this.vertexAI = new VertexAI({ project, location });
+                this.generativeModel = this.vertexAI.getGenerativeModel({
+                    model: 'gemini-1.5-flash-001', // Using Flash for speed/cost, change to 'gemini-1.5-pro-001' for complex tasks
+                    generationConfig: {
+                        maxOutputTokens: 2048,
+                        temperature: 0.7,
+                    }
+                });
+                this.isInitialized = true;
+                console.log(`[AI] Vertex AI Initialized (Project: ${project}, Location: ${location}, Model: gemini-1.5-flash-001)`);
+            } else {
+                console.warn("[AI] GOOGLE_CLOUD_PROJECT_ID not set. Vertex AI disabled. Falling back to Mock.");
+            }
+        } catch (error) {
+            console.error("[AI] Failed to initialize Vertex AI:", error);
+        }
+    }
 
     /**
      * Get the system prompt for a specific agent type
@@ -157,12 +190,21 @@ export class AIService {
         prompt: string,
         options: AIGenerateOptions = {}
     ): Promise<string> {
-        // Simulate API latency
-        await new Promise(resolve => setTimeout(resolve, 500));
+        if (!this.isInitialized || !this.generativeModel) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            return getMockResponse(prompt);
+        }
 
-        // For now, return mock response
-        // TODO: Replace with Vertex AI call
-        return getMockResponse(prompt);
+        try {
+            const result = await this.generativeModel.generateContent({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            });
+            const response = result.response;
+            return response.candidates?.[0].content.parts[0].text || "I clearly didn't understand that.";
+        } catch (error) {
+            console.error("[AI] Generate Error:", error);
+            return getMockResponse(prompt);
+        }
     }
 
     /**
@@ -173,35 +215,73 @@ export class AIService {
         userMessage: string,
         agentType: AgentType = 'command_center'
     ): Promise<string> {
-        // Get or create conversation history
-        if (!this.conversationHistory.has(sessionId)) {
-            this.conversationHistory.set(sessionId, [
-                { role: 'system', content: this.getSystemPrompt(agentType) }
-            ]);
+        // Mock Fallback if not initialized
+        if (!this.isInitialized || !this.generativeModel) {
+            // Keep rudimentary history for mock mostly for structure
+            return this.mockChat(sessionId, userMessage, agentType);
         }
 
-        const history = this.conversationHistory.get(sessionId)!;
+        try {
+            // Get or create conversation history
+            if (!this.conversationHistory.has(sessionId)) {
+                this.conversationHistory.set(sessionId, [
+                    { role: 'system', content: this.getSystemPrompt(agentType) }
+                ]);
+            }
+            const history = this.conversationHistory.get(sessionId)!;
 
-        // Add user message
+            // Construct request with history
+            // Vertex AI Chat format requires Alternating User/Model parts, preventing System role in history directly usually
+            // We use systemInstruction in 1.5 models or prepend to first message
+
+            const chatSession = this.generativeModel.startChat({
+                history: history.filter(h => h.role !== 'system').map(h => ({
+                    role: h.role === 'assistant' ? 'model' : 'user',
+                    parts: [{ text: h.content }]
+                })),
+                systemInstruction: { role: 'system', parts: [{ text: this.getSystemPrompt(agentType) }] }
+            });
+
+            const result = await chatSession.sendMessage(userMessage);
+            const responseText = result.response.candidates?.[0].content.parts[0].text || "";
+
+            // Update local history
+            history.push({ role: 'user', content: userMessage });
+            history.push({ role: 'assistant', content: responseText });
+
+            // Keep history manageable
+            if (history.length > 21) {
+                const systemPrompt = history[0]; // Preserve system prompt
+                this.conversationHistory.set(sessionId, [
+                    systemPrompt,
+                    ...history.slice(-20)
+                ]);
+            }
+
+            return responseText;
+
+        } catch (error) {
+            console.error("[AI] Chat Error:", error);
+            // Fallback to mock logic if API fails
+            return this.mockChat(sessionId, userMessage, agentType);
+        }
+    }
+
+    // Helper for mock chat flow to keep code clean
+    private async mockChat(sessionId: string, userMessage: string, agentType: AgentType): Promise<string> {
+        if (!this.conversationHistory.has(sessionId)) {
+            this.conversationHistory.set(sessionId, [{ role: 'system', content: this.getSystemPrompt(agentType) }]);
+        }
+        const history = this.conversationHistory.get(sessionId)!;
         history.push({ role: 'user', content: userMessage });
 
-        // Generate response
-        const response = await this.generate(userMessage);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const response = getMockResponse(userMessage);
 
-        // Add assistant response to history
         history.push({ role: 'assistant', content: response });
-
-        // Keep history manageable (last 20 messages + system)
-        if (history.length > 21) {
-            const systemPrompt = history[0];
-            this.conversationHistory.set(sessionId, [
-                systemPrompt,
-                ...history.slice(-20)
-            ]);
-        }
-
         return response;
     }
+
 
     /**
      * Generate a streaming response
@@ -212,29 +292,71 @@ export class AIService {
         callbacks: AIStreamCallback,
         agentType: AgentType = 'command_center'
     ): Promise<void> {
+        if (!this.isInitialized || !this.generativeModel) {
+            return this.mockStreamChat(sessionId, userMessage, callbacks, agentType);
+        }
+
         try {
-            // Get full response
-            const fullResponse = await this.chat(sessionId, userMessage, agentType);
+            // Get or create conversation history
+            if (!this.conversationHistory.has(sessionId)) {
+                this.conversationHistory.set(sessionId, [
+                    { role: 'system', content: this.getSystemPrompt(agentType) }
+                ]);
+            }
+            const history = this.conversationHistory.get(sessionId)!;
 
-            // Simulate streaming by chunking the response
-            const words = fullResponse.split(' ');
-            let accumulated = '';
+            const chatSession = this.generativeModel.startChat({
+                history: history.filter(h => h.role !== 'system').map(h => ({
+                    role: h.role === 'assistant' ? 'model' : 'user',
+                    parts: [{ text: h.content }]
+                })),
+                systemInstruction: { role: 'system', parts: [{ text: this.getSystemPrompt(agentType) }] }
+            });
 
-            for (let i = 0; i < words.length; i++) {
-                const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
-                accumulated += chunk;
+            const result = await chatSession.sendMessageStream(userMessage);
 
-                // Simulate typing delay
-                await new Promise(resolve => setTimeout(resolve, 30 + Math.random() * 20));
-
+            let fullResponse = '';
+            for await (const item of result.stream) {
+                const chunk = item.candidates?.[0].content.parts[0].text || '';
+                fullResponse += chunk;
                 callbacks.onChunk(chunk);
             }
 
+            // Update history
+            history.push({ role: 'user', content: userMessage });
+            history.push({ role: 'assistant', content: fullResponse });
+
+            callbacks.onComplete(fullResponse);
+
+        } catch (error) {
+            console.error("[AI] Stream Chat Error:", error);
+            // Fallback
+            return this.mockStreamChat(sessionId, userMessage, callbacks, agentType);
+        }
+    }
+
+    private async mockStreamChat(
+        sessionId: string,
+        userMessage: string,
+        callbacks: AIStreamCallback,
+        agentType: AgentType
+    ): Promise<void> {
+        try {
+            const fullResponse = await this.mockChat(sessionId, userMessage, agentType);
+            const words = fullResponse.split(' ');
+
+            for (let i = 0; i < words.length; i++) {
+                const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
+                // Simulate typing delay
+                await new Promise(resolve => setTimeout(resolve, 30 + Math.random() * 20));
+                callbacks.onChunk(chunk);
+            }
             callbacks.onComplete(fullResponse);
         } catch (error) {
             callbacks.onError(error as Error);
         }
     }
+
 
     /**
      * Analyze text and categorize using DRIP Matrix
@@ -244,35 +366,62 @@ export class AIService {
         explanation: string;
         recommendation: string;
     }> {
-        // Mock DRIP analysis
-        const lowerTask = taskDescription.toLowerCase();
+        // Attempt to use Real AI if available
+        if (this.isInitialized && this.generativeModel) {
+            try {
+                const prompt = `Analyze the following task description for the "DRIP Matrix" framework:
+                Task: "${taskDescription}"
+                
+                Categories:
+                - Delegate: Low value, anyone can do it.
+                - Replace: Low value, repetitive, automate it.
+                - Invest: High leverage, requires system building.
+                - Produce: High value, requires your unique skill.
+                
+                Return ONLY a valid JSON object with keys: "category" (one of the 4 above, lowercase), "explanation", and "recommendation".`;
 
+                const result = await this.generativeModel.generateContent(prompt);
+                const text = result.response.candidates?.[0].content.parts[0].text || "{}";
+
+                // Simple JSON extraction attempt
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    return JSON.parse(jsonMatch[0]);
+                }
+            } catch (e) {
+                console.error("[AI] DRIP Logic Error", e);
+            }
+        }
+
+        // Fallback Mock Logic
+        return this.mockAnalyzeDRIP(taskDescription);
+    }
+
+    private mockAnalyzeDRIP(taskDescription: string) {
+        const lowerTask = taskDescription.toLowerCase();
         if (lowerTask.includes('email') || lowerTask.includes('inbox') || lowerTask.includes('schedule')) {
             return {
-                category: 'replace',
+                category: 'replace' as const,
                 explanation: 'This is a repetitive task that can be fully automated with AI.',
                 recommendation: 'Deploy the Inbox Sentinel agent to handle this automatically.'
             };
         }
-
         if (lowerTask.includes('research') || lowerTask.includes('data entry')) {
             return {
-                category: 'delegate',
+                category: 'delegate' as const,
                 explanation: 'This task requires human judgment but not your expertise.',
                 recommendation: 'Assign to a VA or use The Dossier agent for research tasks.'
             };
         }
-
         if (lowerTask.includes('strategy') || lowerTask.includes('sales call') || lowerTask.includes('client')) {
             return {
-                category: 'produce',
+                category: 'produce' as const,
                 explanation: 'This is high-value work that requires your unique expertise.',
                 recommendation: 'Block focused time for this. It directly impacts revenue.'
             };
         }
-
         return {
-            category: 'invest',
+            category: 'invest' as const,
             explanation: 'This task could benefit from better systems or templates.',
             recommendation: 'Create an SOP or template to make future instances faster.'
         };
@@ -286,6 +435,24 @@ export class AIService {
         options: string[];
         recommendation: number;
     }> {
+        if (this.isInitialized && this.generativeModel) {
+            try {
+                const prompt = `You are the Inbox Sentinel. Analyze this email and specific 1 problem, 3 reply options, and 1 recommendation index (0-2).
+                Email: "${emailContent}"
+                
+                Return ONLY a valid JSON object with keys: "problem", "options" (array of strings), "recommendation" (number index).`;
+
+                const result = await this.generativeModel.generateContent(prompt);
+                const text = result.response.candidates?.[0].content.parts[0].text || "{}";
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    return JSON.parse(jsonMatch[0]);
+                }
+            } catch (e) {
+                console.error("[AI] Email Reply Logic Error", e);
+            }
+        }
+
         // Mock email analysis
         return {
             problem: 'Client is requesting a scope change that wasn\'t in the original agreement.',

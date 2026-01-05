@@ -15,8 +15,11 @@ import {
   Users,
   Command,
   Sparkles,
-  HelpCircle
+  HelpCircle,
+  Sun,
+  Moon
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -52,16 +55,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   // Cmd+K to open command palette
+  const { theme, setTheme } = useTheme();
+
+  // Cmd+K for Palette, Cmd+J for AI Chat
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setIsCommandOpen((open) => !open)
+        e.preventDefault();
+        setIsCommandOpen((open) => !open);
       }
-    }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+      if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setIsAIChatOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] dark:bg-slate-950 flex">
