@@ -2,11 +2,11 @@
  * AI Service Layer
  * 
  * Hybrid implementation:
- * - Uses Google Cloud Vertex AI (Gemini Pro) if credentials are present
- * - Falls back to Mock implementation if credentials are missing or API fails
+ * - Uses Google Generative AI (Gemini API) if API key is present
+ * - Falls back to Mock implementation if key is missing or API fails
  */
 
-import { VertexAI, GenerativeModel, GenerateContentResult } from '@google-cloud/vertexai';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 
 export interface AIMessage {
     role: 'user' | 'assistant' | 'system';
@@ -144,35 +144,35 @@ function getMockResponse(input: string): string {
  */
 export class AIService {
     private conversationHistory: Map<string, AIMessage[]> = new Map();
-    private vertexAI: VertexAI | null = null;
-    private generativeModel: GenerativeModel | null = null;
+    private genAI: GoogleGenerativeAI | null = null;
+    private model: GenerativeModel | null = null;
     private isInitialized = false;
 
     constructor() {
-        this.initializeVertexAI();
+        this.initializeAI();
     }
 
-    private initializeVertexAI() {
+    private initializeAI() {
         try {
-            const project = process.env.GOOGLE_CLOUD_PROJECT_ID;
-            const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+            // Support both GOOGLE_API_KEY (AI Studio) and GOOGLE_CLOUD_API_KEY just in case
+            const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_CLOUD_API_KEY;
 
-            if (project) {
-                this.vertexAI = new VertexAI({ project, location });
-                this.generativeModel = this.vertexAI.getGenerativeModel({
-                    model: 'gemini-1.5-flash-001', // Using Flash for speed/cost, change to 'gemini-1.5-pro-001' for complex tasks
+            if (apiKey) {
+                this.genAI = new GoogleGenerativeAI(apiKey);
+                this.model = this.genAI.getGenerativeModel({
+                    model: 'gemini-1.5-flash',
                     generationConfig: {
                         maxOutputTokens: 2048,
                         temperature: 0.7,
                     }
                 });
                 this.isInitialized = true;
-                console.log(`[AI] Vertex AI Initialized (Project: ${project}, Location: ${location}, Model: gemini-1.5-flash-001)`);
+                console.log("[AI] Google Gemini API Initialized");
             } else {
-                console.warn("[AI] GOOGLE_CLOUD_PROJECT_ID not set. Vertex AI disabled. Falling back to Mock.");
+                console.warn("[AI] GOOGLE_API_KEY not set. Falling back to Mock.");
             }
         } catch (error) {
-            console.error("[AI] Failed to initialize Vertex AI:", error);
+            console.error("[AI] Failed to initialize Gemini API:", error);
         }
     }
 
@@ -190,17 +190,15 @@ export class AIService {
         prompt: string,
         options: AIGenerateOptions = {}
     ): Promise<string> {
-        if (!this.isInitialized || !this.generativeModel) {
+        if (!this.isInitialized || !this.model) {
             await new Promise(resolve => setTimeout(resolve, 500));
             return getMockResponse(prompt);
         }
 
         try {
-            const result = await this.generativeModel.generateContent({
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            });
+            const result = await this.model.generateContent(prompt);
             const response = result.response;
-            return response.candidates?.[0].content.parts[0].text || "I clearly didn't understand that.";
+            return response.text();
         } catch (error) {
             console.error("[AI] Generate Error:", error);
             return getMockResponse(prompt);
@@ -215,14 +213,11 @@ export class AIService {
         userMessage: string,
         agentType: AgentType = 'command_center'
     ): Promise<string> {
-        // Mock Fallback if not initialized
-        if (!this.isInitialized || !this.generativeModel) {
-            // Keep rudimentary history for mock mostly for structure
+        if (!this.isInitialized || !this.model) {
             return this.mockChat(sessionId, userMessage, agentType);
         }
 
         try {
-            // Get or create conversation history
             if (!this.conversationHistory.has(sessionId)) {
                 this.conversationHistory.set(sessionId, [
                     { role: 'system', content: this.getSystemPrompt(agentType) }
@@ -230,28 +225,26 @@ export class AIService {
             }
             const history = this.conversationHistory.get(sessionId)!;
 
-            // Construct request with history
-            // Vertex AI Chat format requires Alternating User/Model parts, preventing System role in history directly usually
-            // We use systemInstruction in 1.5 models or prepend to first message
+            // Map history to Gemini format (user vs model)
+            // Note: Gemini SDK handles system instructions differently in 1.5, 
+            // but we'll use startChat logic where possible or prepend context
 
-            const chatSession = this.generativeModel.startChat({
+            const chatSession = this.model.startChat({
                 history: history.filter(h => h.role !== 'system').map(h => ({
                     role: h.role === 'assistant' ? 'model' : 'user',
                     parts: [{ text: h.content }]
                 })),
-                systemInstruction: { role: 'system', parts: [{ text: this.getSystemPrompt(agentType) }] }
+                systemInstruction: this.getSystemPrompt(agentType)
             });
 
             const result = await chatSession.sendMessage(userMessage);
-            const responseText = result.response.candidates?.[0].content.parts[0].text || "";
+            const responseText = result.response.text();
 
-            // Update local history
             history.push({ role: 'user', content: userMessage });
             history.push({ role: 'assistant', content: responseText });
 
-            // Keep history manageable
             if (history.length > 21) {
-                const systemPrompt = history[0]; // Preserve system prompt
+                const systemPrompt = history[0];
                 this.conversationHistory.set(sessionId, [
                     systemPrompt,
                     ...history.slice(-20)
@@ -262,12 +255,10 @@ export class AIService {
 
         } catch (error) {
             console.error("[AI] Chat Error:", error);
-            // Fallback to mock logic if API fails
             return this.mockChat(sessionId, userMessage, agentType);
         }
     }
 
-    // Helper for mock chat flow to keep code clean
     private async mockChat(sessionId: string, userMessage: string, agentType: AgentType): Promise<string> {
         if (!this.conversationHistory.has(sessionId)) {
             this.conversationHistory.set(sessionId, [{ role: 'system', content: this.getSystemPrompt(agentType) }]);
@@ -282,7 +273,6 @@ export class AIService {
         return response;
     }
 
-
     /**
      * Generate a streaming response
      */
@@ -292,12 +282,11 @@ export class AIService {
         callbacks: AIStreamCallback,
         agentType: AgentType = 'command_center'
     ): Promise<void> {
-        if (!this.isInitialized || !this.generativeModel) {
+        if (!this.isInitialized || !this.model) {
             return this.mockStreamChat(sessionId, userMessage, callbacks, agentType);
         }
 
         try {
-            // Get or create conversation history
             if (!this.conversationHistory.has(sessionId)) {
                 this.conversationHistory.set(sessionId, [
                     { role: 'system', content: this.getSystemPrompt(agentType) }
@@ -305,24 +294,23 @@ export class AIService {
             }
             const history = this.conversationHistory.get(sessionId)!;
 
-            const chatSession = this.generativeModel.startChat({
+            const chatSession = this.model.startChat({
                 history: history.filter(h => h.role !== 'system').map(h => ({
                     role: h.role === 'assistant' ? 'model' : 'user',
                     parts: [{ text: h.content }]
                 })),
-                systemInstruction: { role: 'system', parts: [{ text: this.getSystemPrompt(agentType) }] }
+                systemInstruction: this.getSystemPrompt(agentType)
             });
 
             const result = await chatSession.sendMessageStream(userMessage);
 
             let fullResponse = '';
-            for await (const item of result.stream) {
-                const chunk = item.candidates?.[0].content.parts[0].text || '';
-                fullResponse += chunk;
-                callbacks.onChunk(chunk);
+            for await (const chunk of result.stream) {
+                const chunkText = chunk.text();
+                fullResponse += chunkText;
+                callbacks.onChunk(chunkText);
             }
 
-            // Update history
             history.push({ role: 'user', content: userMessage });
             history.push({ role: 'assistant', content: fullResponse });
 
@@ -330,7 +318,6 @@ export class AIService {
 
         } catch (error) {
             console.error("[AI] Stream Chat Error:", error);
-            // Fallback
             return this.mockStreamChat(sessionId, userMessage, callbacks, agentType);
         }
     }
@@ -347,7 +334,6 @@ export class AIService {
 
             for (let i = 0; i < words.length; i++) {
                 const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
-                // Simulate typing delay
                 await new Promise(resolve => setTimeout(resolve, 30 + Math.random() * 20));
                 callbacks.onChunk(chunk);
             }
@@ -357,7 +343,6 @@ export class AIService {
         }
     }
 
-
     /**
      * Analyze text and categorize using DRIP Matrix
      */
@@ -366,8 +351,7 @@ export class AIService {
         explanation: string;
         recommendation: string;
     }> {
-        // Attempt to use Real AI if available
-        if (this.isInitialized && this.generativeModel) {
+        if (this.isInitialized && this.model) {
             try {
                 const prompt = `Analyze the following task description for the "DRIP Matrix" framework:
                 Task: "${taskDescription}"
@@ -380,10 +364,9 @@ export class AIService {
                 
                 Return ONLY a valid JSON object with keys: "category" (one of the 4 above, lowercase), "explanation", and "recommendation".`;
 
-                const result = await this.generativeModel.generateContent(prompt);
-                const text = result.response.candidates?.[0].content.parts[0].text || "{}";
+                const result = await this.model.generateContent(prompt);
+                const text = result.response.text();
 
-                // Simple JSON extraction attempt
                 const jsonMatch = text.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     return JSON.parse(jsonMatch[0]);
@@ -392,8 +375,6 @@ export class AIService {
                 console.error("[AI] DRIP Logic Error", e);
             }
         }
-
-        // Fallback Mock Logic
         return this.mockAnalyzeDRIP(taskDescription);
     }
 
@@ -435,15 +416,15 @@ export class AIService {
         options: string[];
         recommendation: number;
     }> {
-        if (this.isInitialized && this.generativeModel) {
+        if (this.isInitialized && this.model) {
             try {
                 const prompt = `You are the Inbox Sentinel. Analyze this email and specific 1 problem, 3 reply options, and 1 recommendation index (0-2).
                 Email: "${emailContent}"
                 
                 Return ONLY a valid JSON object with keys: "problem", "options" (array of strings), "recommendation" (number index).`;
 
-                const result = await this.generativeModel.generateContent(prompt);
-                const text = result.response.candidates?.[0].content.parts[0].text || "{}";
+                const result = await this.model.generateContent(prompt);
+                const text = result.response.text();
                 const jsonMatch = text.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     return JSON.parse(jsonMatch[0]);
@@ -453,7 +434,6 @@ export class AIService {
             }
         }
 
-        // Mock email analysis
         return {
             problem: 'Client is requesting a scope change that wasn\'t in the original agreement.',
             options: [
@@ -461,7 +441,7 @@ export class AIService {
                 'Accept the change but document it formally and adjust timeline expectations.',
                 'Schedule a call to discuss the request and understand the underlying need.'
             ],
-            recommendation: 0 // First option is recommended
+            recommendation: 0
         };
     }
 
@@ -473,5 +453,4 @@ export class AIService {
     }
 }
 
-// Singleton instance
 export const aiService = new AIService();
