@@ -37,7 +37,7 @@ app.use(express.json({ verify: (req, _res, buf) => { (req as any).rawBody = buf;
 app.use(express.urlencoded({ extended: false }));
 
 // 2. START LISTENING BEFORE ANYTHING ELSE
-const port = parseInt(process.env.PORT || "5000", 10);
+const port = parseInt(process.env.PORT || "8080", 10);
 httpServer.listen(port, "0.0.0.0", () => {
   log(`🚀 SERVER BIND SUCCESSFUL ON PORT ${port}`);
 });

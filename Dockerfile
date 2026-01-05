@@ -23,12 +23,12 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 # DEFAULT PORT if not provided by Railway
-ENV PORT=5000
+ENV PORT=8080
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 
-EXPOSE 5000
+EXPOSE 8080
 
 CMD ["node", "dist/index.cjs"]
