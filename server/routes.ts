@@ -10,8 +10,13 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  // Helper to get current user ID (using session user or default for development)
+  // Helper to get current user ID
   const getUserId = (req: any) => req.user?.id || "demo-user-id";
+
+  // Health Check for Railway
+  app.get("/health", (_req, res) => {
+    res.status(200).send("OK");
+  });
 
   // Campaigns
   app.get("/api/campaigns", async (req, res) => {
