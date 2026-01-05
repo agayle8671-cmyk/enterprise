@@ -1,3 +1,7 @@
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+
 let pool: pg.Pool | null = null;
 let dbInstance: any = null;
 
