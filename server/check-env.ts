@@ -21,5 +21,4 @@ if (missing.length > 0) {
     console.log("✅ All required environment variables are present.");
     console.log(`   - DATABASE_URL: ${process.env.DATABASE_URL?.substring(0, 10)}... (Redacted)`);
     console.log(`   - GOOGLE_API_KEY: ${process.env.GOOGLE_API_KEY?.substring(0, 5)}... (Redacted)`);
-    process.exit(0);
 }

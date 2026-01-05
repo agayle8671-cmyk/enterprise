@@ -3,6 +3,24 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("🔥 [FATAL] Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+process.on("uncaughtException", (err, origin) => {
+  console.error(`🔥 [FATAL] Caught exception: ${err}\nException origin: ${origin}`);
+});
+
+process.on("SIGTERM", () => {
+  log("🛑 [SIGTERM] Railway is killing the container. Cleaning up...");
+  process.exit(0);
+});
+
+// Heartbeat to prove the process is alive
+setInterval(() => {
+  console.log(`💓 [ALIVE] ${new Date().toISOString()}`);
+}, 1000);
+
 const app = express();
 
 // ABSOLUTE FIRST ROUTE: Health Check 
