@@ -5,7 +5,7 @@ import { createServer } from "http";
 
 const app = express();
 
-// ABSOLUTE FIRST ROUTE: Health Check (Must be before any heavy imports or middleware)
+// ABSOLUTE FIRST ROUTE: Health Check 
 app.get("/health", (_req, res) => {
   console.log("🔔 [HEALTH] Priority check passed");
   res.status(200).send("OK");
@@ -74,13 +74,10 @@ app.use((req, res, next) => {
 });
 
 const port = parseInt(process.env.PORT || "5000", 10);
-const server = app.listen(port, "0.0.0.0", () => {
-  log(`🚀 Initial server listening on port ${port} (Health Check Active)`);
-});
 
 (async () => {
   try {
-    log("⏳ Initializing services...");
+    log("⏳ Initializing routes...");
     await registerRoutes(httpServer, app);
 
     if (process.env.NODE_ENV === "production") {
@@ -89,6 +86,11 @@ const server = app.listen(port, "0.0.0.0", () => {
       const { setupVite } = await import("./vite");
       await setupVite(httpServer, app);
     }
+
+    // Single source of truth for listening
+    httpServer.listen(port, "0.0.0.0", () => {
+      log(`🚀 Server listening on port ${port}`);
+    });
 
     log("✅ Server initialization complete.");
 
@@ -101,7 +103,11 @@ const server = app.listen(port, "0.0.0.0", () => {
 
   } catch (error) {
     console.error("❌ CRITICAL: Server failed to initialize services:", error);
-    // We don't exit here so the health check endpoint stays alive
-    // allowing the user to see logs and fix the issue.
+    // Bind anyway so Railway doesn't kill the container immediately
+    if (!httpServer.listening) {
+      httpServer.listen(port, "0.0.0.0", () => {
+        log(`⚠️ Emergency listener active on port ${port}`);
+      });
+    }
   }
 })();
