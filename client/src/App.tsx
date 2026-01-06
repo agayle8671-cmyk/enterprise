@@ -20,6 +20,7 @@ import Proposals from "@/pages/dashboard/Proposals";
 import ClientPortal from "@/pages/dashboard/ClientPortal";
 import HelpCenter from "@/pages/dashboard/HelpCenter";
 import Settings from "@/pages/dashboard/Settings";
+import SovereignDashboard from "@/pages/dashboard/SovereignDashboard";
 
 function Router() {
   return (
@@ -92,6 +93,12 @@ function Router() {
       <Route path="/dashboard/settings">
         <DashboardLayout>
           <Settings />
+        </DashboardLayout>
+      </Route>
+
+      <Route path="/dashboard/sovereign">
+        <DashboardLayout>
+          <SovereignDashboard />
         </DashboardLayout>
       </Route>
 
