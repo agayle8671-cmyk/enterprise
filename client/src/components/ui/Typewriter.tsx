@@ -1,162 +1,185 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
-interface TypewriterProps {
-    phrases: string[];
+interface TypewriterTextProps {
+    strings: string[];
+    typingSpeed?: number;
+    deletingSpeed?: number;
+    pauseDuration?: number;
     className?: string;
-    cursorColor?: string;
-    onComplete?: () => void;
+    cursorClassName?: string;
+    showCursor?: boolean;
 }
 
-// Gaussian Random Helper (Box-Muller transform)
-// Generates a number with a normal distribution around 0
-function gaussianRandom() {
-    let u = 0, v = 0;
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
-    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-}
+type Phase = 'TYPING' | 'PAUSING' | 'DELETING' | 'SWITCHING';
 
-function getTypingDelay() {
-    // Base speed 40ms + variance
-    // We want a "fast" feel but human.
-    const base = 40;
-    const variance = 15;
-    const noise = gaussianRandom() * variance;
-    return Math.max(10, base + noise); // Min 10ms
-}
-
-function getDeletionDelay() {
-    // Rapid accelerating deletion
-    return 20;
-}
-
-const CONSTANTS = {
-    PAUSE_MS: 2000,
-    PUNCTUATION_PAUSE_MS: 300,
-};
-
-export function Typewriter({
-    phrases,
-    className,
-    cursorColor = '#FF6363', // Raycast Red default 
-    onComplete
-}: TypewriterProps) {
-    const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+export function TypewriterText({
+    strings,
+    typingSpeed = 80,
+    deletingSpeed = 40,
+    pauseDuration = 2000,
+    className = '',
+    cursorClassName = '',
+    showCursor = true,
+}: TypewriterTextProps) {
     const [displayText, setDisplayText] = useState('');
-    const [phase, setPhase] = useState<'TYPING' | 'PAUSING' | 'DELETING'>('TYPING');
-    const [cursorVisible, setCursorVisible] = useState(true);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [phase, setPhase] = useState<Phase>('TYPING');
+    const [isTyping, setIsTyping] = useState(true);
 
-    const goalText = phrases[currentPhraseIndex];
-    const mountedRef = useRef(true);
-
-    // Layout Stability: Find the longest phrase to set container size
-    const longestPhrase = phrases.reduce((a, b) => a.length > b.length ? a : b, '');
-
-    useEffect(() => {
-        mountedRef.current = true;
-        return () => { mountedRef.current = false; };
+    // Calculate common prefix for smart backspacing
+    const getCommonPrefixLength = useCallback((str1: string, str2: string): number => {
+        let i = 0;
+        while (i < str1.length && i < str2.length && str1[i] === str2[i]) {
+            i++;
+        }
+        return i;
     }, []);
 
     useEffect(() => {
-        let timeout: NodeJS.Timeout;
+        if (strings.length === 0) return;
 
-        const loop = () => {
-            if (!mountedRef.current) return;
+        const currentString = strings[currentIndex];
+        const nextIndex = (currentIndex + 1) % strings.length;
+        const nextString = strings[nextIndex];
+        const commonPrefixLength = getCommonPrefixLength(currentString, nextString);
 
-            if (phase === 'TYPING') {
-                if (displayText !== goalText) {
-                    // Determine character to add
-                    const nextChar = goalText.slice(0, displayText.length + 1);
+        let timeout: ReturnType<typeof setTimeout>;
 
-                    // Calculate Delay
-                    let delay = getTypingDelay();
-                    const charAdded = nextChar.slice(-1);
-
-                    // Add pause for punctuation
-                    if ([',', '.', '?', '!'].includes(charAdded)) {
-                        delay += CONSTANTS.PUNCTUATION_PAUSE_MS;
-                    }
-
+        switch (phase) {
+            case 'TYPING':
+                setIsTyping(true);
+                if (displayText.length < currentString.length) {
+                    // Add slight randomness for natural feel
+                    const variance = Math.random() * 40 - 20;
                     timeout = setTimeout(() => {
-                        setDisplayText(nextChar);
-                        setCursorVisible(false); // Hide cursor while typing
-                        loop();
-                    }, delay);
+                        setDisplayText(currentString.slice(0, displayText.length + 1));
+                    }, typingSpeed + variance);
                 } else {
-                    // Finished Typing
                     setPhase('PAUSING');
-                    setCursorVisible(true); // Show cursor immediately
-                    timeout = setTimeout(loop, CONSTANTS.PAUSE_MS);
                 }
-            } else if (phase === 'PAUSING') {
-                // After pause, start deleting
-                setPhase('DELETING');
-                loop();
-            } else if (phase === 'DELETING') {
-                // Smart Backspacing Logic
-                // Calculate LCP with next phrase
-                const nextIndex = (currentPhraseIndex + 1) % phrases.length;
-                const nextPhrase = phrases[nextIndex];
+                break;
 
-                // Find common prefix length
-                let lcpLength = 0;
-                const minLen = Math.min(goalText.length, nextPhrase.length);
-                for (let i = 0; i < minLen; i++) {
-                    if (goalText[i] !== nextPhrase[i]) break;
-                    lcpLength++;
-                }
+            case 'PAUSING':
+                setIsTyping(false);
+                timeout = setTimeout(() => {
+                    setPhase('DELETING');
+                }, pauseDuration);
+                break;
 
-                if (displayText.length > lcpLength) {
+            case 'DELETING':
+                setIsTyping(true);
+                // Smart backspacing - only delete to common prefix
+                if (displayText.length > commonPrefixLength) {
                     timeout = setTimeout(() => {
-                        setDisplayText(prev => prev.slice(0, -1));
-                        setCursorVisible(false); // Hide cursor while deleting
-                        loop();
-                    }, getDeletionDelay());
+                        setDisplayText(displayText.slice(0, -1));
+                    }, deletingSpeed);
                 } else {
-                    // Smart delete finished
-                    setCurrentPhraseIndex(nextIndex);
-                    setPhase('TYPING');
-                    setCursorVisible(true);
-                    loop();
+                    setPhase('SWITCHING');
                 }
-            }
-        };
+                break;
 
-        // Start the loop
-        loop();
+            case 'SWITCHING':
+                setCurrentIndex(nextIndex);
+                setPhase('TYPING');
+                break;
+        }
 
         return () => clearTimeout(timeout);
-    }, [displayText, phase, currentPhraseIndex, goalText, phrases]);
+    }, [displayText, currentIndex, phase, strings, typingSpeed, deletingSpeed, pauseDuration, getCommonPrefixLength]);
 
     return (
-        <div className={cn("relative font-mono-raycast inline-block", className)}>
-            {/* Ghost Element for Zero CLS */}
-            <span className="invisible opacity-0" aria-hidden="true">
-                {longestPhrase}
-                <span className="inline-block w-[1ch]">&nbsp;</span>
-            </span>
-
-            {/* Real Text Overlay */}
-            <span className="absolute top-0 left-0 whitespace-nowrap">
-                {displayText}
-                {/* Block Cursor */}
+        <span className={`inline-flex items-center ${className}`}>
+            <span className="font-mono">{displayText}</span>
+            {showCursor && (
                 <span
-                    className={cn(
-                        "inline-block w-[1ch] h-[1.1em] align-middle -mt-1 ml-[1px]",
-                        cursorVisible ? "animate-cursor-blink" : "opacity-100"
-                    )}
-                    style={{ backgroundColor: cursorColor }}
+                    className={`${isTyping ? 'cursor-solid' : 'cursor-block'} ${cursorClassName}`}
+                    aria-hidden="true"
                 />
-            </span>
-        </div>
+            )}
+            {/* Screen reader accessible version */}
+            <span className="sr-only">{strings[currentIndex]}</span>
+        </span>
     );
 }
 
-// Add these to your global CSS or tailwind config if not present
-// @keyframes cursor-blink {
-//   0%, 100% { opacity: 1; }
-//   50% { opacity: 0; }
-// }
-// .animate-cursor-blink { animation: cursor-blink 1s step-end infinite; }
+// Simpler variant for single line typewriter with loop
+interface SimpleTypewriterProps {
+    text: string;
+    speed?: number;
+    delay?: number;
+    className?: string;
+    onComplete?: () => void;
+}
+
+export function SimpleTypewriter({
+    text,
+    speed = 50,
+    delay = 0,
+    className = '',
+    onComplete,
+}: SimpleTypewriterProps) {
+    const [displayText, setDisplayText] = useState('');
+    const [started, setStarted] = useState(false);
+
+    useEffect(() => {
+        const delayTimeout = setTimeout(() => setStarted(true), delay);
+        return () => clearTimeout(delayTimeout);
+    }, [delay]);
+
+    useEffect(() => {
+        if (!started) return;
+
+        if (displayText.length < text.length) {
+            const timeout = setTimeout(() => {
+                setDisplayText(text.slice(0, displayText.length + 1));
+            }, speed);
+            return () => clearTimeout(timeout);
+        } else {
+            onComplete?.();
+        }
+    }, [displayText, text, speed, started, onComplete]);
+
+    return (
+        <span className={`font-mono ${className}`}>
+            {displayText}
+            {displayText.length < text.length && (
+                <span className="cursor-solid" aria-hidden="true" />
+            )}
+        </span>
+    );
+}
+
+// Staggered text reveal for headers
+interface StaggerTextProps {
+    text: string;
+    className?: string;
+    staggerDelay?: number;
+}
+
+export function StaggerText({ text, className = '', staggerDelay = 0.03 }: StaggerTextProps) {
+    const letters = text.split('');
+
+    return (
+        <motion.span className={className}>
+            {letters.map((letter, i) => (
+                <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.3,
+                        delay: i * staggerDelay,
+                        ease: [0.25, 0.4, 0.25, 1],
+                    }}
+                    className="inline-block"
+                    style={{ whiteSpace: letter === ' ' ? 'pre' : 'normal' }}
+                >
+                    {letter}
+                </motion.span>
+            ))}
+        </motion.span>
+    );
+}
+
+export default TypewriterText;
