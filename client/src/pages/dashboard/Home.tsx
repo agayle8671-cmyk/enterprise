@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BentoGrid, BentoItem, BentoStat, BentoCard } from "@/components/ui/BentoGrid";
-import { ArrowUpRight, Clock, DollarSign, Users, Activity, ArrowRight, Zap, TrendingUp, Calendar, Award, Sparkles, FileText, Check, LayoutDashboard, Rocket } from "lucide-react";
+import { ArrowUpRight, Clock, DollarSign, Users, Activity, ArrowRight, Zap, TrendingUp, Calendar, Award, Sparkles, FileText, Check, LayoutDashboard, Rocket, Mail, X } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardStats, useAgents, useDecisions, useContracts } from "@/lib/api";
-import { WaveText } from "@/components/WaveText";
+import { TypewriterHero } from "@/components/dashboard/TypewriterHero";
 import { motion } from "framer-motion";
 import { PHYSICS, TRANSITIONS, VARIANTS } from "@/lib/animation-constants";
 
@@ -81,54 +81,44 @@ export default function Home() {
   const totalTimeSaved = stats?.totalTimeSaved || 0;
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-6">
+      {/* Header - Raycast V2 Style */}
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-semibold text-foreground tracking-tight">
-            <WaveText text="Dashboard Overview" />
+          <h1 className="text-2xl font-semibold" style={{ color: '#EDEDED', letterSpacing: '-0.025em' }}>
+            Welcome back, James
           </h1>
-          <p className="text-muted-foreground mt-1.5">
-            Welcome back, James. Here's your agency's performance at a glance.
+          <p style={{ color: '#989898' }} className="mt-1">
+            Your agents saved you <span style={{ color: '#FF6363', fontWeight: 600 }}>12.5 hours</span> this week.
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="hidden md:flex" disablePhysics>
-            <Calendar className="mr-2 h-4 w-4" /> Jan 2026
-          </Button>
-          <Button onClick={handleGenerateReport}>
-            <ArrowUpRight className="mr-2 h-4 w-4" /> Generate Report
+          <Button
+            onClick={handleGenerateReport}
+            className="flex items-center gap-2"
+            style={{
+              background: 'linear-gradient(135deg, #FF6363 0%, #8B5CF6 100%)',
+              color: '#FFFFFF',
+              border: 'none'
+            }}
+          >
+            <Zap className="h-4 w-4" />
+            Generate Report
           </Button>
         </div>
       </div>
 
-      {/* AI Insight Banner */}
-      <motion.div
-        className="liquid-glass rounded-2xl p-5 flex items-start gap-4 relative overflow-hidden group"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={PHYSICS.screenTransition}
-      >
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Sparkles className="h-28 w-28" />
-        </div>
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary z-10">
-          <Zap className="h-5 w-5" />
-        </div>
-        <div className="flex-1 z-10">
-          <h3 className="font-medium text-foreground flex items-center gap-2">
-            AI Insight: Optimization Opportunity
-            <Badge variant="secondary" className="text-[10px]">New</Badge>
-          </h3>
-          <p className="text-muted-foreground text-sm mt-1.5 max-w-3xl leading-relaxed">
-            Based on recent "Buyback Loop" data, your <strong className="text-foreground">Lead Qualification</strong> agent is handling 80% of volume but has a 12% drop-off rate. Deploying the new "Contextual Follow-up" module could recover ~$4,200 in monthly pipeline value.
-          </p>
-          <div className="mt-4 flex gap-3">
-            <Button size="sm">Deploy Module</Button>
-            <Button size="sm" variant="ghost">Dismiss</Button>
-          </div>
-        </div>
-      </motion.div>
+      {/* TypewriterHero - Primary Hero */}
+      <TypewriterHero
+        phrases={[
+          "Search contracts...",
+          "Analyze Q4 metrics...",
+          "Draft follow-up email...",
+          "Find optimization opportunities...",
+        ]}
+        statValue={`${totalTimeSaved} hrs`}
+        statLabel="saved today"
+      />
 
       {/* Stats Grid - Using BentoStat */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

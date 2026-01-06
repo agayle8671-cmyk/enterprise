@@ -87,85 +87,95 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="raycast-kbd">ESC</span>
           </div>
           <div className="p-2">
-            <div className="px-2 py-1.5 text-[10px] font-medium text-slate-400 uppercase tracking-wider">Suggestions</div>
+            <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: '#989898' }}>Suggestions</div>
             <div className="space-y-0.5">
-              <div className="flex items-center px-3 py-2.5 text-[14px] text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                <Rocket className="h-4 w-4 mr-2.5 text-slate-400" /> Launch New Campaign
+              <div className="flex items-center px-3 py-2.5 text-[14px] rounded-lg cursor-pointer transition-colors" style={{ color: '#EDEDED' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                <Rocket className="h-4 w-4 mr-2.5" style={{ color: '#989898' }} /> Launch New Campaign
               </div>
-              <div className="flex items-center px-3 py-2.5 text-[14px] text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                <Users className="h-4 w-4 mr-2.5 text-slate-400" /> Invite Team Member
+              <div className="flex items-center px-3 py-2.5 text-[14px] rounded-lg cursor-pointer transition-colors" style={{ color: '#EDEDED' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                <Users className="h-4 w-4 mr-2.5" style={{ color: '#989898' }} /> Invite Team Member
               </div>
-              <div className="flex items-center px-3 py-2.5 text-[14px] text-slate-700 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                <CreditCard className="h-4 w-4 mr-2.5 text-slate-400" /> View Billing
+              <div className="flex items-center px-3 py-2.5 text-[14px] rounded-lg cursor-pointer transition-colors" style={{ color: '#EDEDED' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                <CreditCard className="h-4 w-4 mr-2.5" style={{ color: '#989898' }} /> View Billing
               </div>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Sidebar - Apple-style Desktop */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-border/50 bg-sidebar fixed h-full z-10">
-        <div className="p-5 border-b border-slate-100/60 dark:border-slate-800 flex items-center gap-3">
-          <div className="h-8 w-8 bg-slate-900 rounded-xl flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 text-white">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+      {/* Sidebar - Raycast V2 Dark */}
+      <aside className="hidden md:flex flex-col w-64 fixed h-full z-10" style={{ background: '#080808', boxShadow: 'inset -1px 0 0 rgba(255,255,255,0.1)' }}>
+        <div className="p-5 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="h-8 w-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FF6363 0%, #8B5CF6 100%)' }}>
+            <span className="text-white font-bold text-sm">S</span>
           </div>
-          <span className="font-medium text-[17px] text-slate-900 dark:text-white tracking-[-0.01em]">
-            <WaveText text="Sovereign OS" />
+          <span className="font-semibold text-[17px] text-[#EDEDED]" style={{ letterSpacing: '-0.025em' }}>
+            Sovereign
           </span>
         </div>
 
+        {/* Search with ⌘K */}
         <div className="px-3 pt-4">
-          <Button
-            variant="outline"
-            className="w-full justify-start text-[13px] text-slate-400 border-slate-200/60 bg-slate-50/50 hover:bg-slate-100 hover:text-slate-600 rounded-xl h-9"
+          <button
             onClick={() => setIsCommandOpen(true)}
+            className="w-full flex items-center justify-between px-3 h-9 rounded-lg text-sm transition-colors"
+            style={{
+              background: '#121212',
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              color: '#989898'
+            }}
           >
-            <Search className="h-4 w-4 mr-2" />
-            <span className="flex-1 text-left">Search...</span>
-            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-slate-200 bg-white px-1.5 font-mono text-[10px] font-medium text-slate-400">
-              <span className="text-xs">⌘</span>K
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              <span>Search...</span>
+            </div>
+            <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium" style={{ background: '#1a1a1a', color: '#989898' }}>
+              <span>⌘</span>K
             </kbd>
-          </Button>
+          </button>
         </div>
 
-        <nav className="flex-1 px-3 py-2 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1">
           {navigation.map((item) => {
             const isActive = location === item.href;
             return (
               <Link key={item.name} href={item.href}>
                 <div
-                  className={`raycast-item ${isActive ? "raycast-item-active" : ""}`}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer"
+                  style={{
+                    background: isActive ? 'rgba(255, 99, 99, 0.15)' : 'transparent',
+                    color: isActive ? '#FF6363' : '#989898',
+                  }}
                 >
-                  <item.icon
-                    className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`}
-                  />
-                  <span className={isActive ? "text-foreground font-medium" : "text-muted-foreground"}>
+                  <item.icon className="h-4 w-4" />
+                  <span style={{ fontWeight: isActive ? 500 : 400 }}>
                     {item.name}
                   </span>
+                  {isActive && <ChevronDown className="h-3 w-3 ml-auto rotate-[-90deg]" />}
                 </div>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-3 border-t border-slate-100/60 dark:border-slate-800">
+        {/* Buyback Status Card */}
+        <div className="p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
           <Link href="/dashboard/buyback">
-            <div className="bg-slate-50/80 dark:bg-slate-800 rounded-xl p-4 border border-slate-100/60 dark:border-slate-700 cursor-pointer hover:border-slate-200 transition-all duration-300 group relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-2 opacity-5">
-                <Sparkles className="h-10 w-10" />
+            <div
+              className="rounded-lg p-4 cursor-pointer transition-all relative overflow-hidden"
+              style={{ background: '#121212', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)' }}
+            >
+              <div className="absolute top-0 right-0 p-2 opacity-10">
+                <Sparkles className="h-10 w-10 text-[#FF6363]" />
               </div>
-              <h4 className="text-[11px] font-medium text-slate-500 dark:text-white mb-2.5 flex justify-between relative z-10 uppercase tracking-wider">
+              <h4 className="text-[11px] font-medium uppercase tracking-wider mb-2 flex justify-between" style={{ color: '#989898' }}>
                 Buyback Status
-                <span className="text-slate-400 group-hover:text-slate-600 transition-colors normal-case tracking-normal">View</span>
+                <span className="text-[#FF6363]">View →</span>
               </h4>
-              <div className="w-full bg-slate-200/80 dark:bg-slate-700 h-1 rounded-full overflow-hidden mb-2 relative z-10">
-                <div className="bg-slate-900 h-full w-[65%] rounded-full" />
+              <div className="w-full h-1 rounded-full overflow-hidden mb-2" style={{ background: '#1a1a1a' }}>
+                <div className="h-full w-[65%] rounded-full" style={{ background: 'linear-gradient(90deg, #FF6363, #8B5CF6)' }} />
               </div>
-              <p className="text-[12px] text-slate-400 dark:text-slate-400 relative z-10">
+              <p className="text-[12px]" style={{ color: '#989898' }}>
                 65% of manual tasks automated
               </p>
             </div>

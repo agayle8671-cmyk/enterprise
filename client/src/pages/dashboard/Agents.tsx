@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PHYSICS } from '@/lib/animation-constants';
 import { Button } from '@/components/ui/button';
 import { BentoGrid, BentoItem } from '@/components/ui/BentoGrid';
+import { TypewriterHero } from '@/components/dashboard/TypewriterHero';
 import {
     Bot,
     Mail,
@@ -148,52 +149,42 @@ export default function Agents() {
     const runningAgents = agents.filter(a => a.status === 'Running').length;
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
+        <div className="space-y-6">
+            {/* Header - Raycast V2 Style */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-headline text-foreground">AI Agent Workforce</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Your autonomous team handling the "Replace" quadrant of the DRIP Matrix
+                    <h1 className="text-2xl font-semibold" style={{ color: '#EDEDED', letterSpacing: '-0.025em' }}>
+                        AI Agent Swarm
+                    </h1>
+                    <p style={{ color: '#989898' }} className="mt-1">
+                        Your autonomous workforce. <span style={{ color: '#FF6363' }}>{runningAgents} agents active</span>.
                     </p>
                 </div>
                 <Button
                     onClick={() => setShowNewAgent(true)}
-                    className="bg-gradient-primary shadow-lg shadow-primary/30"
+                    className="flex items-center gap-2"
+                    style={{
+                        background: 'linear-gradient(135deg, #FF6363 0%, #8B5CF6 100%)',
+                        color: '#FFFFFF',
+                        border: 'none'
+                    }}
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Deploy Agent
+                    <Plus className="h-4 w-4" />
+                    Deploy New Agent
                 </Button>
             </div>
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard
-                    label="Active Agents"
-                    value={runningAgents}
-                    icon={Bot}
-                    color="text-primary"
-                />
-                <StatCard
-                    label="Time Saved (hrs)"
-                    value={(totalTimeSaved / 60).toFixed(1)}
-                    icon={Clock}
-                    color="text-success"
-                />
-                <StatCard
-                    label="Value Generated"
-                    value={`$${Math.round(totalTimeSaved * 4.16).toLocaleString()}`}
-                    icon={TrendingUp}
-                    color="text-warning"
-                    subtext="@ $250/hr buyback rate"
-                />
-                <StatCard
-                    label="Decisions Pending"
-                    value="4"
-                    icon={Activity}
-                    color="text-destructive"
-                />
-            </div>
+            {/* TypewriterHero */}
+            <TypewriterHero
+                phrases={[
+                    "Analyzing inbox patterns...",
+                    "Processing lead responses...",
+                    "Drafting follow-up emails...",
+                    "Updating CRM records...",
+                ]}
+                statValue={`${(totalTimeSaved / 60).toFixed(1)} hrs`}
+                statLabel="saved today"
+            />
 
             {/* Agent Grid */}
             {isLoading ? (
