@@ -9,10 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   CreditCard, Globe, Lock, Mail, User, Zap, Bell, Shield,
-  Users, Key, Activity, Search, FileText, Download, Filter, Cpu
+  Users, Key, Activity, Search, FileText, Download, Filter, Cpu, HardDrive
 } from "lucide-react";
 import { WaveText } from "@/components/WaveText";
 import { KernelStatus } from "@/components/KernelStatus";
+import { FileExplorer } from "@/components/FileExplorer";
 
 export default function Settings() {
   return (
@@ -35,6 +36,7 @@ export default function Settings() {
           <TabsTrigger value="security" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Security & Audit</TabsTrigger>
           <TabsTrigger value="integrations" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Integrations</TabsTrigger>
           <TabsTrigger value="system" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">System</TabsTrigger>
+          <TabsTrigger value="files" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Files</TabsTrigger>
         </TabsList>
 
         {/* General Tab */}
@@ -345,6 +347,11 @@ export default function Settings() {
         {/* System Tab - Kernel Management */}
         <TabsContent value="system" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <KernelStatus />
+        </TabsContent>
+
+        {/* Files Tab - Sovereign File System */}
+        <TabsContent value="files" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <FileExplorer />
         </TabsContent>
       </Tabs>
     </div>
