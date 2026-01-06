@@ -1,9 +1,9 @@
 /**
  * Sovereign Dashboard
  * 
- * Sovereign Aesthetic Phase 1 + 2: Bloomberg + Raycast Layers
+ * Sovereign Aesthetic Phase 1 + 2 + 3: Bloomberg + Raycast + Antigravity Layers
  * Dense, data-first dashboard with glassmorphism, aurora effects,
- * and physics-based interactions.
+ * physics-based interactions, typewriter animations, and gravity cards.
  */
 
 import { useState, useEffect } from 'react';
@@ -15,6 +15,15 @@ import {
     GlowButton,
     SpotlightCard
 } from '@/components/GlassCard';
+import {
+    TypewriterText,
+    GravityCard,
+    StreamingNumber,
+    PulseRing,
+    ParticleField,
+    FloatingElement,
+    SpringCounter
+} from '@/components/Physics';
 import {
     Activity,
     TrendingUp,
@@ -31,7 +40,11 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     Terminal,
-    Sparkles
+    Sparkles,
+    Atom,
+    Orbit,
+    Play,
+    RefreshCw
 } from 'lucide-react';
 
 // ============================================================================
@@ -445,6 +458,146 @@ export default function SovereignDashboard() {
                             </p>
                         </div>
                     </SpotlightCard>
+                </div>
+            </div>
+
+            {/* ================================================================
+                PHASE 3: ANTIGRAVITY LAYER - Physics & Motion
+                ================================================================ */}
+
+            <div className="mt-8 mb-20">
+                <h2 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+                    ANTIGRAVITY LAYER
+                </h2>
+
+                {/* Typewriter Text Demo */}
+                <div className="glass-panel rounded-2xl p-8 mb-6 relative overflow-hidden">
+                    <ParticleField count={20} color="var(--color-acid)" />
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Atom className="h-6 w-6 text-[var(--color-acid)]" />
+                            <h3 className="text-xl font-bold text-[var(--text-sovereign-primary)]">
+                                Typewriter Effect
+                            </h3>
+                        </div>
+                        <div className="text-2xl text-[var(--color-acid)] mb-4">
+                            <TypewriterText
+                                text="SYSTEM ONLINE. ALL MODULES OPERATIONAL. READY FOR COMMANDS..."
+                                speed={30}
+                                loop
+                                pauseDuration={3000}
+                            />
+                        </div>
+                        <p className="text-[var(--text-sovereign-muted)] text-sm">
+                            Text streams in character by character using useMotionValue and useTransform.
+                            The blinking cursor uses a stepped animation for authentic terminal feel.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Gravity Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <GravityCard strength={8} range={200}>
+                        <div className="glass-panel rounded-xl p-6 h-full">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                                    GRAVITY CARD
+                                </span>
+                                <Orbit className="h-4 w-4 text-[var(--color-aurora-cyan)]" />
+                            </div>
+                            <p className="text-[var(--text-sovereign-primary)] text-lg font-bold mb-2"
+                                style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                MAGNETIC PULL
+                            </p>
+                            <p className="text-sm text-[var(--text-sovereign-muted)]">
+                                Move your cursor near this card to see it follow with spring physics.
+                            </p>
+                        </div>
+                    </GravityCard>
+
+                    <FloatingElement amplitude={8} duration={3}>
+                        <div className="glass-panel rounded-xl p-6 h-full border-[var(--color-aurora-purple)]/30">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-terminal text-xs text-[var(--color-aurora-purple)]">
+                                    FLOATING ELEMENT
+                                </span>
+                                <RefreshCw className="h-4 w-4 text-[var(--color-aurora-purple)]" />
+                            </div>
+                            <p className="text-[var(--color-aurora-purple)] text-lg font-bold mb-2"
+                                style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                ZERO GRAVITY
+                            </p>
+                            <p className="text-sm text-[var(--text-sovereign-muted)]">
+                                Continuous floating animation with customizable amplitude.
+                            </p>
+                        </div>
+                    </FloatingElement>
+
+                    <div className="glass-panel rounded-xl p-6 relative">
+                        <div className="absolute top-4 right-4">
+                            <PulseRing color="var(--color-acid)" size={40} duration={2} />
+                        </div>
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                                STREAMING DATA
+                            </span>
+                            <Play className="h-4 w-4 text-[var(--color-acid)]" />
+                        </div>
+                        <div className="text-3xl font-bold text-[var(--color-acid)] mb-2">
+                            <StreamingNumber
+                                value={liveData.requests}
+                                duration={0.5}
+                                prefix=""
+                                suffix=" req"
+                            />
+                        </div>
+                        <p className="text-sm text-[var(--text-sovereign-muted)]">
+                            Numbers animate smoothly between values with spring physics.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Spring Counters Row */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="glass-panel rounded-xl p-4 text-center">
+                        <span className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                            ACTIVE USERS
+                        </span>
+                        <SpringCounter
+                            value={liveData.activeUsers}
+                            className="text-2xl font-bold text-[var(--color-acid)]"
+                        />
+                    </div>
+                    <div className="glass-panel rounded-xl p-4 text-center">
+                        <span className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                            CPU LOAD
+                        </span>
+                        <SpringCounter
+                            value={Math.round(liveData.cpuUsage)}
+                            suffix="%"
+                            className="text-2xl font-bold text-[var(--color-aurora-cyan)]"
+                        />
+                    </div>
+                    <div className="glass-panel rounded-xl p-4 text-center">
+                        <span className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                            MEMORY
+                        </span>
+                        <SpringCounter
+                            value={Math.round(liveData.memoryUsage)}
+                            suffix="%"
+                            className="text-2xl font-bold text-[var(--color-aurora-purple)]"
+                        />
+                    </div>
+                    <div className="glass-panel rounded-xl p-4 text-center">
+                        <span className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                            LATENCY
+                        </span>
+                        <SpringCounter
+                            value={Math.round(liveData.networkLatency)}
+                            suffix="ms"
+                            className={`text-2xl font-bold ${liveData.networkLatency > 100 ? 'text-[var(--color-alarm)]' : 'text-[var(--color-acid)]'}`}
+                        />
+                    </div>
                 </div>
             </div>
 
