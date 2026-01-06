@@ -7,11 +7,12 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  CreditCard, Globe, Lock, Mail, User, Zap, Bell, Shield, 
-  Users, Key, Activity, Search, FileText, Download, Filter 
+import {
+  CreditCard, Globe, Lock, Mail, User, Zap, Bell, Shield,
+  Users, Key, Activity, Search, FileText, Download, Filter, Cpu
 } from "lucide-react";
 import { WaveText } from "@/components/WaveText";
+import { KernelStatus } from "@/components/KernelStatus";
 
 export default function Settings() {
   return (
@@ -33,6 +34,7 @@ export default function Settings() {
           <TabsTrigger value="team" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Team & Roles</TabsTrigger>
           <TabsTrigger value="security" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Security & Audit</TabsTrigger>
           <TabsTrigger value="integrations" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Integrations</TabsTrigger>
+          <TabsTrigger value="system" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">System</TabsTrigger>
         </TabsList>
 
         {/* General Tab */}
@@ -53,7 +55,7 @@ export default function Settings() {
                   <p className="text-xs text-slate-500">JPG, GIF or PNG. Max size 2MB.</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
@@ -144,47 +146,47 @@ export default function Settings() {
 
         {/* Security & Audit Tab */}
         <TabsContent value="security" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             <Card className="border-slate-200">
-               <CardHeader>
-                 <CardTitle className="text-base">MFA Status</CardTitle>
-               </CardHeader>
-               <CardContent>
-                 <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-2 text-emerald-600 font-medium">
-                     <Shield className="h-5 w-5" /> Enabled
-                   </div>
-                   <Switch checked />
-                 </div>
-               </CardContent>
-             </Card>
-             <Card className="border-slate-200">
-               <CardHeader>
-                 <CardTitle className="text-base">SSO Configuration</CardTitle>
-               </CardHeader>
-               <CardContent>
-                 <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-2 text-slate-500 font-medium">
-                     <Key className="h-5 w-5" /> Disabled
-                   </div>
-                   <Switch />
-                 </div>
-               </CardContent>
-             </Card>
-             <Card className="border-slate-200">
-               <CardHeader>
-                 <CardTitle className="text-base">Session Timeout</CardTitle>
-               </CardHeader>
-               <CardContent>
-                 <div className="flex items-center justify-between">
-                   <span className="text-slate-900 font-medium">30 Minutes</span>
-                   <Button variant="ghost" size="sm">Edit</Button>
-                 </div>
-               </CardContent>
-             </Card>
-           </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="border-slate-200">
+              <CardHeader>
+                <CardTitle className="text-base">MFA Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-emerald-600 font-medium">
+                    <Shield className="h-5 w-5" /> Enabled
+                  </div>
+                  <Switch checked />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-slate-200">
+              <CardHeader>
+                <CardTitle className="text-base">SSO Configuration</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-500 font-medium">
+                    <Key className="h-5 w-5" /> Disabled
+                  </div>
+                  <Switch />
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-slate-200">
+              <CardHeader>
+                <CardTitle className="text-base">Session Timeout</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-900 font-medium">30 Minutes</span>
+                  <Button variant="ghost" size="sm">Edit</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-           <Card className="border-slate-200 dark:border-slate-800">
+          <Card className="border-slate-200 dark:border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Audit Logs</CardTitle>
@@ -227,8 +229,8 @@ export default function Settings() {
                         <td className="px-4 py-3 text-right">
                           <Badge variant="outline" className={
                             log.status === "Success" ? "text-emerald-600 border-emerald-200 bg-emerald-50" :
-                            log.status === "Failed" ? "text-red-600 border-red-200 bg-red-50" :
-                            "text-orange-600 border-orange-200 bg-orange-50"
+                              log.status === "Failed" ? "text-red-600 border-red-200 bg-red-50" :
+                                "text-orange-600 border-orange-200 bg-orange-50"
                           }>
                             {log.status}
                           </Badge>
@@ -256,7 +258,7 @@ export default function Settings() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-3xl font-display font-bold">$299<span className="text-lg text-slate-400 font-normal">/month</span></div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-300">Agent Usage</span>
@@ -266,7 +268,7 @@ export default function Settings() {
                   <div className="h-full w-[28%] bg-blue-500 rounded-full" />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 text-sm text-slate-300">
                 <div className="flex items-center gap-2">
                   <Zap className="h-4 w-4 text-blue-400" /> 10 Active Agents
@@ -293,51 +295,56 @@ export default function Settings() {
               <CardDescription>Manage your credit cards and billing details.</CardDescription>
             </CardHeader>
             <CardContent>
-               <div className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg">
-                 <div className="h-10 w-14 bg-slate-100 rounded flex items-center justify-center">
-                   <CreditCard className="h-6 w-6 text-slate-600" />
-                 </div>
-                 <div className="flex-1">
-                   <p className="font-medium text-slate-900">Visa ending in 4242</p>
-                   <p className="text-sm text-slate-500">Expiry 12/2028</p>
-                 </div>
-                 <Button variant="ghost" size="sm">Edit</Button>
-               </div>
+              <div className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg">
+                <div className="h-10 w-14 bg-slate-100 rounded flex items-center justify-center">
+                  <CreditCard className="h-6 w-6 text-slate-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-slate-900">Visa ending in 4242</p>
+                  <p className="text-sm text-slate-500">Expiry 12/2028</p>
+                </div>
+                <Button variant="ghost" size="sm">Edit</Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Integrations Tab */}
         <TabsContent value="integrations" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             {[
-               { name: "Stripe", desc: "Sync revenue data for Profit Analytics.", status: "Connected", color: "bg-[#635BFF]" },
-               { name: "Slack", desc: "Receive agent alerts in your team channel.", status: "Connected", color: "bg-[#4A154B]" },
-               { name: "Gmail", desc: "Allow 'Inbox Zero' agent to read/write emails.", status: "Connected", color: "bg-[#EA4335]" },
-               { name: "HubSpot", desc: "Sync leads from Founding 50 waitlist.", status: "Disconnected", color: "bg-[#FF7A59]" },
-               { name: "Notion", desc: "Export SOPs generated by the system.", status: "Disconnected", color: "bg-[#000000]" },
-               { name: "OpenAI", desc: "Bring your own API key for custom agents.", status: "Disconnected", color: "bg-[#10A37F]" },
-             ].map((integration, i) => (
-               <Card key={i} className="border-slate-200 dark:border-slate-800 hover:border-slate-300 transition-colors">
-                 <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                   <div className={`h-12 w-12 rounded-lg ${integration.color} flex items-center justify-center text-white font-bold text-xl`}>
-                     {integration.name[0]}
-                   </div>
-                   <div className="flex-1">
-                     <CardTitle className="text-base">{integration.name}</CardTitle>
-                     <CardDescription className="mt-1">{integration.desc}</CardDescription>
-                   </div>
-                 </CardHeader>
-                 <CardFooter>
-                   {integration.status === "Connected" ? (
-                     <Button variant="outline" className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">Connected</Button>
-                   ) : (
-                     <Button variant="outline" className="w-full">Connect</Button>
-                   )}
-                 </CardFooter>
-               </Card>
-             ))}
-           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { name: "Stripe", desc: "Sync revenue data for Profit Analytics.", status: "Connected", color: "bg-[#635BFF]" },
+              { name: "Slack", desc: "Receive agent alerts in your team channel.", status: "Connected", color: "bg-[#4A154B]" },
+              { name: "Gmail", desc: "Allow 'Inbox Zero' agent to read/write emails.", status: "Connected", color: "bg-[#EA4335]" },
+              { name: "HubSpot", desc: "Sync leads from Founding 50 waitlist.", status: "Disconnected", color: "bg-[#FF7A59]" },
+              { name: "Notion", desc: "Export SOPs generated by the system.", status: "Disconnected", color: "bg-[#000000]" },
+              { name: "OpenAI", desc: "Bring your own API key for custom agents.", status: "Disconnected", color: "bg-[#10A37F]" },
+            ].map((integration, i) => (
+              <Card key={i} className="border-slate-200 dark:border-slate-800 hover:border-slate-300 transition-colors">
+                <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                  <div className={`h-12 w-12 rounded-lg ${integration.color} flex items-center justify-center text-white font-bold text-xl`}>
+                    {integration.name[0]}
+                  </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-base">{integration.name}</CardTitle>
+                    <CardDescription className="mt-1">{integration.desc}</CardDescription>
+                  </div>
+                </CardHeader>
+                <CardFooter>
+                  {integration.status === "Connected" ? (
+                    <Button variant="outline" className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">Connected</Button>
+                  ) : (
+                    <Button variant="outline" className="w-full">Connect</Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* System Tab - Kernel Management */}
+        <TabsContent value="system" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <KernelStatus />
         </TabsContent>
       </Tabs>
     </div>
