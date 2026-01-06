@@ -2,6 +2,7 @@ import type { Express, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { aiService } from "./services/ai";
+import { inboxSentinel, dossierAgent, contentAlchemist, closerAgent, AGENT_REGISTRY } from "./services/agents";
 import { insertCampaignSchema, insertLeadSchema, insertAgentSchema, insertDecisionSchema, insertContractSchema, insertTimeEntrySchema } from "@shared/schema";
 import { ZodError } from "zod";
 
