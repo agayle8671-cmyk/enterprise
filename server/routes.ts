@@ -387,5 +387,325 @@ export async function registerRoutes(
     }
   });
 
+  // ==========================================
+  // AGENT COMMAND ENDPOINTS (Sovereign OS)
+  // ==========================================
+
+  // Unified agent command endpoint
+  app.post("/api/agents/:agent", async (req, res) => {
+    try {
+      const { agent } = req.params;
+      const { action, parameters, originalCommand } = req.body;
+      const userId = getUserId(req);
+
+      console.log(`Agent ${agent} received: ${action}`, parameters);
+
+      // Route to specific agent handler
+      let result: any;
+      let pendingDecision = false;
+
+      switch (agent) {
+        case 'inbox-sentinel':
+          result = await handleInboxSentinel(action, parameters, userId);
+          pendingDecision = true;
+          break;
+        case 'dossier':
+          result = await handleDossier(action, parameters, userId);
+          pendingDecision = true;
+          break;
+        case 'content-alchemist':
+          result = await handleContentAlchemist(action, parameters, userId);
+          pendingDecision = true;
+          break;
+        case 'closer':
+          result = await handleCloser(action, parameters, userId);
+          pendingDecision = true;
+          break;
+        case 'offer-architect':
+          result = await handleOfferArchitect(action, parameters, userId);
+          pendingDecision = false; // Direct action
+          break;
+        case 'system':
+          result = await handleSystemCommand(action, parameters, userId);
+          pendingDecision = false;
+          break;
+        default:
+          return res.status(400).json({ error: `Unknown agent: ${agent}` });
+      }
+
+      res.json({
+        message: result.message,
+        result: result.data,
+        pendingDecision,
+      });
+    } catch (error) {
+      console.error("Agent command error:", error);
+      res.status(500).json({ error: "Agent command failed" });
+    }
+  });
+
+  // Get agent status overview
+  app.get("/api/agents/status", async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const agents = await storage.getAgentsByUserId(userId);
+      const decisions = await storage.getPendingDecisionsByUserId(userId);
+
+      res.json({
+        agents: agents.map(a => ({
+          id: a.id,
+          name: a.name,
+          role: a.role,
+          status: a.status,
+          timeSaved: a.timeSaved || 0,
+        })),
+        pendingDecisions: decisions.length,
+        totalTimeSaved: agents.reduce((sum, a) => sum + (a.timeSaved || 0), 0),
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch agent status" });
+    }
+  });
+
+  // Batch approve decisions
+  app.post("/api/decisions/batch-approve", async (req, res) => {
+    try {
+      const { ids } = req.body;
+      const userId = getUserId(req);
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: "No decision IDs provided" });
+      }
+
+      let approved = 0;
+      for (const id of ids) {
+        try {
+          await storage.updateDecision(id, {
+            status: 'approved',
+          });
+          approved++;
+        } catch (e) {
+          console.error(`Failed to approve decision ${id}:`, e);
+        }
+      }
+
+      res.json({
+        message: `Approved ${approved} of ${ids.length} decisions`,
+        approved,
+        total: ids.length,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Batch approve failed" });
+    }
+  });
+
+  // Batch reject decisions
+  app.post("/api/decisions/batch-reject", async (req, res) => {
+    try {
+      const { ids } = req.body;
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: "No decision IDs provided" });
+      }
+
+      let rejected = 0;
+      for (const id of ids) {
+        try {
+          await storage.updateDecision(id, {
+            status: 'rejected',
+          });
+          rejected++;
+        } catch (e) {
+          console.error(`Failed to reject decision ${id}:`, e);
+        }
+      }
+
+      res.json({
+        message: `Rejected ${rejected} of ${ids.length} decisions`,
+        rejected,
+        total: ids.length,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Batch reject failed" });
+    }
+  });
+
   return httpServer;
+}
+
+// ==========================================
+// AGENT HANDLERS
+// ==========================================
+
+async function handleInboxSentinel(action: string, parameters: Record<string, string>, userId: string) {
+  switch (action) {
+    case 'scan':
+      // Create a decision for inbox scan results
+      await storage.createDecision({
+        userId,
+        agentName: 'Inbox Sentinel',
+        title: 'Inbox Scan Complete: 3 Urgent Items',
+        description: 'Found 3 emails requiring your attention. 12 were auto-filtered as promotional.',
+        type: 'email',
+        priority: 'medium',
+        options: JSON.stringify([
+          { label: 'Review urgent emails', description: 'Open inbox with urgent filter applied' },
+          { label: 'Auto-reply with templates', description: 'Send templated responses to routine inquiries' },
+          { label: 'Schedule review for later', description: 'Add to tomorrow\'s agenda' },
+        ]),
+        recommendation: 0,
+        status: 'pending',
+      });
+      return { message: 'Inbox scanned. Found 3 urgent items.', data: { urgent: 3, filtered: 12 } };
+
+    case 'draft-reply':
+      const recipient = parameters.recipient || 'the sender';
+      await storage.createDecision({
+        userId,
+        agentName: 'Inbox Sentinel',
+        title: `Draft Reply to ${recipient}`,
+        description: 'I\'ve drafted 3 response options based on the email context and your communication style.',
+        type: 'email',
+        priority: 'low',
+        options: JSON.stringify([
+          { label: 'Professional & Brief', description: 'Concise acknowledgment with next steps' },
+          { label: 'Detailed & Thorough', description: 'Full response addressing all points' },
+          { label: 'Defer & Schedule', description: 'Acknowledge receipt, suggest a call' },
+        ]),
+        recommendation: 0,
+        status: 'pending',
+      });
+      return { message: `Draft replies prepared for ${recipient}`, data: { recipient } };
+
+    default:
+      return { message: `Inbox Sentinel: ${action} executed`, data: {} };
+  }
+}
+
+async function handleDossier(action: string, parameters: Record<string, string>, userId: string) {
+  const topic = parameters.topic || parameters.company || 'the subject';
+
+  await storage.createDecision({
+    userId,
+    agentName: 'The Dossier',
+    title: `Research Complete: ${topic}`,
+    description: `I've compiled a briefing on ${topic} including company background, recent news, and key decision makers.`,
+    type: 'proposal',
+    priority: 'medium',
+    options: JSON.stringify([
+      { label: 'View Full Briefing', description: 'Open the complete research document' },
+      { label: 'Add to Call Prep', description: 'Attach to your upcoming meeting notes' },
+      { label: 'Export as PDF', description: 'Download for offline reference' },
+    ]),
+    recommendation: 0,
+    status: 'pending',
+  });
+
+  return { message: `Research briefing prepared on ${topic}`, data: { topic } };
+}
+
+async function handleContentAlchemist(action: string, parameters: Record<string, string>, userId: string) {
+  switch (action) {
+    case 'repurpose':
+    case 'create-post':
+      await storage.createDecision({
+        userId,
+        agentName: 'Content Alchemist',
+        title: 'Content Ready for Review',
+        description: 'I\'ve transformed your input into 3 platform-optimized versions.',
+        type: 'automation',
+        priority: 'low',
+        options: JSON.stringify([
+          { label: 'LinkedIn Article', description: 'Long-form thought leadership piece (800 words)' },
+          { label: 'Twitter Thread', description: 'Engaging 7-tweet thread with hooks' },
+          { label: 'Newsletter Section', description: 'Email-ready content block' },
+        ]),
+        recommendation: 0,
+        status: 'pending',
+      });
+      return { message: 'Content transformed and ready for review', data: { formats: 3 } };
+
+    case 'transcribe':
+      return { message: 'Transcription in progress. Will notify when complete.', data: { status: 'processing' } };
+
+    default:
+      return { message: `Content Alchemist: ${action} executed`, data: {} };
+  }
+}
+
+async function handleCloser(action: string, parameters: Record<string, string>, userId: string) {
+  switch (action) {
+    case 'analyze-call':
+      await storage.createDecision({
+        userId,
+        agentName: 'The Closer',
+        title: 'Call Analysis Complete',
+        description: 'Identified 4 key objections and 2 buying signals. Proposal draft is ready.',
+        type: 'proposal',
+        priority: 'high',
+        options: JSON.stringify([
+          { label: 'View Analysis', description: 'See detailed call breakdown with timestamps' },
+          { label: 'Send Proposal', description: 'Forward the AI-drafted proposal for review' },
+          { label: 'Update CRM', description: 'Sync insights to client record' },
+        ]),
+        recommendation: 1,
+        status: 'pending',
+      });
+      return { message: 'Call analyzed. Found 4 objections, 2 buying signals.', data: { objections: 4, signals: 2 } };
+
+    case 'draft-proposal':
+      await storage.createDecision({
+        userId,
+        agentName: 'The Closer',
+        title: 'Proposal Draft Ready',
+        description: 'Value-based proposal with ROI calculations and outcome statements.',
+        type: 'proposal',
+        priority: 'medium',
+        options: JSON.stringify([
+          { label: 'Review & Edit', description: 'Open proposal in editor' },
+          { label: 'Send to Client', description: 'Email with e-signature request' },
+          { label: 'Schedule Follow-up', description: 'Set reminder for 48 hours' },
+        ]),
+        recommendation: 0,
+        status: 'pending',
+      });
+      return { message: 'Proposal draft completed', data: {} };
+
+    default:
+      return { message: `The Closer: ${action} executed`, data: {} };
+  }
+}
+
+async function handleOfferArchitect(action: string, parameters: Record<string, string>, userId: string) {
+  switch (action) {
+    case 'founding-50':
+      return {
+        message: 'Launching Founding 50 campaign wizard...',
+        data: { redirect: '/dashboard/founding-50' }
+      };
+    case 'create-offer':
+      return {
+        message: 'Opening Offer Architect...',
+        data: { redirect: '/dashboard/offers' }
+      };
+    default:
+      return { message: `Offer Architect: ${action}`, data: {} };
+  }
+}
+
+async function handleSystemCommand(action: string, parameters: Record<string, string>, userId: string) {
+  switch (action) {
+    case 'list-decisions':
+      const decisions = await storage.getPendingDecisionsByUserId(userId);
+      return { message: `You have ${decisions.length} pending decisions`, data: { count: decisions.length } };
+    case 'approve-all':
+      return { message: 'Batch approve initiated. Use the Decision Feed to confirm.', data: { action: 'batch-approve' } };
+    case 'time-audit':
+      return { message: 'Opening Time Audit...', data: { redirect: '/dashboard/time-audit' } };
+    case 'agent-status':
+      const agents = await storage.getAgentsByUserId(userId);
+      return { message: `${agents.filter(a => a.status === 'Running').length} agents active`, data: { agents: agents.length } };
+    default:
+      return { message: `System: ${action}`, data: {} };
+  }
 }

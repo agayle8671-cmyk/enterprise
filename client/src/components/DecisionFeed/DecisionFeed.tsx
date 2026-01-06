@@ -52,11 +52,65 @@ const priorityColors: Record<string, string> = {
 
 export function DecisionFeed() {
     const [expandedId, setExpandedId] = useState<number | null>(null);
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const queryClient = useQueryClient();
 
     const { data: decisions = [], isLoading } = useQuery<Decision[]>({
         queryKey: ['/api/decisions'],
         refetchInterval: 30000, // Poll every 30 seconds
     });
+
+    // Batch approve mutation
+    const batchApproveMutation = useMutation({
+        mutationFn: async (ids: number[]) => {
+            const res = await fetch('/api/decisions/batch-approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids }),
+            });
+            if (!res.ok) throw new Error('Batch approve failed');
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['/api/decisions'] });
+            setSelectedIds(new Set());
+        },
+    });
+
+    // Batch reject mutation
+    const batchRejectMutation = useMutation({
+        mutationFn: async (ids: number[]) => {
+            const res = await fetch('/api/decisions/batch-reject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids }),
+            });
+            if (!res.ok) throw new Error('Batch reject failed');
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['/api/decisions'] });
+            setSelectedIds(new Set());
+        },
+    });
+
+    const toggleSelection = (id: number) => {
+        const newSet = new Set(selectedIds);
+        if (newSet.has(id)) {
+            newSet.delete(id);
+        } else {
+            newSet.add(id);
+        }
+        setSelectedIds(newSet);
+    };
+
+    const selectAll = () => {
+        setSelectedIds(new Set(decisions.map(d => d.id)));
+    };
+
+    const clearSelection = () => {
+        setSelectedIds(new Set());
+    };
 
     if (isLoading) {
         return (
@@ -83,8 +137,73 @@ export function DecisionFeed() {
         );
     }
 
+    const pendingCount = decisions.filter(d => d.status === 'pending').length;
+
     return (
         <div className="space-y-3">
+            {/* Batch Actions Header */}
+            {selectedIds.size > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="raycast-panel p-3 flex items-center justify-between"
+                >
+                    <span className="text-sm" style={{ color: '#989898' }}>
+                        <span style={{ color: '#FF6363', fontWeight: 600 }}>{selectedIds.size}</span> selected
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={clearSelection}
+                            className="text-xs"
+                            disablePhysics
+                        >
+                            Clear
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => batchRejectMutation.mutate(Array.from(selectedIds))}
+                            disabled={batchRejectMutation.isPending}
+                            disablePhysics
+                        >
+                            <X className="h-3.5 w-3.5 mr-1" />
+                            Reject All
+                        </Button>
+                        <Button
+                            size="sm"
+                            className="bg-success/20 text-success hover:bg-success/30"
+                            onClick={() => batchApproveMutation.mutate(Array.from(selectedIds))}
+                            disabled={batchApproveMutation.isPending}
+                            disablePhysics
+                        >
+                            <Check className="h-3.5 w-3.5 mr-1" />
+                            Approve All
+                        </Button>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Quick Select */}
+            {pendingCount > 1 && selectedIds.size === 0 && (
+                <div className="flex justify-between items-center px-1">
+                    <span className="text-xs" style={{ color: '#989898' }}>
+                        {pendingCount} decisions pending
+                    </span>
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={selectAll}
+                        className="text-xs h-7"
+                        disablePhysics
+                    >
+                        Select All
+                    </Button>
+                </div>
+            )}
+
             <AnimatePresence mode="popLayout">
                 {decisions.map((decision, index) => (
                     <DecisionCard
@@ -92,7 +211,9 @@ export function DecisionFeed() {
                         decision={decision}
                         index={index}
                         isExpanded={expandedId === decision.id}
+                        isSelected={selectedIds.has(decision.id)}
                         onToggle={() => setExpandedId(expandedId === decision.id ? null : decision.id)}
+                        onSelect={() => toggleSelection(decision.id)}
                     />
                 ))}
             </AnimatePresence>
@@ -104,10 +225,12 @@ interface DecisionCardProps {
     decision: Decision;
     index: number;
     isExpanded: boolean;
+    isSelected?: boolean;
     onToggle: () => void;
+    onSelect?: () => void;
 }
 
-function DecisionCard({ decision, index, isExpanded, onToggle }: DecisionCardProps) {
+function DecisionCard({ decision, index, isExpanded, isSelected, onToggle, onSelect }: DecisionCardProps) {
     const queryClient = useQueryClient();
     const Icon = typeIcons[decision.type] || Bot;
 
@@ -247,16 +370,16 @@ function DecisionCard({ decision, index, isExpanded, onToggle }: DecisionCardPro
                                         onClick={() => handleApprove(i)}
                                         disabled={updateMutation.isPending}
                                         className={`w-full text-left p-4 rounded-xl border transition-all ${isRecommended
-                                                ? 'border-primary/50 bg-primary/10 hover:bg-primary/15'
-                                                : 'border-border/30 bg-card/30 hover:bg-card/50'
+                                            ? 'border-primary/50 bg-primary/10 hover:bg-primary/15'
+                                            : 'border-border/30 bg-card/30 hover:bg-card/50'
                                             }`}
                                         whileHover={{ scale: 1.01 }}
                                         whileTap={{ scale: 0.99 }}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className={`h-6 w-6 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${isRecommended
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'bg-muted/30 text-muted-foreground'
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'bg-muted/30 text-muted-foreground'
                                                 }`}>
                                                 {i + 1}
                                             </div>

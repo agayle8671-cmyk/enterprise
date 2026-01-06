@@ -4,6 +4,8 @@ import { useAIChat, type Message } from '@/hooks/useAIChat';
 import { Button } from '@/components/ui/button';
 import { Typewriter } from '@/components/ui/Typewriter';
 import { PHYSICS } from '@/lib/animation-constants';
+import { parseCommand, executeCommand, getAgentInfo, getSuggestions, type AgentCommand } from '@/lib/agent-router';
+import { useLocation } from 'wouter';
 import {
     Send,
     X,
@@ -13,7 +15,12 @@ import {
     Loader2,
     Trash2,
     Minimize2,
-    Maximize2
+    Maximize2,
+    Mail,
+    Search,
+    Target,
+    Lightbulb,
+    Command as CommandIcon
 } from 'lucide-react';
 
 interface CommandCenterProps {
@@ -25,13 +32,16 @@ export function CommandCenter({ isOpen, onClose }: CommandCenterProps) {
     const { messages, isLoading, sendMessage, cancel, clearHistory } = useAIChat();
     const [input, setInput] = useState('');
     const [isMinimized, setIsMinimized] = useState(false);
+    const [agentResponse, setAgentResponse] = useState<{ agent: string; message: string } | null>(null);
+    const [isAgentProcessing, setIsAgentProcessing] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [, setLocation] = useLocation();
 
     // Auto-scroll to bottom
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [messages, agentResponse]);
 
     // Focus input when opened
     useEffect(() => {
@@ -40,11 +50,51 @@ export function CommandCenter({ isOpen, onClose }: CommandCenterProps) {
         }
     }, [isOpen, isMinimized]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (input.trim() && !isLoading) {
-            sendMessage(input);
+        const trimmedInput = input.trim();
+        if (!trimmedInput || isLoading || isAgentProcessing) return;
+
+        // Try to parse as agent command first
+        const command = parseCommand(trimmedInput);
+
+        if (command && command.confidence > 0.5) {
+            // Route to agent
             setInput('');
+            setIsAgentProcessing(true);
+            setAgentResponse(null);
+
+            try {
+                const result = await executeCommand(command);
+                const agentInfo = getAgentInfo(command.agent);
+
+                setAgentResponse({
+                    agent: agentInfo.name,
+                    message: result.message,
+                });
+
+                // Handle redirects
+                if (result.data?.redirect) {
+                    setTimeout(() => {
+                        setLocation(result.data.redirect);
+                        onClose();
+                    }, 1500);
+                }
+            } catch (error) {
+                setAgentResponse({
+                    agent: 'System',
+                    message: 'Command failed. Falling back to AI chat.',
+                });
+                // Fallback to AI chat
+                sendMessage(trimmedInput);
+            } finally {
+                setIsAgentProcessing(false);
+            }
+        } else {
+            // No agent match - use general AI chat
+            sendMessage(trimmedInput);
+            setInput('');
+            setAgentResponse(null);
         }
     };
 
@@ -120,6 +170,36 @@ export function CommandCenter({ isOpen, onClose }: CommandCenterProps) {
                     <>
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[300px]">
                             <AnimatePresence mode="popLayout">
+                                {/* Agent Response Display */}
+                                {agentResponse && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="p-4 rounded-xl border border-primary/30 bg-primary/5"
+                                    >
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="h-6 w-6 rounded-lg bg-primary/20 flex items-center justify-center">
+                                                <Bot className="h-3.5 w-3.5 text-primary" />
+                                            </div>
+                                            <span className="text-xs font-medium text-primary">{agentResponse.agent}</span>
+                                        </div>
+                                        <p className="text-sm text-foreground">{agentResponse.message}</p>
+                                    </motion.div>
+                                )}
+                                {/* Agent Processing Indicator */}
+                                {isAgentProcessing && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="flex items-center gap-3 p-3"
+                                    >
+                                        <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                                            <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                                        </div>
+                                        <span className="text-sm text-muted-foreground">Agent processing...</span>
+                                    </motion.div>
+                                )}
                                 {messages.map((message) => (
                                     <MessageBubble key={message.id} message={message} />
                                 ))}

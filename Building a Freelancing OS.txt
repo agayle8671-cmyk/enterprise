@@ -1,0 +1,276 @@
+﻿Blueprint for Sovereign OS: Architectural Specification for a High-Performance, Local-First Web Desktop Environment
+1. Executive Summary and System Philosophy
+The contemporary digital landscape for freelancers is characterized by a paradox: while tools are increasingly cloud-based, the necessity for data sovereignty, privacy, and offline resilience has never been higher. Traditional "Webtops" or web-based operating systems, such as Puter or DaedalOS, have historically oscillated between two extremes: they are either thin clients for server-side infrastructure 1 or novelty simulations lacking the robustness required for professional workflows.3 The "Sovereign OS" project aims to resolve this dichotomy by engineering a "Local-First" operating environment that leverages the modern browser not merely as a rendering engine, but as a hypervisor.
+This report serves as a comprehensive technical directive for the construction of Sovereign OS using the Google "Antigravity" Integrated Development Environment (IDE). By utilizing the agentic capabilities of Antigravity, specifically leveraging the high-context reasoning of the "Opus 4.5" model context, we define a development methodology that shifts from manual coding to high-level architectural orchestration.4 The goal is to produce a system that provides the "native feel" of a Windows environment—characterized by sub-16ms latency, robust file management, and background processing—while running entirely within a secure browser context.
+1.1 The Freelancer's Sovereign Requirement
+For the target demographic of high-end freelancers (developers, designers, legal consultants), the reliance on third-party cloud storage (Google Drive, Dropbox) introduces liabilities regarding client confidentiality and data ownership. Sovereign OS is architected on a "Zero-Trust" client-only model. Utilizing the Origin Private File System (OPFS), data persists locally on the user's device, encrypted and isolated from external servers, mirroring the security architecture of advanced client-side PDF parsing tools where sensitive documents never leave the browser.6
+1.2 Core Architectural Pillars
+The system is built upon four non-negotiable architectural pillars, derived from an analysis of existing state-of-the-art web systems:
+1. Asynchronous Microkernel: A non-blocking message-passing kernel running in a Service Worker or Shared Worker, managing a virtual process table and utilizing comlink for seamless IPC (Inter-Process Communication).7
+2. Sovereign Storage Layer: A tiered file system utilizing OPFS for high-performance I/O (in-place reads/writes) and IndexedDB for metadata indexing, providing a POSIX-like interface.9
+3. Local Intelligence Grid: Integration of quantized Large Language Models (LLMs) and Stable Diffusion directly into the browser via WebGPU, enabling "Air-Gapped" AI assistance.11
+4. Hybrid Window Manager: A React-based, state-machine-driven window manager that supports both tiling (productivity) and floating (utility) layouts, optimized via OffscreenCanvas to maintain 60fps compositing.13
+________________
+2. Development Environment Configuration: The Antigravity Paradigm
+The construction of a system with the complexity of Sovereign OS requires a development environment capable of managing multiple, parallel workstreams. We utilize Google Antigravity, an agent-first fork of Visual Studio Code, to orchestrate this process. Unlike traditional IDEs, Antigravity treats the "Agent" as a primary collaborator rather than a simple autocomplete tool.15
+2.1 The Agentic Workspace Architecture
+To maximize the efficacy of the Opus 4.5 context, the development environment is partitioned into distinct workspaces, each managed by a specialized agent profile configured via .agent files. This separation of concerns prevents context pollution and allows for parallel execution of kernel and UI development.16
+2.1.1 Workspace 1: The Kernel Foundry (/src/kernel)
+This workspace is dedicated to the non-visual components of the OS: the bootloader, process scheduler, and file system drivers.
+* Agent Profile: "System Architect."
+* Configuration (.agent/config.json):
+   * mode: "Planning".18 This forces the agent to generate detailed architectural artifacts (diagrams, flowcharts) before writing code, crucial for race-condition avoidance in the kernel.
+   * Terminal Policy: Turbo. The agent is granted autonomous control over the terminal to install dependencies, run build scripts, and execute unit tests without human blocking.5
+* Opus 4.5 Directive: The agent is instructed to prioritize memory safety and race-condition handling, utilizing SharedArrayBuffer and Atomics for thread synchronization.
+2.1.2 Workspace 2: The Desktop Compositor (/src/ui)
+This workspace focuses on the visual shell, window management, and application rendering.
+* Agent Profile: "Frontend Specialist."
+* Configuration (.agent/config.json):
+   * mode: "Fast". This enables rapid iteration of UI components, allowing the agent to quickly prototype CSS layouts and animation timings.18
+   * Integration: Linked with "Nano Banana" for real-time asset generation (icons, wallpapers, textures).16
+* Opus 4.5 Directive: The agent is restricted from implementing business logic in the UI thread. All logic must be dispatched to the kernel; the UI is strictly a view layer.
+2.2 Global Configuration and Governance
+To ensure consistency across agents, a global governance file .agent/rules/sovereign.md is established. This file acts as the "Constitution" of the project, enforcing strict architectural constraints.5
+Table 1: Antigravity Agent Rules (.agent/rules/sovereign.md)
+
+
+Rule Category
+	Constraint Description
+	Reasoning
+	Type Safety
+	strict: true, noImplicitAny. All Kernel messages must use generic interfaces.
+	Prevents runtime errors in the IPC layer. 13
+	Threading
+	Main thread is for UI only. All I/O, crypto, and AI must run in Workers.
+	Ensures "Native Feel" by preventing frame drops. 7
+	Storage
+	localStorage is prohibited for sensitive data. Use OPFS for files, IDB for indexes.
+	Security and performance (synchronous access). 10
+	Documentation
+	Agents must generate Architecture.md artifacts before implementation.
+	Maintains interpretability of complex agent-generated code. 19
+	2.3 Automated Verification Pipelines
+We define custom "Workflows" within Antigravity to automate quality assurance. The "Native Feel" workflow is critical:
+* Workflow ID: verify-latency
+* Trigger: Post-build.
+* Action: The Browser Agent 20 launches the OS instance.
+* Test:
+   1. Open 20 "Terminal" windows.
+   2. Simulate a rapid drag-and-drop operation.
+   3. Measure the delta between mousemove event and paint.
+   4. If latency > 16.67ms (1 frame), fail the build and rollback.21
+________________
+3. Kernel Architecture: The Browser Microkernel
+The core differentiation of Sovereign OS from a standard React app is the existence of a Kernel. This is not a metaphor; it is a distinct JavaScript runtime that manages the lifecycle of other runtimes.
+3.1 The Microkernel Pattern
+Traditional monolithic web apps load all logic into the main thread. Sovereign OS adopts a Microkernel architecture where the kernel resides in a ServiceWorker (for offline persistence) or a SharedWorker (for multi-tab state management).22 This decoupling ensures that even if a specific application crashes (rendering the iframe unresponsive), the OS itself remains stable.
+3.1.1 Inter-Process Communication (IPC) Bus
+The nervous system of the OS is the IPC Bus. We utilize the Actor Model, implemented via the comlink library, to abstract postMessage complexity.
+* Mechanism: The Kernel exposes an expose() endpoint. Applications (Actors) connect via MessagePort.
+* Zero-Copy Transfer: For heavy data (file transfers), the IPC Bus enforces the use of Transferable objects (ArrayBuffer), physically moving memory ownership between threads rather than copying it, eliminating garbage collection overhead.8
+3.2 Process Scheduling and Multitasking
+A browser environment is cooperatively multitasking by default. To impose the discipline of a preemptive operating system, we implement a Virtual Process Scheduler.23
+3.2.1 The Process Control Block (PCB)
+The Kernel maintains a registry of all active applications, utilizing a Map<PID, Process> structure. Each PCB contains:
+* PID: Unique Process Identifier.
+* Priority: RealTime (UI), High (Audio), Normal (Apps), Idle (Indexing).
+* State: READY, RUNNING, BLOCKED (waiting for I/O), ZOMBIE.
+* WorkerHandle: Reference to the dedicated Web Worker or Iframe.
+3.2.2 The Round-Robin Scheduler
+The scheduler runs a heartbeat loop. Unlike native OS schedulers that interrupt CPU cycles, the JS scheduler manages the Event Loop.
+* Algorithm: We utilize a Weighted Round Robin approach.24 High-priority processes are granted more "tokens" to execute logic.
+* Implementation: The scheduler utilizes navigator.scheduling.isInputPending() to detect user interaction. If the user is idle, the scheduler dispatches background tasks (e.g., file indexing).7
+* Throttling: If a background process consumes excessive CPU (measured via performance.now() deltas between heartbeats), the scheduler artificially throttles it by delaying its next postMessage capability, effectively "preempting" the script.25
+3.3 The Boot Sequence State Machine
+To ensure a robust startup, the boot sequence is modeled as a deterministic Finite State Machine (FSM). This prevents the "white screen of death" by ensuring dependencies are loaded in strict order.26
+Table 2: Boot Sequence Stages
+
+
+Stage
+	Description
+	Critical Checks
+	POST (Power On Self Test)
+	Hardware capability discovery.
+	Check navigator.gpu, navigator.storage, SharedArrayBuffer. 27
+	KERNEL_INIT
+	Loading the SharedWorker kernel.
+	Mount OPFS root. Initialize IPC bus.
+	DAEMON_LOAD
+	Starting system services.
+	Load Window Manager, Taskbar, Notification Service. 28
+	USER_SESSION
+	Loading user profile and shell.
+	Decrypt user keys. Apply theme. Restore session state. 13
+	3.4 Antigravity Instruction Set: Kernel Generation
+Agent Directive:
+"Act as a Kernel Systems Engineer. Initialize a SharedWorker entry point. Implement a ProcessManager class that maintains a Map of active processes. Implement a Scheduler loop using requestIdleCallback for low-priority tasks and MessageChannel for high-priority tasks. Integrate comlink to expose the Kernel API. Ensure the PCB interface is strictly typed. Implement a kill(pid) method that forcibly terminates the worker associated with a process." 7
+________________
+4. The Sovereign File System: OPFS and Virtualization
+For a freelancer, the file system is the single most critical component. It must be reliable, fast, and organized. We reject the legacy IndexedDB file storage pattern (used by Puter and DaedalOS) in favor of the modern Origin Private File System (OPFS).9
+4.1 OPFS: The Native-Performance Layer
+OPFS provides a specialized file system origin that is not visible to the user's host OS file explorer but allows for highly optimized, in-place read/write operations. This is crucial for applications like databases (SQLite) or media editors that require random access to large binaries.10
+* Synchronous Access Handles: By running file I/O in a dedicated "IO Worker," we utilize FileSystemSyncAccessHandle. This bypasses the asynchronous overhead of standard Promises, delivering performance metrics that rival native disk I/O (up to 3x faster than IndexedDB).10
+* Locking: We implement a Read-Write Lock (Mutex) mechanism over file handles to prevent data corruption when multiple apps utilize the same file (e.g., a backup daemon reading while a text editor writes).
+4.2 The Virtual File System (VFS) Abstraction
+While OPFS provides the storage, it lacks a user-friendly hierarchy. We implement a Virtual File System (VFS) layer on top of OPFS, inspired by the OS.js VFS but optimized for binary streams.29
+4.2.1 Mount Point Architecture
+The VFS aggregates multiple storage backends into a single directory tree:
+* root:/ -> Mapped to OPFS Root.
+* mnt/local/ -> Mapped to the host OS via the File System Access API (showDirectoryPicker), allowing the freelancer to edit files directly on their physical desktop.30
+* mnt/cloud/ -> Mapped to external providers (S3/Google Drive) via API proxies.
+4.2.2 Inode Management via IndexedDB
+Traversing the OPFS handle tree is slow for large directories. Sovereign OS maintains a "Shadow File Table" in IndexedDB.
+* Structure: Each file entry (Inode) stores metadata: name, path, size, mimeType, created, modified, and permissions.29
+* Optimization: When the "File Explorer" app requests a directory listing, it queries the IndexedDB (milliseconds) rather than recursively walking the OPFS handles (seconds). The VFS driver lazily syncs the DB with the actual OPFS state.
+4.3 Data Sovereignty and Encryption
+To maximize client value, the VFS includes a transparent encryption layer.
+* Vaults: Users can designate specific folders as "Vaults."
+* Mechanism: Using the Web Crypto API, files written to a Vault are encrypted (AES-GCM) on the fly before being flushed to OPFS. The decryption key is derived from the user's login password and never stored persistently.6
+4.4 Antigravity Instruction Set: VFS Implementation
+Agent Directive:
+"Act as a Storage Engineer. Implement a FileSystemManager class. Use the Adapter pattern to support OPFS, IndexedDB, and LocalSystem backends. Implement a stream() method that returns a ReadableStream for any file. Implement a Watcher system using BroadcastChannel to notify apps of file changes (e.g., updating the File Explorer view when a file is saved). Ensure all I/O operations are offloaded to a fs.worker.ts." 31
+________________
+5. Window Management and Desktop Interface
+The "Desktop Environment" (DE) is the interface through which the freelancer interacts with the system. It must be responsive, aesthetically professional, and support complex windowing operations.
+5.1 The Hybrid Window Manager
+Most web desktops (like DaedalOS) use a "Stacking" (floating) window manager.3 While intuitive, it is inefficient for coding or writing tasks. Sovereign OS implements a Hybrid Dynamic Window Manager.14
+5.1.1 Tiling Algorithms (Productivity Mode)
+Inspired by bspwm (Binary Space Partitioning Window Manager), the OS supports a Tiling Mode.
+* Algorithm: The window layout is represented as a Binary Tree. When a new window is spawned, it bisects the currently focused node.14
+* Implementation: The React state for the window manager holds this tree structure. Resizing a parent node automatically recalculates the flexbox percentages of all children, ensuring perfect tiling without gaps.33
+5.1.2 Snap Assist (Floating Mode)
+In Floating Mode, the OS mimics Windows 11 "Snap Assist."
+* Detection: As a window is dragged, the mousemove handler calculates proximity to screen edges.
+* Visual Feedback: If within 20px of an edge, a semi-transparent "Phantom" overlay (rendered on an OffscreenCanvas to avoid DOM layout thrashing) highlights the snap zone (half or quarter screen).33
+* State Transition: Releasing the mouse triggers a state transition in the Window State Machine from FLOATING to SNAPPED, applying a CSS transition to the new geometry.26
+5.2 Desktop Compositing and Rendering
+To achieve the "Native Feel," we must avoid the pitfalls of heavy DOM manipulation.
+* React Optimization: We utilize React.memo and useReducer heavily to prevent re-rendering the entire desktop when a single clock tick updates.26
+* GPU Layers: Application windows are wrapped in containers with will-change: transform. This promotes them to their own GPU composition layers, ensuring that dragging a window does not trigger a repaint of the wallpaper or icons behind it.34
+5.3 Application Runtime Isolation
+Applications run in varying degrees of isolation based on trust:
+* Core Apps (File Manager, Settings): Rendered as React Components within the main DOM (Shadow DOM) for instant loading.35
+* Untrusted Apps: Rendered inside <iframe> elements with the sandbox attribute.
+* WASM Apps: Rendered into a <canvas> element (for emulators or games), with input events proxied from the main thread.36
+5.4 Antigravity Instruction Set: UI Generation
+Agent Directive:
+"Act as a UX Engineer. Create a WindowManager context in React. Define a WindowState interface including z-index, geometry, isMinimized, and isMaximized. Implement a BSPLayout engine for tiling mode. Implement a useDrag hook that utilizes requestAnimationFrame to update window coordinates, bypassing standard React state updates for the drag operation to ensure 60fps performance. Use Nano Banana to generate a set of professional, flat-design SVG icons for the system apps." 16
+________________
+6. Local Intelligence Layer: The AI Subsystem
+A Sovereign OS must provide intelligence without compromising privacy. We integrate a Local Intelligence Grid directly into the OS kernel.
+6.1 WebLLM Integration
+We utilize WebLLM to run a quantized version of a model like Llama-3-8B directly in the browser via WebGPU.11
+* Service Architecture: The LLM runs in a AI_Worker. It exposes a standardized API endpoint on the IPC Bus: os.ai.complete(prompt).
+* System-Wide Integration: This allows any app to use AI.
+   * Notepad: "Summarize this text" context menu item.
+   * Mail: "Draft reply" button.
+   * Terminal: Natural language command parsing ("Delete all logs from yesterday") -> translates to rm commands.38
+* Optimization: We use 4-bit quantization to fit the model within the browser's memory limits (typically 4GB for high-end devices).37
+6.2 Client-Side RAG (Research Assistant)
+Freelancers often research documents. Sovereign OS includes a Local RAG (Retrieval-Augmented Generation) system.39
+* Workflow:
+   1. User drags a PDF into the "Knowledge Base" folder.
+   2. pdf.js extracts text in a background worker.6
+   3. A lightweight embedding model (e.g., all-MiniLM-L6-v2) creates vectors.40
+   4. Vectors are stored in a local vector store (backed by IndexedDB).
+   5. The user can chat with the OS: "What does the NDA say about termination?" The OS retrieves chunks and feeds them to the local WebLLM for an answer, ensuring zero data leakage.6
+6.3 WebSD (Creative Suite)
+For design freelancers, we integrate WebSD (Stable Diffusion) via WebGPU.12
+* Implementation: Using ONNX Runtime Web, we enable text-to-image generation.
+* Resource Management: The Kernel pauses other background tasks when generation is active to dedicate maximum VRAM to the WebGPU context.12
+6.4 Antigravity Instruction Set: AI Integration
+Agent Directive:
+"Act as an AI Engineer. Implement an AIService class in a Web Worker. Use mlc-llm libraries to load Llama-3-4bit. Implement a caching mechanism using the Cache API to store the model weights (2GB+) so they only download once. Create a global hook useAI() for frontend components. Implement a RAG pipeline that accepts text/PDF, chunks it, and stores embeddings in Voyager (WASM)." 11
+________________
+7. Native Application Runtime and Emulation
+To replace a native OS, Sovereign OS must support legacy software. We achieve this through advanced emulation and WASM containers.
+7.1 Legacy x86 Emulation
+Freelancers may need specific Windows utilities. We utilize v86 (x86 emulator) or BoxedWine to run these applications.3
+* Integration: The emulator runs in a Worker, rendering the frame buffer to an OffscreenCanvas transferred to the UI thread.
+* State Management: The emulator's state (RAM dump) is periodically saved to OPFS (/Users/Public/Snapshots), allowing instant "Resume" functionality even after a browser restart.13
+7.2 Native WASM Apps
+We prioritize porting open-source tools to WASM:
+* FFmpeg: For video transcoding directly in the file manager.
+* LibreOffice: (Experimental) via WASM ports for document editing.
+* VS Code: The built-in editor is the actual Monaco editor, essentially running VS Code in the browser.13
+________________
+8. Networking and Data Acquisition Layer
+Freelancers need to gather data (leads, research) and communicate.
+8.1 Hybrid Scraping Architecture
+Sovereign OS includes a "Market Research" tool that bypasses standard browser restrictions using a Hybrid Scraping architecture.42
+* The Bridge: A companion Chrome Extension (if installed) acts as a bridge. The OS sends a request to the extension via window.postMessage. The extension, which is not bound by CORS, fetches the page and returns the HTML.43
+* Fallback: If no extension is present, it routes requests through a user-configured proxy (e.g., a Residential Proxy) to avoid IP blocking.44
+* Analysis: The fetched HTML is parsed locally, and the Local LLM extracts structured data (e.g., extracting emails from a list of company websites).46
+8.2 Decentralized Communication
+To ensure sovereign communication, the OS integrates a Nostr client.13
+* Key Management: Private keys are stored in the browser's secure storage enclave.
+* Relay Connection: The client connects to multiple relays via WebSockets to fetch and publish encrypted DMs, bypassing centralized chat servers.
+________________
+9. Comprehensive Implementation Plan
+The following section outlines the step-by-step instructions for the Antigravity Agent to build this system.
+Phase 1: Foundation (Weeks 1-2)
+1. Agent Directive: Initialize repository with Monorepo structure (Turborepo). Set up src/kernel, src/ui, src/apps.
+2. Agent Directive: Implement the SharedWorker Kernel. Set up comlink message bus.
+3. Agent Directive: Implement FileSystemManager with OPFS backend. Verify read/write speeds.
+Phase 2: The Shell (Weeks 3-4)
+1. Agent Directive: Build React-based Window Manager. Implement BSP Tiling algorithm.
+2. Agent Directive: Create "Start Menu" and "Taskbar" components utilizing the VFS for data source.
+3. Agent Directive: Integrate "Nano Banana" to generate a cohesive icon pack.16
+Phase 3: Intelligence & Apps (Weeks 5-8)
+1. Agent Directive: Integrate WebLLM. Build the "Chat Assistant" app.
+2. Agent Directive: Port v86 emulator. Create a "Retro Box" app for running Windows 98/XP.
+3. Agent Directive: Build the "Market Research" scraper tool using the Extension Bridge pattern.
+Phase 4: Polish & Deployment (Week 9)
+1. Agent Directive: Configure PWA Manifest for offline installation.
+2. Agent Directive: Set up Docker container for self-hosting (Nginx serving static assets).
+3. Agent Directive: Run verify-latency workflow to ensure 60fps performance.
+________________
+Conclusion
+Sovereign OS redefines the capabilities of a web application. By rigorously optimizing the "Kernel" logic into background threads, leveraging the raw speed of OPFS, and integrating local AI models via WebGPU, we create an environment that satisfies the freelancer's need for a robust, private, and "native-feeling" workspace. This is not merely a website; it is a declaration of digital independence, engineered to run autonomously on the edge. The use of Antigravity and the Opus 4.5 context allows us to architect this complexity with precision, ensuring that every component—from the process scheduler to the tiling window manager—serves the ultimate goal: maximizing client value through technological sovereignty.
+Works cited
+1. HeyPuter/puter: The Internet Computer! Free, Open-Source ... - GitHub, accessed on January 5, 2026, https://github.com/HeyPuter/puter
+2. Puter - GitHub, accessed on January 5, 2026, https://github.com/HeyPuter
+3. daedalOS, a desktop environment from the web browser - Ubunlog, accessed on January 5, 2026, https://en.ubunlog.com/daedalos-desktop-environment-from-web-browser/
+4. Build with Google Antigravity, our new agentic development platform, accessed on January 5, 2026, https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/
+5. Getting Started with Google Antigravity, accessed on January 5, 2026, https://codelabs.developers.google.com/getting-started-google-antigravity
+6. Parsing PDFs with AI - How I Built a Zero-Trust, Client-Only PDF Parser in the Browser, accessed on January 5, 2026, https://www.workingsoftware.dev/parsing-pdf-with-ai-zero-trust-client-only/
+7. webworker-threads - NPM, accessed on January 5, 2026, https://www.npmjs.com/package/webworker-threads
+8. web-worker - NPM, accessed on January 5, 2026, https://www.npmjs.com/package/web-worker
+9. Origin private file system - Web APIs | MDN, accessed on January 5, 2026, https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system
+10. Origin Private File System (OPFS) Database with the RxDB OPFS-RxStorage, accessed on January 5, 2026, https://rxdb.info/rx-storage-opfs.html
+11. mlc-ai/web-llm: High-performance In-browser LLM Inference Engine - GitHub, accessed on January 5, 2026, https://github.com/mlc-ai/web-llm
+12. Zhare-AI/sd-1-5-webgpu - Hugging Face, accessed on January 5, 2026, https://huggingface.co/Zhare-AI/sd-1-5-webgpu
+13. DustinBrett/daedalOS: Desktop environment in the browser - GitHub, accessed on January 5, 2026, https://github.com/DustinBrett/daedalOS
+14. Tiling window manager - Wikipedia, accessed on January 5, 2026, https://en.wikipedia.org/wiki/Tiling_window_manager
+15. Google Antigravity - Wikipedia, accessed on January 5, 2026, https://en.wikipedia.org/wiki/Google_Antigravity
+16. Blogs: Google Antigravity: 5 Key Features of the Next-Gen Agentic IDE - Zeabur, accessed on January 5, 2026, https://zeabur.com/blogs/google-antigravity-agentic-ide-features
+17. Google Antigravity vs Cursor: AI-Powered Coding IDEs Differences - Metana, accessed on January 5, 2026, https://metana.io/blog/google-antigravity-vs-cursor/
+18. Agent Modes / Settings - Google Antigravity Documentation, accessed on January 5, 2026, https://antigravity.google/docs/agent-modes-settings
+19. Google Antigravity | AI Coding Tools - Real Python, accessed on January 5, 2026, https://realpython.com/ref/ai-coding-tools/google-antigravity/
+20. What Is Google Antigravity? Full Tutorial, First Look & App-Building Workflow Examples (Gemini 3 + Claude Sonnet 4.5 Testing) : r/GeminiAI - Reddit, accessed on January 5, 2026, https://www.reddit.com/r/GeminiAI/comments/1p7hioy/what_is_google_antigravity_full_tutorial_first/
+21. How to Set Up and Use Google Antigravity - Codecademy, accessed on January 5, 2026, https://www.codecademy.com/article/how-to-set-up-and-use-google-antigravity
+22. Microkernel Architecture, Principles, Benefits & Challenges - Aalpha Information Systems, accessed on January 5, 2026, https://www.aalpha.net/blog/microkernel-architecture/
+23. Scheduling (computing) - Wikipedia, accessed on January 5, 2026, https://en.wikipedia.org/wiki/Scheduling_(computing)
+24. Process Scheduling in Operating Systems | by Chamuditha Kekulawala - Medium, accessed on January 5, 2026, https://medium.com/@ckekula/process-scheduling-in-operating-systems-b10f9f662b6a
+25. Process Scheduling - Operating System - Tutorials Point, accessed on January 5, 2026, https://www.tutorialspoint.com/operating_system/os_process_scheduling.htm
+26. The beauty of State Machines in React | by Fabrizio Beccaceci - Medium, accessed on January 5, 2026, https://medium.com/@ipla/the-beauty-of-state-machines-in-react-7b340676ceb8
+27. Explain the Boot Sequence Like I'm 5 - DEV Community, accessed on January 5, 2026, https://dev.to/_bigblind/explain-the-boot-sequence-like-im-5
+28. ReactOS Architecture, accessed on January 5, 2026, https://reactos.org/architecture/
+29. VFS Tutorial - OS.js Web Desktop Manual, accessed on January 5, 2026, https://manual.os-js.org/tutorial/vfs/
+30. File System API - MDN Web Docs, accessed on January 5, 2026, https://developer.mozilla.org/en-US/docs/Web/API/File_System_API
+31. kachurun/opfs-worker: OPFS File System Webworker - GitHub, accessed on January 5, 2026, https://github.com/kachurun/opfs-worker
+32. Window manager - Wikipedia, accessed on January 5, 2026, https://en.wikipedia.org/wiki/Window_manager
+33. What is a tiling window manager : r/linux4noobs - Reddit, accessed on January 5, 2026, https://www.reddit.com/r/linux4noobs/comments/1adarb3/what_is_a_tiling_window_manager/
+34. 41 Best Vue Component Libraries and Frameworks in 2024 - Bacancy Technology, accessed on January 5, 2026, https://www.bacancytechnology.com/blog/vue-component-libraries
+35. The Architecture of a Scalable and Performant Micro-Frontend Framework | by Joel Chen, accessed on January 5, 2026, https://medium.com/@joelchen19/the-architecture-of-a-scalable-and-performant-micro-frontend-framework-0e77a68451d0
+36. Simon Willison on webassembly, accessed on January 5, 2026, https://simonwillison.net/tags/webassembly/?page=3
+37. WebLLM: A High-Performance In-Browser LLM Inference Engine - arXiv, accessed on January 5, 2026, https://arxiv.org/html/2412.15803v1
+38. WebLLM | Home, accessed on January 5, 2026, https://webllm.mlc.ai/
+39. Best Local LLMs for PDF Chat, Analysis and RAG | LocalLLM.in, accessed on January 5, 2026, https://localllm.in/blog/best-local-llms-pdf-chat-rag
+40. Building a Hybrid LLM-Powered RAG System with PDFs and Web Search - Medium, accessed on January 5, 2026, https://medium.com/@furkhan_suhail_/building-a-hybrid-llm-powered-rag-system-with-pdfs-and-web-search-b7b9c7c94087
+41. AI in the browser: Smarter Angular apps with WebGPU and WebNN - Thinktecture AG, accessed on January 5, 2026, https://www.thinktecture.com/en/contributions/ai-in-the-browser-smarter-angular-apps-with-webgpu-and-webnn/
+42. Hybrid Scraping: The Architecture for the Modern Web - Zyte, accessed on January 5, 2026, https://www.zyte.com/learn/hybrid-scraping-the-architecture-for-the-modern-web/
+43. A Deep Dive into the chrome-extension-bridge-mcp Server - Skywork.ai, accessed on January 5, 2026, https://skywork.ai/skypage/en/Bridging-the-Browser-A-Deep-Dive-into-the-chrome-extension-bridge-mcp-Server/1970731347474444288
+44. The Complete Guide To Using Proxies For Web Scraping - Scrapfly, accessed on January 5, 2026, https://scrapfly.io/blog/posts/introduction-to-proxies-in-web-scraping
+45. How to choose proxies for web scraping - Octo Browser Blog, accessed on January 5, 2026, https://blog.octobrowser.net/how-to-choose-proxies-for-web-scraping
+46. How web scraping works and is used by businesses in data pipelines | Parallel Web Systems | Web Search & Research APIs Built for AI Agents, accessed on January 5, 2026, https://parallel.ai/articles/what-is-web-scraping
