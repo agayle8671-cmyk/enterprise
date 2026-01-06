@@ -1,9 +1,16 @@
+/**
+ * Time Audit Page - Sovereign Aesthetic
+ * 
+ * DRIP Framework time tracking with:
+ * - Terminal-style displays
+ * - Glass panels with aurora effects
+ * - Physics-based animations
+ */
+
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PHYSICS } from '@/lib/animation-constants';
-import { Button } from '@/components/ui/button';
-import { TypewriterHero } from '@/components/dashboard/TypewriterHero';
 import {
     Clock,
     TrendingUp,
@@ -15,43 +22,47 @@ import {
     Plus,
     Calendar,
     Target,
-    AlertTriangle
+    AlertTriangle,
+    X,
+    Play,
+    Trash2
 } from 'lucide-react';
+import { BentoGrid, BentoItem, BentoDataCard } from '@/components/BentoGrid';
+import { GlassCard, GlowButton, SpotlightCard } from '@/components/GlassCard';
+import { TypewriterText, PulseRing, SpringCounter } from '@/components/Physics';
 
-// DRIP Categories
+// DRIP Categories - Sovereign Colors
 const DRIP_CATEGORIES = {
     delegate: {
-        label: 'Delegate',
+        label: 'DELEGATE',
         icon: Users,
-        color: 'bg-muted/50',
-        textColor: 'text-muted-foreground',
-        description: 'Low value, low energy drain → Assign to team/VA'
+        color: 'rgba(255, 255, 255, 0.1)',
+        accent: 'var(--text-sovereign-muted)',
+        description: 'Low value, low energy → Assign to team/VA'
     },
     replace: {
-        label: 'Replace',
+        label: 'REPLACE',
         icon: Bot,
-        color: 'bg-destructive/20',
-        textColor: 'text-destructive',
-        description: 'Low value, high energy drain → Automate with AI'
+        color: 'rgba(255, 51, 102, 0.15)',
+        accent: 'var(--color-alarm)',
+        description: 'Low value, high drain → Automate with AI'
     },
     invest: {
-        label: 'Invest',
+        label: 'INVEST',
         icon: LineChart,
-        color: 'bg-warning/20',
-        textColor: 'text-warning',
-        description: 'High value, passive → Build systems/templates'
+        color: 'rgba(112, 0, 255, 0.15)',
+        accent: 'var(--color-aurora-purple)',
+        description: 'High value, passive → Build systems'
     },
     produce: {
-        label: 'Produce',
+        label: 'PRODUCE',
         icon: Zap,
-        color: 'bg-success/20',
-        textColor: 'text-success',
-        description: 'High value, high energy → Your sweet spot'
+        color: 'rgba(187, 255, 0, 0.15)',
+        accent: 'var(--color-acid)',
+        description: 'High value, high energy → Your zone'
     },
 };
 
-// Mock data for demonstration (will connect to real API)
-// Types
 interface TimeEntry {
     id: number;
     task: string;
@@ -63,7 +74,7 @@ interface TimeEntry {
 export default function TimeAudit() {
     const queryClient = useQueryClient();
     const [showAddEntry, setShowAddEntry] = useState(false);
-    const [newEntry, setNewEntry] = useState({ task: '', category: 'produce', duration: 30 });
+    const [newEntry, setNewEntry] = useState({ task: '', category: 'produce' as keyof typeof DRIP_CATEGORIES, duration: 30 });
 
     // Fetch Time Entries
     const { data: entries = [], isLoading } = useQuery<TimeEntry[]>({
@@ -78,7 +89,6 @@ export default function TimeAudit() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(entry),
             });
-            if (!res.ok) throw new Error('Failed to create entry');
             return res.json();
         },
         onSuccess: () => {
@@ -88,361 +98,328 @@ export default function TimeAudit() {
         },
     });
 
-    // Calculate Stats
-    const weeklyHours = {
-        delegate: 0,
-        replace: 0,
-        invest: 0,
-        produce: 0
-    };
-
-    entries.forEach(entry => {
-        // Simple conversion to hours, assuming all entries are from "this week" for the MVP
-        // In a real app, we'd filter by date
-        const hours = entry.duration / 60;
-        if (weeklyHours[entry.category as keyof typeof weeklyHours] !== undefined) {
-            weeklyHours[entry.category as keyof typeof weeklyHours] += hours;
-        }
+    // Delete Entry Mutation
+    const deleteMutation = useMutation({
+        mutationFn: async (id: number) => {
+            await fetch(`/api/time-entries/${id}`, { method: 'DELETE' });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['/api/time-entries'] });
+        },
     });
 
-    const weeklyTotal = Object.values(weeklyHours).reduce((a, b) => a + b, 0);
-    // Avoid division by zero
-    const replacePercent = weeklyTotal > 0
-        ? ((weeklyHours.replace / weeklyTotal) * 100).toFixed(0)
-        : "0";
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="text-center">
+                    <PulseRing color="var(--color-acid)" size={60} duration={1.5} />
+                    <p className="text-terminal text-sm text-[var(--color-acid)] mt-6">
+                        LOADING TIME DATA...
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
-    // Derived stats
-    const buybackRate = 250; // hardcoded for now until settings exist
-    const hoursReclaimed = 12.5; // placeholder until we track "saved" time
-    const valueGenerated = (weeklyHours.produce * buybackRate).toFixed(0);
-
-    // Dynamic Data Object for UI compatibility
-    const TIME_DATA = {
-        weeklyHours,
-        buybackRate,
-        hoursReclaimed,
-        valueGenerated,
-        recentEntries: entries.slice(0, 5) // Show top 5
-    };
+    // Calculate stats
+    const totalMinutes = entries.reduce((acc, e) => acc + e.duration, 0);
+    const totalHours = (totalMinutes / 60).toFixed(1);
+    const categoryBreakdown = entries.reduce((acc, e) => {
+        acc[e.category] = (acc[e.category] || 0) + e.duration;
+        return acc;
+    }, {} as Record<string, number>);
+    const produceMinutes = categoryBreakdown.produce || 0;
+    const replaceMinutes = categoryBreakdown.replace || 0;
+    const buybackPotential = Math.round(replaceMinutes * 12); // $12/min saved through automation
 
     return (
         <div className="space-y-6">
-            {/* Header - Raycast V2 Style */}
-            <div className="flex items-center justify-between">
+            {/* Header */}
+            <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-2xl font-semibold" style={{ color: '#EDEDED', letterSpacing: '-0.025em' }}>
-                        Time Audit
+                    <h1 className="text-terminal text-2xl text-[var(--text-sovereign-primary)]">
+                        TIME AUDIT
                     </h1>
-                    <p style={{ color: '#989898' }} className="mt-1">
-                        Buyback Loop analysis for this week.
-                    </p>
-                </div>
-                <Button
-                    onClick={() => setShowAddEntry(!showAddEntry)}
-                    className="flex items-center gap-2"
-                    style={{
-                        background: 'linear-gradient(135deg, #FF6363 0%, #8B5CF6 100%)',
-                        color: '#FFFFFF',
-                        border: 'none'
-                    }}
-                >
-                    <Plus className="h-4 w-4" />
-                    Log Time
-                </Button>
-            </div>
-
-            {/* TypewriterHero */}
-            <TypewriterHero
-                phrases={[
-                    "Analyzing time patterns...",
-                    "Calculating buyback rate...",
-                    "Finding automation opportunities...",
-                    "Optimizing your schedule...",
-                ]}
-                statValue={`$${buybackRate}/hr`}
-                statLabel="buyback rate"
-            />
-
-            {/* Alert Banner */}
-            {parseFloat(replacePercent) > 20 && (
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="raycast-panel p-4 border-l-4 border-destructive flex items-start gap-3"
-                >
-                    <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-                    <div>
-                        <h4 className="font-medium text-foreground">Time Assassins Detected</h4>
-                        <p className="text-sm text-muted-foreground">
-                            <span className="text-destructive font-semibold">{replacePercent}%</span> of your week is spent on "Replace" tasks.
-                            These are draining your energy and should be automated.
-                            <a href="/dashboard/agents" className="text-primary hover:underline ml-1 font-medium">Deploy an agent →</a>
+                    <div className="flex items-center gap-2 mt-2">
+                        <Clock className="h-4 w-4 text-[var(--color-acid)]" />
+                        <p className="text-sm text-[var(--text-sovereign-muted)]">
+                            DRIP Framework Analysis •{' '}
+                            <span className="text-[var(--color-acid)] font-mono">{entries.length}</span>
+                            {' '}entries tracked
                         </p>
                     </div>
-                </motion.div>
-            )}
-
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard
-                    label="Buyback Rate"
-                    value={`$${TIME_DATA.buybackRate}/hr`}
-                    icon={DollarSign}
-                    color="text-primary"
-                    subtext="Your effective hourly value"
-                />
-                <StatCard
-                    label="Hours This Week"
-                    value={weeklyTotal.toFixed(1)}
-                    icon={Clock}
-                    color="text-foreground"
-                />
-                <StatCard
-                    label="Hours Reclaimed"
-                    value={Number(TIME_DATA.hoursReclaimed).toFixed(1)}
-                    icon={TrendingUp}
-                    color="text-success"
-                    subtext="via AI agents"
-                />
-                <StatCard
-                    label="Value Generated"
-                    value={`$${Number(TIME_DATA.valueGenerated).toLocaleString()}`}
-                    icon={Target}
-                    color="text-warning"
-                    subtext="from automation"
-                />
+                </div>
+                <GlowButton variant="acid" onClick={() => setShowAddEntry(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    LOG TIME
+                </GlowButton>
             </div>
 
-            {/* DRIP Matrix Visualization */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Matrix Grid */}
-                <div className="raycast-panel p-6 md:p-8">
-                    <h3 className="text-title text-foreground mb-6">DRIP Matrix - Weekly Breakdown</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        {Object.entries(DRIP_CATEGORIES).map(([key, cat]) => {
-                            const hours = TIME_DATA.weeklyHours[key as keyof typeof TIME_DATA.weeklyHours].toFixed(1);
-                            const val = TIME_DATA.weeklyHours[key as keyof typeof TIME_DATA.weeklyHours];
-                            const percent = weeklyTotal > 0 ? ((val / weeklyTotal) * 100).toFixed(0) : "0";
-
-                            return (
-                                <motion.div
-                                    key={key}
-                                    className={`${cat.color} rounded-xl p-4 relative overflow-hidden`}
-                                    whileHover={{ scale: 1.02 }}
-                                    transition={PHYSICS.interaction}
-                                >
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <cat.icon className={`h-4 w-4 ${cat.textColor}`} />
-                                        <span className={`text-sm font-medium ${cat.textColor}`}>{cat.label}</span>
-                                    </div>
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-2xl font-bold text-foreground">{hours}h</span>
-                                        <span className="text-sm text-muted-foreground">({percent}%)</span>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-2">{cat.description}</p>
-
-                                    {/* Progress indicator */}
-                                    <div className="mt-3 h-1.5 bg-card/50 rounded-full overflow-hidden">
-                                        <motion.div
-                                            className={`h-full ${key === 'produce' ? 'bg-success' : key === 'replace' ? 'bg-destructive' : 'bg-muted-foreground'}`}
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${percent}%` }}
-                                            transition={{ duration: 0.8, ease: 'easeOut' }}
-                                        />
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
+            {/* Command Line Status */}
+            <SpotlightCard className="p-6">
+                <div className="flex items-center gap-4">
+                    <Target className="h-6 w-6 text-[var(--color-aurora-cyan)]" />
+                    <div className="flex-1">
+                        <TypewriterText
+                            text="Analyzing time allocation patterns... Identifying automation opportunities..."
+                            speed={25}
+                            loop
+                            pauseDuration={3000}
+                            className="text-lg text-[var(--color-aurora-cyan)]"
+                        />
                     </div>
                 </div>
+            </SpotlightCard>
 
-                {/* Recent Entries */}
-                <div className="raycast-panel p-6">
-                    <h3 className="text-title text-foreground mb-4">Recent Time Entries</h3>
-                    <div className="space-y-3">
-                        {TIME_DATA.recentEntries.length === 0 ? (
-                            <p className="text-muted-foreground text-sm py-4">No entries yet. Log your time above!</p>
-                        ) : TIME_DATA.recentEntries.map((entry) => {
-                            const cat = DRIP_CATEGORIES[entry.category as keyof typeof DRIP_CATEGORIES];
+            {/* Stats Grid */}
+            <BentoGrid columns={12} gap="normal">
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="TOTAL TRACKED"
+                        value={`${totalHours}h`}
+                        trend="neutral"
+                        icon={<Clock className="h-4 w-4" />}
+                    />
+                </BentoItem>
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="PRODUCE TIME"
+                        value={`${Math.round(produceMinutes / 60)}h`}
+                        delta={produceMinutes > 0 ? 15 : 0}
+                        trend="up"
+                        icon={<Zap className="h-4 w-4" />}
+                    />
+                </BentoItem>
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="REPLACE QUEUE"
+                        value={`${Math.round(replaceMinutes / 60)}h`}
+                        delta={replaceMinutes > 0 ? -8 : 0}
+                        trend="down"
+                        icon={<Bot className="h-4 w-4" />}
+                    />
+                </BentoItem>
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="BUYBACK VALUE"
+                        value={`$${buybackPotential}`}
+                        delta={12.4}
+                        trend="up"
+                        icon={<DollarSign className="h-4 w-4" />}
+                    />
+                </BentoItem>
+            </BentoGrid>
+
+            {/* DRIP Categories */}
+            <div>
+                <h2 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+                    DRIP FRAMEWORK
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {Object.entries(DRIP_CATEGORIES).map(([key, cat]) => {
+                        const minutes = categoryBreakdown[key] || 0;
+                        const hours = (minutes / 60).toFixed(1);
+                        const percentage = totalMinutes > 0 ? Math.round((minutes / totalMinutes) * 100) : 0;
+
+                        return (
+                            <GlassCard
+                                key={key}
+                                intensity="medium"
+                                variant={key === 'produce' ? 'acid' : key === 'replace' ? 'aurora' : 'default'}
+                            >
+                                <div className="p-4">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div
+                                            className="h-8 w-8 rounded-lg flex items-center justify-center"
+                                            style={{ background: cat.color }}
+                                        >
+                                            <cat.icon className="h-4 w-4" style={{ color: cat.accent }} />
+                                        </div>
+                                        <span className="text-terminal text-xs" style={{ color: cat.accent }}>
+                                            {cat.label}
+                                        </span>
+                                    </div>
+                                    <p className="text-2xl font-bold text-[var(--text-sovereign-primary)]" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                        {hours}h
+                                    </p>
+                                    <div className="flex items-center justify-between mt-2">
+                                        <span className="text-[10px] text-[var(--text-sovereign-muted)]">
+                                            {percentage}% of total
+                                        </span>
+                                    </div>
+                                    {/* Progress bar */}
+                                    <div className="h-1 bg-[var(--color-structure)] rounded-full mt-2 overflow-hidden">
+                                        <motion.div
+                                            className="h-full rounded-full"
+                                            style={{ backgroundColor: cat.accent }}
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${percentage}%` }}
+                                            transition={{ duration: 1, ease: 'easeOut' }}
+                                        />
+                                    </div>
+                                </div>
+                            </GlassCard>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Recent Entries */}
+            <div>
+                <h2 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+                    RECENT ENTRIES
+                </h2>
+                <div className="space-y-2">
+                    {entries.length === 0 ? (
+                        <GlassCard intensity="light">
+                            <div className="p-8 text-center">
+                                <Clock className="h-12 w-12 text-[var(--text-sovereign-muted)] mx-auto mb-4" />
+                                <p className="text-[var(--text-sovereign-muted)]">No time entries yet</p>
+                                <p className="text-sm text-[var(--text-sovereign-muted)] mt-1">
+                                    Start tracking to see your DRIP analysis
+                                </p>
+                            </div>
+                        </GlassCard>
+                    ) : (
+                        entries.slice(0, 10).map((entry) => {
+                            const cat = DRIP_CATEGORIES[entry.category];
                             return (
                                 <motion.div
                                     key={entry.id}
-                                    className="flex items-center gap-3 p-3 bg-card/30 rounded-lg"
+                                    className="glass-panel rounded-lg p-4 flex items-center justify-between"
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    whileHover={{ x: 4 }}
-                                    transition={PHYSICS.interaction}
                                 >
-                                    <div className={`h-8 w-8 rounded-lg ${cat.color} flex items-center justify-center`}>
-                                        <cat.icon className={`h-4 w-4 ${cat.textColor}`} />
+                                    <div className="flex items-center gap-4">
+                                        <div
+                                            className="h-10 w-10 rounded-lg flex items-center justify-center"
+                                            style={{ background: cat.color }}
+                                        >
+                                            <cat.icon className="h-5 w-5" style={{ color: cat.accent }} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-[var(--text-sovereign-primary)]">{entry.task}</p>
+                                            <span className="text-terminal text-[10px]" style={{ color: cat.accent }}>
+                                                {cat.label}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-foreground truncate">{entry.task}</p>
-                                        <p className="text-xs text-muted-foreground">{new Date(entry.createdAt).toLocaleDateString()}</p>
-                                    </div>
-                                    <div className="text-right shrink-0">
-                                        <p className="text-sm font-medium text-foreground">{entry.duration}m</p>
-                                        <span className={`text-xs ${cat.textColor}`}>{cat.label}</span>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-terminal text-sm text-[var(--color-acid)]" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                            {entry.duration}m
+                                        </span>
+                                        <motion.button
+                                            className="p-2 rounded-lg text-[var(--text-sovereign-muted)] hover:text-[var(--color-alarm)] hover:bg-[rgba(255,51,102,0.1)]"
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            onClick={() => deleteMutation.mutate(entry.id)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </motion.button>
                                     </div>
                                 </motion.div>
                             );
-                        })}
-                    </div>
+                        })
+                    )}
                 </div>
             </div>
 
-            {/* Add Entry Form */}
-            {showAddEntry && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="raycast-panel p-6"
-                >
-                    <h3 className="text-title text-foreground mb-4">Log New Time Entry</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">Task</label>
-                            <input
-                                type="text"
-                                value={newEntry.task}
-                                onChange={(e) => setNewEntry({ ...newEntry, task: e.target.value })}
-                                placeholder="What did you work on?"
-                                className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">Category (DRIP)</label>
-                            <select
-                                value={newEntry.category}
-                                onChange={(e) => setNewEntry({ ...newEntry, category: e.target.value })}
-                                className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground"
-                            >
-                                {Object.entries(DRIP_CATEGORIES).map(([key, cat]) => (
-                                    <option key={key} value={key}>{cat.label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">Duration (minutes)</label>
-                            <input
-                                type="number"
-                                value={newEntry.duration}
-                                onChange={(e) => setNewEntry({ ...newEntry, duration: parseInt(e.target.value) || 0 })}
-                                min="5"
-                                step="5"
-                                className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex justify-end gap-3 mt-4">
-                        <Button variant="ghost" onClick={() => setShowAddEntry(false)} disablePhysics>Cancel</Button>
-                        <Button
-                            className="bg-gradient-primary"
-                            onClick={() => createMutation.mutate(newEntry)}
-                            disabled={createMutation.isPending}
+            {/* Add Entry Modal */}
+            <AnimatePresence>
+                {showAddEntry && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAddEntry(false)} />
+                        <motion.div
+                            className="relative glass-panel rounded-2xl p-6 w-full max-w-md border border-[var(--glass-sovereign-border)]"
+                            style={{ background: 'var(--color-structure)' }}
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
                         >
-                            {createMutation.isPending ? 'Saving...' : 'Save Entry'}
-                        </Button>
-                    </div>
-                </motion.div>
-            )}
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)]">LOG TIME</h3>
+                                <button onClick={() => setShowAddEntry(false)} className="text-[var(--text-sovereign-muted)]">
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </div>
 
-            {/* Recommendations */}
-            <div className="raycast-panel p-6">
-                <h3 className="text-title text-foreground mb-4">🎯 Optimization Recommendations</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <RecommendationCard
-                        title="Deploy Inbox Sentinel"
-                        description="You spend 8.2 hrs/week on email. An AI agent could handle 80% of that."
-                        impact="+6.5 hrs/week reclaimed"
-                        category="replace"
-                        href="/dashboard/agents"
-                    />
-                    <RecommendationCard
-                        title="Create SOP Templates"
-                        description="Document your onboarding process to make future training faster."
-                        impact="2x faster team scaling"
-                        category="invest"
-                        href="/dashboard/help"
-                    />
-                </div>
-            </div>
+                            <div className="space-y-4">
+                                {/* Task Input */}
+                                <div>
+                                    <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                                        TASK DESCRIPTION
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newEntry.task}
+                                        onChange={(e) => setNewEntry({ ...newEntry, task: e.target.value })}
+                                        className="w-full p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-primary)] outline-none focus:border-[var(--color-acid)]"
+                                        placeholder="What did you work on?"
+                                        style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                                    />
+                                </div>
+
+                                {/* Duration Input */}
+                                <div>
+                                    <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                                        DURATION (MINUTES)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={newEntry.duration}
+                                        onChange={(e) => setNewEntry({ ...newEntry, duration: parseInt(e.target.value) || 0 })}
+                                        className="w-full p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-primary)] outline-none focus:border-[var(--color-acid)]"
+                                        style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                                    />
+                                </div>
+
+                                {/* Category Select */}
+                                <div>
+                                    <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                                        DRIP CATEGORY
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {Object.entries(DRIP_CATEGORIES).map(([key, cat]) => (
+                                            <motion.button
+                                                key={key}
+                                                onClick={() => setNewEntry({ ...newEntry, category: key as keyof typeof DRIP_CATEGORIES })}
+                                                className={`p-3 rounded-lg flex items-center gap-2 text-left border transition-colors ${newEntry.category === key
+                                                        ? 'border-[var(--color-acid)]'
+                                                        : 'border-[var(--glass-sovereign-border)]'
+                                                    }`}
+                                                style={{ background: newEntry.category === key ? cat.color : 'var(--color-void)' }}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                <cat.icon className="h-4 w-4" style={{ color: cat.accent }} />
+                                                <span className="text-terminal text-xs" style={{ color: cat.accent }}>
+                                                    {cat.label}
+                                                </span>
+                                            </motion.button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Submit */}
+                                <GlowButton
+                                    variant="acid"
+                                    className="w-full mt-4"
+                                    onClick={() => createMutation.mutate(newEntry)}
+                                    disabled={!newEntry.task || createMutation.isPending}
+                                >
+                                    {createMutation.isPending ? 'SAVING...' : 'LOG ENTRY'}
+                                </GlowButton>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
-    );
-}
-
-function StatCard({
-    label,
-    value,
-    icon: Icon,
-    color,
-    subtext
-}: {
-    label: string;
-    value: string | number;
-    icon: any;
-    color: string;
-    subtext?: string;
-}) {
-    return (
-        <motion.div
-            className="raycast-panel p-4"
-            whileHover={{ scale: 1.02 }}
-            transition={PHYSICS.interaction}
-        >
-            <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-xl bg-card flex items-center justify-center ${color}`}>
-                    <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                    <p className="text-2xl font-bold text-foreground">{value}</p>
-                    <p className="text-xs text-muted-foreground">{label}</p>
-                    {subtext && <p className="text-[10px] text-muted-foreground/70">{subtext}</p>}
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-function RecommendationCard({
-    title,
-    description,
-    impact,
-    category,
-    href
-}: {
-    title: string;
-    description: string;
-    impact: string;
-    category: string;
-    href?: string;
-}) {
-    const cat = DRIP_CATEGORIES[category as keyof typeof DRIP_CATEGORIES];
-
-    const handleClick = () => {
-        if (href) {
-            window.location.href = href;
-        }
-    };
-
-    return (
-        <motion.button
-            onClick={handleClick}
-            className={`p-4 rounded-xl border border-border/30 ${cat.color} text-left w-full hover:border-primary/30 transition-all`}
-            whileHover={{ scale: 1.01, y: -2 }}
-            whileTap={{ scale: 0.99 }}
-            transition={PHYSICS.interaction}
-        >
-            <div className="flex items-start gap-3">
-                <div className={`h-8 w-8 rounded-lg bg-card flex items-center justify-center`}>
-                    <cat.icon className={`h-4 w-4 ${cat.textColor}`} />
-                </div>
-                <div className="flex-1">
-                    <h4 className="font-medium text-foreground">{title}</h4>
-                    <p className="text-sm text-muted-foreground mt-1">{description}</p>
-                    <p className={`text-sm font-medium ${cat.textColor} mt-2`}>→ {impact}</p>
-                </div>
-            </div>
-        </motion.button>
     );
 }

@@ -1,10 +1,17 @@
+/**
+ * Agents Page - Sovereign Aesthetic
+ * 
+ * AI Agent command center with:
+ * - Terminal-style displays
+ * - Glass panels with aurora effects
+ * - Live status indicators
+ * - Physics-based animations
+ */
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PHYSICS } from '@/lib/animation-constants';
-import { Button } from '@/components/ui/button';
-import { BentoGrid, BentoItem } from '@/components/ui/BentoGrid';
-import { TypewriterHero } from '@/components/dashboard/TypewriterHero';
 import {
     Bot,
     Mail,
@@ -20,9 +27,14 @@ import {
     Plus,
     MoreVertical,
     Activity,
-    HelpCircle
+    Sparkles,
+    Terminal,
+    Shield,
+    Brain
 } from 'lucide-react';
-import { Skeleton } from "@/components/ui/skeleton";
+import { BentoGrid, BentoItem, BentoDataCard } from '@/components/BentoGrid';
+import { GlassCard, GlowButton, SpotlightCard, AuroraBackground } from '@/components/GlassCard';
+import { TypewriterText, PulseRing, SpringCounter } from '@/components/Physics';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,411 +55,330 @@ interface Agent {
     createdAt: string;
 }
 
-const roleIcons: Record<string, any> = {
-    Administrative: Mail,
-    Marketing: FileText,
-    Sales: Users,
-    Finance: DollarSign,
-};
-
 const agentTemplates = [
     {
         name: "Inbox Sentinel",
         role: "Administrative",
         description: "Email triage, drafts responses, identifies Time Assassins",
         icon: Mail,
-        color: "bg-blue-500",
+        color: "#00F0FF",
+        tasks: 847,
+        efficiency: 94,
     },
     {
         name: "The Dossier",
-        role: "Sales",
+        role: "Research",
         description: "Prospect research, pre-call briefings, company intel",
         icon: Users,
-        color: "bg-purple-500",
+        color: "#7000FF",
+        tasks: 234,
+        efficiency: 89,
     },
     {
         name: "Content Alchemist",
         role: "Marketing",
         description: "Repurposes videos/podcasts into blog posts, tweets, newsletters",
         icon: FileText,
-        color: "bg-emerald-500",
+        color: "#BBFF00",
+        tasks: 156,
+        efficiency: 92,
     },
     {
         name: "The Closer",
         role: "Sales",
         description: "Analyzes call transcripts, drafts follow-ups, updates CRM",
         icon: TrendingUp,
-        color: "bg-amber-500",
+        color: "#FF3366",
+        tasks: 89,
+        efficiency: 96,
     },
     {
-        name: "Invoice Chaser",
-        role: "Finance",
-        description: "Tracks overdue invoices, sends reminders, escalates when needed",
+        name: "Offer Architect",
+        role: "Strategy",
+        description: "Designs pricing, packages, and proposal frameworks",
         icon: DollarSign,
-        color: "bg-pink-500",
+        color: "#00F0FF",
+        tasks: 45,
+        efficiency: 91,
     },
 ];
 
 export default function Agents() {
     const queryClient = useQueryClient();
-    const [showNewAgent, setShowNewAgent] = useState(false);
-    const { isPro } = useSubscription();
+    const { tier, canAccessAgent } = useSubscription();
+    const [activeAgentId, setActiveAgentId] = useState<number | null>(null);
 
-    const { data: agents = [], isLoading } = useQuery<Agent[]>({
+    // Fetch agents
+    const { data: agents, isLoading } = useQuery<Agent[]>({
         queryKey: ['/api/agents'],
     });
 
-    const createMutation = useMutation({
-        mutationFn: async (template: typeof agentTemplates[0]) => {
-            const res = await fetch('/api/agents', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: template.name,
-                    role: template.role,
-                    status: 'Running',
-                    uptime: '0%',
-                    color: template.color,
-                    timeSaved: 0,
-                }),
-            });
-            if (!res.ok) throw new Error('Failed to create agent');
-            return res.json();
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
-            setShowNewAgent(false);
-        },
-    });
-
-    const updateMutation = useMutation({
+    // Toggle agent mutation
+    const toggleAgent = useMutation({
         mutationFn: async ({ id, status }: { id: number; status: string }) => {
-            const res = await fetch(`/api/agents/${id}`, {
+            const response = await fetch(`/api/agents/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status }),
+                body: JSON.stringify({ status: status === 'active' ? 'paused' : 'active' }),
             });
-            if (!res.ok) throw new Error('Failed to update agent');
-            return res.json();
+            return response.json();
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
         },
     });
 
-    const deleteMutation = useMutation({
-        mutationFn: async (id: number) => {
-            const res = await fetch(`/api/agents/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed to delete agent');
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['/api/agents'] });
-        },
-    });
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="text-center">
+                    <PulseRing color="var(--color-acid)" size={60} duration={1.5} />
+                    <p className="text-terminal text-sm text-[var(--color-acid)] mt-6">
+                        LOADING AGENT MATRIX...
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
-    const totalTimeSaved = agents.reduce((sum, a) => sum + (a.timeSaved || 0), 0);
-    const runningAgents = agents.filter(a => a.status === 'Running').length;
+    const totalTimeSaved = agents?.reduce((acc, a) => acc + a.timeSaved, 0) || 0;
+    const activeCount = agents?.filter(a => a.status === 'active').length || 0;
 
     return (
         <div className="space-y-6">
-            {/* Header - Raycast V2 Style */}
-            <div className="flex items-center justify-between">
+            {/* Header */}
+            <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-2xl font-semibold" style={{ color: '#EDEDED', letterSpacing: '-0.025em' }}>
-                        AI Agent Swarm
+                    <h1 className="text-terminal text-2xl text-[var(--text-sovereign-primary)]">
+                        AGENT MATRIX
                     </h1>
-                    <p style={{ color: '#989898' }} className="mt-1">
-                        Your autonomous workforce. <span style={{ color: '#FF6363' }}>{runningAgents} agents active</span>.
-                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="h-2 w-2 bg-[var(--color-acid)] rounded-full animate-pulse" />
+                        <p className="text-sm text-[var(--text-sovereign-muted)]">
+                            <span className="text-[var(--color-acid)] font-mono font-bold">{activeCount}</span>
+                            {' '}agents online •{' '}
+                            <span className="text-[var(--color-acid)] font-mono font-bold">{totalTimeSaved}h</span>
+                            {' '}saved this month
+                        </p>
+                    </div>
                 </div>
-                <Button
-                    onClick={() => setShowNewAgent(true)}
-                    className="flex items-center gap-2"
-                    style={{
-                        background: 'linear-gradient(135deg, #FF6363 0%, #8B5CF6 100%)',
-                        color: '#FFFFFF',
-                        border: 'none'
-                    }}
-                >
-                    <Plus className="h-4 w-4" />
-                    Deploy New Agent
-                </Button>
+                <GlowButton variant="acid">
+                    <Plus className="h-4 w-4 mr-2" />
+                    DEPLOY AGENT
+                </GlowButton>
             </div>
 
-            {/* TypewriterHero */}
-            <TypewriterHero
-                phrases={[
-                    "Analyzing inbox patterns...",
-                    "Processing lead responses...",
-                    "Drafting follow-up emails...",
-                    "Updating CRM records...",
-                ]}
-                statValue={`${(totalTimeSaved / 60).toFixed(1)} hrs`}
-                statLabel="saved today"
-            />
-
-            {/* Agent Grid */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="raycast-panel p-6 h-[200px] flex flex-col gap-4">
-                            <div className="flex items-center gap-4">
-                                <Skeleton className="h-12 w-12 rounded-xl" />
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-32" />
-                                    <Skeleton className="h-3 w-20" />
-                                </div>
-                            </div>
-                            <Skeleton className="h-2 w-full mt-4" />
-                            <div className="flex justify-between mt-auto">
-                                <Skeleton className="h-8 w-20 rounded-lg" />
-                                <Skeleton className="h-8 w-8 rounded-lg" />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : agents.length === 0 ? (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="col-span-full raycast-panel p-12 text-center"
-                >
-                    <Bot className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-title text-foreground mb-2">No agents deployed</h3>
-                    <p className="text-muted-foreground mb-6">
-                        Deploy your first AI agent to start buying back your time.
-                    </p>
-                    <Button onClick={() => setShowNewAgent(true)} className="bg-gradient-primary">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Deploy Your First Agent
-                    </Button>
-                </motion.div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <AnimatePresence mode="popLayout">
-                        {agents.map((agent, i) => (
-                            <AgentCard
-                                key={agent.id}
-                                agent={agent}
-                                index={i}
-                                onToggle={() => updateMutation.mutate({
-                                    id: agent.id,
-                                    status: agent.status === 'Running' ? 'Paused' : 'Running'
-                                })}
-                                onDelete={() => deleteMutation.mutate(agent.id)}
-                                isUpdating={updateMutation.isPending || deleteMutation.isPending}
-                            />
-                        ))}
-                    </AnimatePresence>
-                </div>
-            )}
-
-            {/* New Agent Modal */}
-            <AnimatePresence>
-                {showNewAgent && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                        onClick={() => setShowNewAgent(false)}
-                    >
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            transition={PHYSICS.interaction}
-                            className="raycast-panel-elevated w-full max-w-2xl p-6"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <h2 className="text-title text-foreground mb-6">Deploy a New Agent</h2>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {agentTemplates.map((template) => {
-                                    const requiredTier = AGENT_TIERS[template.name] || 'free';
-                                    const isLocked = requiredTier === 'pro' && !isPro;
-                                    const isDeployed = agents.some(a => a.name === template.name);
-
-                                    return (
-                                        <motion.button
-                                            key={template.name}
-                                            onClick={() => !isLocked && createMutation.mutate(template)}
-                                            disabled={createMutation.isPending || isDeployed || isLocked}
-                                            className={`text-left p-4 rounded-xl border transition-all ${isLocked
-                                                ? 'border-amber-500/30 bg-amber-500/5 cursor-not-allowed'
-                                                : 'border-border/30 bg-card/30 hover:bg-card/50'
-                                                } ${isDeployed ? 'opacity-50' : ''}`}
-                                            whileHover={!isLocked ? { scale: 1.02 } : {}}
-                                            whileTap={!isLocked ? { scale: 0.98 } : {}}
-                                        >
-                                            <div className="flex items-start gap-3">
-                                                <div className={`h-10 w-10 rounded-xl ${template.color} flex items-center justify-center text-white ${isLocked ? 'opacity-50' : ''}`}>
-                                                    <template.icon className="h-5 w-5" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className={`font-medium ${isLocked ? 'text-muted-foreground' : 'text-foreground'}`}>{template.name}</h4>
-                                                        {requiredTier === 'pro' && <UpgradeBadge small />}
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground mt-1">{template.description}</p>
-                                                    {isDeployed && (
-                                                        <span className="text-xs text-primary mt-2 inline-block">Already deployed</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </motion.button>
-                                    );
-                                })}
-                            </div>
-
-                            <div className="flex justify-end mt-6">
-                                <Button variant="ghost" onClick={() => setShowNewAgent(false)} disablePhysics>
-                                    Cancel
-                                </Button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-}
-
-function StatCard({
-    label,
-    value,
-    icon: Icon,
-    color,
-    subtext
-}: {
-    label: string;
-    value: string | number;
-    icon: any;
-    color: string;
-    subtext?: string;
-}) {
-    return (
-        <motion.div
-            className="raycast-panel p-4"
-            whileHover={{ scale: 1.02 }}
-            transition={PHYSICS.interaction}
-        >
-            <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-xl bg-card flex items-center justify-center ${color}`}>
-                    <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                    <p className="text-2xl font-bold text-foreground">{value}</p>
-                    <p className="text-xs text-muted-foreground">{label}</p>
-                    {subtext && <p className="text-[10px] text-muted-foreground/70">{subtext}</p>}
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-function AgentCard({
-    agent,
-    index,
-    onToggle,
-    onDelete,
-    isUpdating
-}: {
-    agent: Agent;
-    index: number;
-    onToggle: () => void;
-    onDelete: () => void;
-    isUpdating: boolean;
-}) {
-    const Icon = roleIcons[agent.role] || Bot;
-    const isRunning = agent.status === 'Running';
-
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ ...PHYSICS.interaction, delay: index * 0.05 }}
-            className="raycast-panel p-5"
-        >
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    <div className={`h-12 w-12 rounded-xl ${agent.color || 'bg-primary'} flex items-center justify-center text-white shadow-lg`}>
-                        <Icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                        <h3 className="font-semibold text-foreground">{agent.name}</h3>
-                        <p className="text-xs text-muted-foreground">{agent.role}</p>
-                    </div>
-                </div>
-
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" disablePhysics>
-                            <MoreVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="raycast-panel">
-                        <DropdownMenuItem onClick={onToggle} disabled={isUpdating}>
-                            {isRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                            {isRunning ? 'Pause' : 'Resume'}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Settings className="h-4 w-4 mr-2" />
-                            Configure
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={onDelete}
-                            disabled={isUpdating}
-                            className="text-destructive focus:text-destructive"
-                        >
-                            Delete
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-3">
-                <div className="bg-card/50 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                        <div className={`h-2 w-2 rounded-full ${isRunning ? 'bg-success animate-pulse' : 'bg-muted'}`} />
-                        <span className="text-xs text-muted-foreground">Status</span>
-                    </div>
-                    <p className="text-sm font-medium text-foreground mt-1">{agent.status}</p>
-                </div>
-                <div className="bg-card/50 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                        <Activity className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">Uptime</span>
-                    </div>
-                    <p className="text-sm font-medium text-foreground mt-1">{agent.uptime}</p>
-                </div>
-            </div>
-
-            {/* Time Saved */}
-            <div className="mt-4 pt-4 border-t border-border/30">
-                <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Time Saved</span>
-                    <div className="flex items-center gap-2">
-                        <Clock className="h-3 w-3 text-success" />
-                        <span className="text-sm font-bold text-success">
-                            {agent.timeSaved ? `${(agent.timeSaved / 60).toFixed(1)} hrs` : '0 hrs'}
-                        </span>
-                    </div>
-                </div>
-                {agent.timeSaved > 0 && (
-                    <div className="mt-2 h-1.5 bg-card rounded-full overflow-hidden">
-                        <motion.div
-                            className="h-full bg-gradient-to-r from-success to-primary rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min((agent.timeSaved / 480) * 100, 100)}%` }}
-                            transition={{ duration: 1, ease: 'easeOut' }}
+            {/* Status Command Line */}
+            <SpotlightCard className="p-6">
+                <div className="flex items-center gap-4">
+                    <Brain className="h-6 w-6 text-[var(--color-aurora-purple)]" />
+                    <div className="flex-1">
+                        <TypewriterText
+                            text="All agents operational. Processing 47 tasks in queue. Estimated completion: 23 minutes..."
+                            speed={30}
+                            loop
+                            pauseDuration={3000}
+                            className="text-lg text-[var(--color-aurora-cyan)]"
                         />
                     </div>
-                )}
+                </div>
+            </SpotlightCard>
+
+            {/* Stats Row */}
+            <BentoGrid columns={12} gap="normal">
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="TOTAL AGENTS"
+                        value={agentTemplates.length}
+                        trend="neutral"
+                        icon={<Bot className="h-4 w-4" />}
+                    />
+                </BentoItem>
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="ACTIVE NOW"
+                        value={activeCount}
+                        delta={activeCount > 0 ? 100 : 0}
+                        trend="up"
+                        icon={<Activity className="h-4 w-4" />}
+                    />
+                </BentoItem>
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="TASKS TODAY"
+                        value={1371}
+                        delta={12.4}
+                        trend="up"
+                        icon={<Zap className="h-4 w-4" />}
+                    />
+                </BentoItem>
+                <BentoItem colSpan={3}>
+                    <BentoDataCard
+                        label="HOURS SAVED"
+                        value={`${totalTimeSaved}h`}
+                        delta={8.2}
+                        trend="up"
+                        icon={<Clock className="h-4 w-4" />}
+                    />
+                </BentoItem>
+            </BentoGrid>
+
+            {/* Agent Grid */}
+            <div>
+                <h2 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+                    DEPLOYED AGENTS
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {agentTemplates.map((agent, idx) => {
+                        const isLocked = !canAccessAgent(agent.name as keyof typeof AGENT_TIERS);
+                        const dbAgent = agents?.find(a => a.name === agent.name);
+                        const isActive = dbAgent?.status === 'active';
+
+                        return (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1, ...PHYSICS.snappy }}
+                            >
+                                <GlassCard
+                                    intensity="medium"
+                                    variant={isActive ? 'acid' : 'default'}
+                                    glowing={isActive}
+                                    className={isLocked ? 'opacity-60' : ''}
+                                >
+                                    <div className="p-5">
+                                        {/* Header */}
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div
+                                                    className="h-10 w-10 rounded-lg flex items-center justify-center"
+                                                    style={{
+                                                        background: `${agent.color}20`,
+                                                        border: `1px solid ${agent.color}40`
+                                                    }}
+                                                >
+                                                    <agent.icon className="h-5 w-5" style={{ color: agent.color }} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-terminal text-sm text-[var(--text-sovereign-primary)]">
+                                                        {agent.name.toUpperCase()}
+                                                    </h3>
+                                                    <span className="text-[10px] text-[var(--text-sovereign-muted)]">
+                                                        {agent.role.toUpperCase()}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {isLocked ? (
+                                                <UpgradeBadge size="sm" />
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`h-2 w-2 rounded-full ${isActive ? 'bg-[var(--color-acid)] animate-pulse' : 'bg-[var(--text-sovereign-muted)]'}`} />
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <button className="p-1 rounded hover:bg-white/10">
+                                                                <MoreVertical className="h-4 w-4 text-[var(--text-sovereign-muted)]" />
+                                                            </button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent className="glass-panel border-[var(--glass-sovereign-border)]" style={{ background: 'var(--color-structure)' }}>
+                                                            <DropdownMenuItem
+                                                                className="text-[var(--text-sovereign-primary)] focus:bg-[rgba(187,255,0,0.1)] focus:text-[var(--color-acid)]"
+                                                                onClick={() => dbAgent && toggleAgent.mutate({ id: dbAgent.id, status: dbAgent.status })}
+                                                            >
+                                                                {isActive ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                                                                {isActive ? 'Pause' : 'Activate'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem className="text-[var(--text-sovereign-primary)] focus:bg-[rgba(187,255,0,0.1)] focus:text-[var(--color-acid)]">
+                                                                <Settings className="h-4 w-4 mr-2" />
+                                                                Configure
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Description */}
+                                        <p className="text-xs text-[var(--text-sovereign-muted)] mb-4 line-clamp-2">
+                                            {agent.description}
+                                        </p>
+
+                                        {/* Stats */}
+                                        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[var(--glass-sovereign-border)]">
+                                            <div>
+                                                <span className="text-terminal text-[10px] text-[var(--text-sovereign-muted)]">
+                                                    TASKS
+                                                </span>
+                                                <p className="text-lg font-bold text-[var(--text-sovereign-primary)]" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                                    <SpringCounter value={agent.tasks} />
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <span className="text-terminal text-[10px] text-[var(--text-sovereign-muted)]">
+                                                    EFFICIENCY
+                                                </span>
+                                                <p
+                                                    className={`text-lg font-bold ${agent.efficiency >= 95 ? 'text-[var(--color-acid)]' : 'text-[var(--text-sovereign-primary)]'}`}
+                                                    style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                                                >
+                                                    {agent.efficiency}%
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Action Button */}
+                                        {!isLocked && (
+                                            <motion.button
+                                                className="w-full mt-4 py-2 rounded-lg text-terminal text-xs flex items-center justify-center gap-2"
+                                                style={{
+                                                    background: isActive ? 'var(--color-acid)' : 'var(--color-structure)',
+                                                    color: isActive ? '#000' : 'var(--text-sovereign-muted)',
+                                                    border: isActive ? 'none' : '1px solid var(--glass-sovereign-border)'
+                                                }}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={() => dbAgent && toggleAgent.mutate({ id: dbAgent.id, status: dbAgent.status })}
+                                            >
+                                                {isActive ? (
+                                                    <>
+                                                        <Pause className="h-3 w-3" />
+                                                        PAUSE AGENT
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Play className="h-3 w-3" />
+                                                        ACTIVATE
+                                                    </>
+                                                )}
+                                            </motion.button>
+                                        )}
+                                    </div>
+                                </GlassCard>
+                            </motion.div>
+                        );
+                    })}
+                </div>
             </div>
-        </motion.div>
+
+            {/* Deploy New Agent CTA */}
+            <AuroraBackground intensity="subtle" className="rounded-2xl p-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-lg font-bold text-[var(--text-sovereign-primary)]">
+                            Need a Custom Agent?
+                        </h3>
+                        <p className="text-sm text-[var(--text-sovereign-muted)]">
+                            Design and deploy agents tailored to your specific workflows
+                        </p>
+                    </div>
+                    <GlowButton variant="aurora">
+                        <Terminal className="h-4 w-4 mr-2" />
+                        AGENT BUILDER
+                    </GlowButton>
+                </div>
+            </AuroraBackground>
+        </div>
     );
 }
