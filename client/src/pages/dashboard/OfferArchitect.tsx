@@ -113,7 +113,7 @@ export default function OfferArchitect() {
             </div>
 
             {/* Form Content */}
-            <div className="glass-card p-8">
+            <div className="raycast-panel p-8">
                 <AnimatePresence mode="wait">
                     {!generatedOffer ? (
                         <motion.div
@@ -299,7 +299,7 @@ function StepTransformation({ formData, setFormData }: any) {
                 />
             </div>
 
-            <div className="glass-card p-4 border-l-4 border-primary">
+            <div className="raycast-panel p-4 border-l-4 border-primary">
                 <h4 className="font-medium text-foreground mb-2">💡 Transformation Formula</h4>
                 <p className="text-sm text-muted-foreground">
                     <strong>From:</strong> {formData.painPoints.split(',')[0] || '[Current pain]'}<br />
@@ -322,19 +322,19 @@ function StepOffer({ formData, isGenerating }: any) {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <div className="glass-card p-4">
+                <div className="raycast-panel p-4">
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">Expertise</h4>
                     <p className="text-foreground">{formData.expertise || 'Not specified'}</p>
                 </div>
-                <div className="glass-card p-4">
+                <div className="raycast-panel p-4">
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">Ideal Client</h4>
                     <p className="text-foreground">{formData.audience || 'Not specified'}</p>
                 </div>
-                <div className="glass-card p-4">
+                <div className="raycast-panel p-4">
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">Pain Points</h4>
                     <p className="text-foreground">{formData.painPoints || 'Not specified'}</p>
                 </div>
-                <div className="glass-card p-4">
+                <div className="raycast-panel p-4">
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">Transformation</h4>
                     <p className="text-foreground">{formData.transformation || 'Not specified'}</p>
                 </div>
@@ -377,7 +377,7 @@ function GeneratedOffer({ offer, onReset }: { offer: any; onReset: () => void })
             </div>
 
             {/* Transformation Statement */}
-            <div className="glass-card p-6 border-l-4 border-primary">
+            <div className="raycast-panel p-6 border-l-4 border-primary">
                 <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-foreground">Transformation Statement</h3>
                     <Button variant="ghost" size="sm" onClick={copyToClipboard} disablePhysics>
@@ -388,7 +388,7 @@ function GeneratedOffer({ offer, onReset }: { offer: any; onReset: () => void })
             </div>
 
             {/* Methodology Map */}
-            <div className="glass-card p-6">
+            <div className="raycast-panel p-6">
                 <div className="flex items-center gap-2 mb-4">
                     <BookOpen className="h-5 w-5 text-primary" />
                     <h3 className="font-semibold text-foreground">Methodology Map</h3>
@@ -413,14 +413,14 @@ function GeneratedOffer({ offer, onReset }: { offer: any; onReset: () => void })
 
             {/* Pricing & Guarantee */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="glass-card p-4">
+                <div className="raycast-panel p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <DollarSign className="h-4 w-4 text-success" />
                         <h4 className="font-medium text-foreground">Pricing Guidance</h4>
                     </div>
                     <p className="text-sm text-muted-foreground">{offer.pricing}</p>
                 </div>
-                <div className="glass-card p-4">
+                <div className="raycast-panel p-4">
                     <div className="flex items-center gap-2 mb-2">
                         <Target className="h-4 w-4 text-warning" />
                         <h4 className="font-medium text-foreground">Guarantee</h4>

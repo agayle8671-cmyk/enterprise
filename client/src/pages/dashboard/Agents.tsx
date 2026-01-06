@@ -190,7 +190,7 @@ export default function Agents() {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="glass-card p-6 h-[200px] flex flex-col gap-4">
+                        <div key={i} className="raycast-panel p-6 h-[200px] flex flex-col gap-4">
                             <div className="flex items-center gap-4">
                                 <Skeleton className="h-12 w-12 rounded-xl" />
                                 <div className="space-y-2">
@@ -210,7 +210,7 @@ export default function Agents() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="col-span-full glass-card p-12 text-center"
+                    className="col-span-full raycast-panel p-12 text-center"
                 >
                     <Bot className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-title text-foreground mb-2">No agents deployed</h3>
@@ -257,7 +257,7 @@ export default function Agents() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={PHYSICS.interaction}
-                            className="liquid-glass-heavy w-full max-w-2xl p-6"
+                            className="raycast-panel-elevated w-full max-w-2xl p-6"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <h2 className="text-title text-foreground mb-6">Deploy a New Agent</h2>
@@ -328,7 +328,7 @@ function StatCard({
 }) {
     return (
         <motion.div
-            className="glass-card p-4"
+            className="raycast-panel p-4"
             whileHover={{ scale: 1.02 }}
             transition={PHYSICS.interaction}
         >
@@ -369,7 +369,7 @@ function AgentCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ ...PHYSICS.interaction, delay: index * 0.05 }}
-            className="glass-card p-5"
+            className="raycast-panel p-5"
         >
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -388,7 +388,7 @@ function AgentCard({
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="liquid-glass-subtle">
+                    <DropdownMenuContent align="end" className="raycast-panel">
                         <DropdownMenuItem onClick={onToggle} disabled={isUpdating}>
                             {isRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
                             {isRunning ? 'Pause' : 'Resume'}

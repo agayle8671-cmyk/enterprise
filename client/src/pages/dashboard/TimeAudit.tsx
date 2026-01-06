@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PHYSICS } from '@/lib/animation-constants';
 import { Button } from '@/components/ui/button';
+import { TypewriterHero } from '@/components/dashboard/TypewriterHero';
 import {
     Clock,
     TrendingUp,
@@ -125,30 +126,49 @@ export default function TimeAudit() {
     };
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
+        <div className="space-y-6">
+            {/* Header - Raycast V2 Style */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-headline text-foreground">Time Audit</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Track and optimize your time using the DRIP Matrix
+                    <h1 className="text-2xl font-semibold" style={{ color: '#EDEDED', letterSpacing: '-0.025em' }}>
+                        Time Audit
+                    </h1>
+                    <p style={{ color: '#989898' }} className="mt-1">
+                        Buyback Loop analysis for this week.
                     </p>
                 </div>
                 <Button
                     onClick={() => setShowAddEntry(!showAddEntry)}
-                    className="bg-gradient-primary shadow-lg shadow-primary/30"
+                    className="flex items-center gap-2"
+                    style={{
+                        background: 'linear-gradient(135deg, #FF6363 0%, #8B5CF6 100%)',
+                        color: '#FFFFFF',
+                        border: 'none'
+                    }}
                 >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4" />
                     Log Time
                 </Button>
             </div>
+
+            {/* TypewriterHero */}
+            <TypewriterHero
+                phrases={[
+                    "Analyzing time patterns...",
+                    "Calculating buyback rate...",
+                    "Finding automation opportunities...",
+                    "Optimizing your schedule...",
+                ]}
+                statValue={`$${buybackRate}/hr`}
+                statLabel="buyback rate"
+            />
 
             {/* Alert Banner */}
             {parseFloat(replacePercent) > 20 && (
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-4 border-l-4 border-destructive flex items-start gap-3"
+                    className="raycast-panel p-4 border-l-4 border-destructive flex items-start gap-3"
                 >
                     <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                     <div>
@@ -196,7 +216,7 @@ export default function TimeAudit() {
             {/* DRIP Matrix Visualization */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Matrix Grid */}
-                <div className="glass-card p-6 md:p-8">
+                <div className="raycast-panel p-6 md:p-8">
                     <h3 className="text-title text-foreground mb-6">DRIP Matrix - Weekly Breakdown</h3>
                     <div className="grid grid-cols-2 gap-4">
                         {Object.entries(DRIP_CATEGORIES).map(([key, cat]) => {
@@ -237,7 +257,7 @@ export default function TimeAudit() {
                 </div>
 
                 {/* Recent Entries */}
-                <div className="glass-card p-6">
+                <div className="raycast-panel p-6">
                     <h3 className="text-title text-foreground mb-4">Recent Time Entries</h3>
                     <div className="space-y-3">
                         {TIME_DATA.recentEntries.length === 0 ? (
@@ -276,7 +296,7 @@ export default function TimeAudit() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6"
+                    className="raycast-panel p-6"
                 >
                     <h3 className="text-title text-foreground mb-4">Log New Time Entry</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -328,7 +348,7 @@ export default function TimeAudit() {
             )}
 
             {/* Recommendations */}
-            <div className="glass-card p-6">
+            <div className="raycast-panel p-6">
                 <h3 className="text-title text-foreground mb-4">🎯 Optimization Recommendations</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <RecommendationCard
@@ -366,7 +386,7 @@ function StatCard({
 }) {
     return (
         <motion.div
-            className="glass-card p-4"
+            className="raycast-panel p-4"
             whileHover={{ scale: 1.02 }}
             transition={PHYSICS.interaction}
         >

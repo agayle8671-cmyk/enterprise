@@ -62,7 +62,7 @@ export function DecisionFeed() {
         return (
             <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="glass-card p-4 animate-pulse">
+                    <div key={i} className="raycast-panel p-4 animate-pulse">
                         <div className="h-4 bg-muted/30 rounded w-3/4 mb-2" />
                         <div className="h-3 bg-muted/20 rounded w-1/2" />
                     </div>
@@ -73,7 +73,7 @@ export function DecisionFeed() {
 
     if (decisions.length === 0) {
         return (
-            <div className="glass-card p-8 text-center">
+            <div className="raycast-panel p-8 text-center">
                 <Bot className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="font-medium text-foreground mb-2">No pending decisions</h3>
                 <p className="text-sm text-muted-foreground">
@@ -152,7 +152,7 @@ function DecisionCard({ decision, index, isExpanded, onToggle }: DecisionCardPro
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ ...PHYSICS.interaction, delay: index * 0.05 }}
-            className="glass-card overflow-hidden"
+            className="raycast-panel overflow-hidden"
         >
             {/* Header - Always visible */}
             <div

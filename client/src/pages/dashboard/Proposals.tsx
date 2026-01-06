@@ -109,7 +109,7 @@ export default function Proposals() {
             </div>
 
             {/* Contract List */}
-            <div className="glass-card divide-y divide-border/30">
+            <div className="raycast-panel divide-y divide-border/30">
                 {contracts.length === 0 ? (
                     <div className="p-12 text-center">
                         <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -139,7 +139,7 @@ export default function Proposals() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={PHYSICS.interaction}
-                        className="liquid-glass-heavy w-full max-w-md p-6"
+                        className="raycast-panel-elevated w-full max-w-md p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <h2 className="text-title text-foreground mb-6">Create New Proposal</h2>
@@ -219,7 +219,7 @@ function ContractRow({ contract }: { contract: Contract }) {
                         <MoreVertical className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="liquid-glass-subtle">
+                <DropdownMenuContent align="end" className="raycast-panel">
                     <DropdownMenuItem>
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
@@ -237,7 +237,7 @@ function ContractRow({ contract }: { contract: Contract }) {
 function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
     return (
         <motion.div
-            className="glass-card p-4"
+            className="raycast-panel p-4"
             whileHover={{ scale: 1.02 }}
             transition={PHYSICS.interaction}
         >

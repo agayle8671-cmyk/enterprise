@@ -53,7 +53,7 @@ export function FloatingDock({
             onMouseMove={(e) => mouseX.set(e.pageX)}
             onMouseLeave={() => mouseX.set(Infinity)}
             className={cn(
-                "liquid-glass-heavy flex items-end gap-1 px-3 py-2 rounded-2xl z-50",
+                "raycast-panel-elevated flex items-end gap-1 px-3 py-2 rounded-2xl z-50",
                 positionClasses[position],
                 className
             )}
@@ -204,7 +204,7 @@ export function MiniDock({
     return (
         <div
             className={cn(
-                "liquid-glass-subtle flex gap-1 p-1.5 rounded-xl",
+                "raycast-panel flex gap-1 p-1.5 rounded-xl",
                 orientation === "vertical" ? "flex-col" : "flex-row",
                 className
             )}

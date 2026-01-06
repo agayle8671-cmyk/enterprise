@@ -33,7 +33,7 @@ const buttonVariants = cva(
           "text-primary underline-offset-4 hover:underline",
         // New Apple-style variants
         glass:
-          "liquid-glass-subtle text-foreground",
+          "raycast-panel text-foreground",
         gradient:
           "bg-gradient-primary text-white shadow-md",
       },

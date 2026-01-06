@@ -414,7 +414,7 @@ export default function HelpCenter() {
             </div>
 
             {/* Quick Workflows */}
-            <div className="glass-card p-6">
+            <div className="raycast-panel p-6">
                 <div className="flex items-center gap-2 mb-4">
                     <Zap className="h-5 w-5 text-warning" />
                     <h2 className="text-title text-foreground">Quick Start Workflows</h2>
@@ -472,7 +472,7 @@ export default function HelpCenter() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={PHYSICS.interaction}
-                            className="liquid-glass-heavy w-full max-w-lg p-6"
+                            className="raycast-panel-elevated w-full max-w-lg p-6"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-center justify-between mb-6">
@@ -573,7 +573,7 @@ export default function HelpCenter() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                                 transition={PHYSICS.interaction}
-                                className="glass-card p-6"
+                                className="raycast-panel p-6"
                             >
                                 {filteredModules.find(m => m.id === expandedModule)?.sections.map((section, i) => (
                                     <div key={section.title} className={i > 0 ? 'mt-6 pt-6 border-t border-border/30' : ''}>
@@ -631,7 +631,7 @@ export default function HelpCenter() {
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="glass-card p-12 text-center"
+                                className="raycast-panel p-12 text-center"
                             >
                                 <HelpCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="text-title text-foreground mb-2">Select a Topic</h3>
@@ -646,7 +646,7 @@ export default function HelpCenter() {
 
             {/* Command Center CTA */}
             <motion.div
-                className="glass-card p-6 border-l-4 border-primary"
+                className="raycast-panel p-6 border-l-4 border-primary"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}

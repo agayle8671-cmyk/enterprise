@@ -67,7 +67,7 @@ export default function ClientPortal() {
             </div>
 
             {/* Info Banner */}
-            <div className="glass-card p-4 border-l-4 border-primary flex items-start gap-3">
+            <div className="raycast-panel p-4 border-l-4 border-primary flex items-start gap-3">
                 <Lock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <div>
                     <h4 className="font-medium text-foreground">Client Portal Preview</h4>
@@ -80,7 +80,7 @@ export default function ClientPortal() {
             {/* Client Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Project Status */}
-                <div className="lg:col-span-2 glass-card p-6">
+                <div className="lg:col-span-2 raycast-panel p-6">
                     <div className="flex items-center justify-between mb-6">
                         <div>
                             <h3 className="text-title text-foreground">{MOCK_CLIENT_DATA.project.name}</h3>
@@ -149,7 +149,7 @@ export default function ClientPortal() {
                 {/* Sidebar */}
                 <div className="space-y-6">
                     {/* Deliverables */}
-                    <div className="glass-card p-5">
+                    <div className="raycast-panel p-5">
                         <div className="flex items-center gap-2 mb-4">
                             <FileText className="h-4 w-4 text-primary" />
                             <h4 className="font-medium text-foreground">Deliverables</h4>
@@ -171,7 +171,7 @@ export default function ClientPortal() {
                     </div>
 
                     {/* Methodology Assets */}
-                    <div className="glass-card p-5">
+                    <div className="raycast-panel p-5">
                         <div className="flex items-center gap-2 mb-4">
                             <BookOpen className="h-4 w-4 text-warning" />
                             <h4 className="font-medium text-foreground">Your Assets</h4>
@@ -192,7 +192,7 @@ export default function ClientPortal() {
                     </div>
 
                     {/* Contact */}
-                    <div className="glass-card p-5">
+                    <div className="raycast-panel p-5">
                         <div className="flex items-center gap-2 mb-4">
                             <MessageSquare className="h-4 w-4 text-primary" />
                             <h4 className="font-medium text-foreground">Need Help?</h4>

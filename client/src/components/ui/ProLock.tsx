@@ -96,7 +96,7 @@ export function UpgradeCTA({ feature, description, requiredTier = 'pro' }: Upgra
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-6 border-l-4 border-amber-500"
+            className="raycast-panel p-6 border-l-4 border-amber-500"
         >
             <div className="flex items-start gap-4">
                 <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-lg shrink-0">

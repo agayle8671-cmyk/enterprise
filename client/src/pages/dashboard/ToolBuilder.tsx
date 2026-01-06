@@ -95,7 +95,7 @@ export default function ToolBuilder() {
                         return (
                             <motion.div
                                 key={tool.id}
-                                className="glass-card p-5"
+                                className="raycast-panel p-5"
                                 whileHover={{ scale: 1.01 }}
                                 transition={PHYSICS.interaction}
                             >
@@ -158,7 +158,7 @@ export default function ToolBuilder() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={PHYSICS.interaction}
-                        className="liquid-glass-heavy w-full max-w-2xl p-6"
+                        className="raycast-panel-elevated w-full max-w-2xl p-6"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <h2 className="text-title text-foreground mb-6">Choose a Template</h2>
@@ -213,7 +213,7 @@ export default function ToolBuilder() {
 function StatCard({ label, value, color }: { label: string; value: string | number; color: string }) {
     return (
         <motion.div
-            className="glass-card p-4"
+            className="raycast-panel p-4"
             whileHover={{ scale: 1.02 }}
             transition={PHYSICS.interaction}
         >

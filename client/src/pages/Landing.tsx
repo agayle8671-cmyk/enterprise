@@ -20,7 +20,7 @@ export default function Landing() {
       {/* Navigation - Floating Glass */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-50">
         <motion.div
-          className="liquid-glass-subtle px-6 py-3 flex items-center justify-between"
+          className="raycast-panel px-6 py-3 flex items-center justify-between"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={PHYSICS.screenTransition}
@@ -94,7 +94,7 @@ export default function Landing() {
                   </Button>
                 </Link>
                 <button className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors group">
-                  <div className="h-12 w-12 rounded-full liquid-glass-subtle flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="h-12 w-12 rounded-full raycast-panel flex items-center justify-center group-hover:scale-105 transition-transform">
                     <Play className="h-4 w-4 ml-0.5" />
                   </div>
                   <span className="text-sm font-medium">Watch demo</span>
@@ -113,7 +113,7 @@ export default function Landing() {
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
               transition={{ ...PHYSICS.screenTransition, delay: 0.4 }}
             >
-              <div className="liquid-glass-heavy p-8 float-glow">
+              <div className="raycast-panel-elevated p-8 float-glow">
                 {/* Glow accent */}
                 <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/30 rounded-full blur-3xl" />
 
@@ -140,7 +140,7 @@ export default function Landing() {
                   ].map((item, i) => (
                     <motion.div
                       key={i}
-                      className="flex items-center justify-between py-4 px-5 glass-card"
+                      className="flex items-center justify-between py-4 px-5 raycast-panel"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ ...PHYSICS.interaction, delay: 0.6 + i * 0.1 }}
@@ -218,7 +218,7 @@ export default function Landing() {
             ].map((step, i) => (
               <motion.div
                 key={i}
-                className="glass-card p-8 relative group"
+                className="raycast-panel p-8 relative group"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ ...PHYSICS.screenTransition, delay: i * 0.15 }}
@@ -293,7 +293,7 @@ export default function Landing() {
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  className={`glass-card p-6 bg-gradient-to-br ${item.gradient} glow-border`}
+                  className={`raycast-panel p-6 bg-gradient-to-br ${item.gradient} glow-border`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   whileHover={{ scale: 1.03, y: -4 }}
@@ -350,7 +350,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Starter */}
             <motion.div
-              className="glass-card p-8"
+              className="raycast-panel p-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={PHYSICS.screenTransition}
@@ -381,7 +381,7 @@ export default function Landing() {
 
             {/* Pro - Highlighted */}
             <motion.div
-              className="liquid-glass-heavy p-8 relative glow-border animate-glow-pulse"
+              className="raycast-panel-elevated p-8 relative glow-border animate-glow-pulse"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ ...PHYSICS.screenTransition, delay: 0.1 }}
