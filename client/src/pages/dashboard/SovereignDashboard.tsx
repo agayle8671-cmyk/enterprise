@@ -1,14 +1,20 @@
 /**
  * Sovereign Dashboard
  * 
- * Sovereign Aesthetic Phase 1: The Bloomberg Layer
- * A dense, data-first dashboard showcasing the Bento Grid system
- * with live data streams and terminal-style typography.
+ * Sovereign Aesthetic Phase 1 + 2: Bloomberg + Raycast Layers
+ * Dense, data-first dashboard with glassmorphism, aurora effects,
+ * and physics-based interactions.
  */
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BentoGrid, BentoItem, BentoDataCard, BentoTicker } from '@/components/BentoGrid';
+import {
+    GlassCard,
+    AuroraBackground,
+    GlowButton,
+    SpotlightCard
+} from '@/components/GlassCard';
 import {
     Activity,
     TrendingUp,
@@ -23,7 +29,9 @@ import {
     Wifi,
     BarChart3,
     ArrowUpRight,
-    ArrowDownRight
+    ArrowDownRight,
+    Terminal,
+    Sparkles
 } from 'lucide-react';
 
 // ============================================================================
@@ -311,6 +319,134 @@ export default function SovereignDashboard() {
                 </BentoItem>
 
             </BentoGrid>
+
+            {/* ================================================================
+                PHASE 2: RAYCAST LAYER - Glass, Aurora, Spotlight
+                ================================================================ */}
+
+            <div className="mt-8 mb-20">
+                <h2 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+                    RAYCAST LAYER
+                </h2>
+
+                {/* Aurora Background Section */}
+                <AuroraBackground intensity="medium" className="rounded-2xl mb-6">
+                    <div className="p-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Sparkles className="h-6 w-6 text-[var(--color-aurora-cyan)]" />
+                            <h3 className="text-xl font-bold text-[var(--text-sovereign-primary)]">
+                                Aurora Background
+                            </h3>
+                        </div>
+                        <p className="text-[var(--text-sovereign-muted)] max-w-2xl mb-6">
+                            Animated aurora gradients create depth and energy. The pulsing cyan, purple,
+                            and acid accents bring the interface to life without overwhelming the data.
+                        </p>
+                        <div className="flex gap-3">
+                            <GlowButton variant="acid" size="md">
+                                <Terminal className="h-4 w-4 mr-2 inline" />
+                                EXECUTE
+                            </GlowButton>
+                            <GlowButton variant="aurora" size="md">
+                                DEPLOY
+                            </GlowButton>
+                            <GlowButton variant="alarm" size="md">
+                                ABORT
+                            </GlowButton>
+                        </div>
+                    </div>
+                </AuroraBackground>
+
+                {/* Glass Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* Glass Card - Default */}
+                    <GlassCard intensity="medium" variant="default" magnetic>
+                        <div className="p-6">
+                            <h4 className="text-terminal text-sm text-[var(--text-sovereign-muted)] mb-2">
+                                DEFAULT GLASS
+                            </h4>
+                            <p className="text-[var(--text-sovereign-primary)] text-2xl font-bold mb-2"
+                                style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                MAGNETIC
+                            </p>
+                            <p className="text-xs text-[var(--text-sovereign-muted)]">
+                                Hover to feel the magnetic pull effect
+                            </p>
+                        </div>
+                    </GlassCard>
+
+                    {/* Glass Card - Acid */}
+                    <GlassCard intensity="medium" variant="acid" glowing>
+                        <div className="p-6">
+                            <h4 className="text-terminal text-sm text-[var(--color-acid)] mb-2">
+                                ACID VARIANT
+                            </h4>
+                            <p className="text-[var(--color-acid)] text-2xl font-bold mb-2"
+                                style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                GLOWING
+                            </p>
+                            <p className="text-xs text-[var(--text-sovereign-muted)]">
+                                Bloomberg Terminal Green with aurora border
+                            </p>
+                        </div>
+                    </GlassCard>
+
+                    {/* Glass Card - Aurora */}
+                    <GlassCard intensity="heavy" variant="aurora" glowing>
+                        <div className="p-6">
+                            <h4 className="text-terminal text-sm text-[var(--color-aurora-cyan)] mb-2">
+                                AURORA VARIANT
+                            </h4>
+                            <p className="text-[var(--color-aurora-cyan)] text-2xl font-bold mb-2"
+                                style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                                ETHEREAL
+                            </p>
+                            <p className="text-xs text-[var(--text-sovereign-muted)]">
+                                Cyan-purple gradient with heavy blur
+                            </p>
+                        </div>
+                    </GlassCard>
+                </div>
+
+                {/* Spotlight Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <SpotlightCard>
+                        <div className="p-6">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="h-10 w-10 rounded-lg bg-[var(--color-acid)]/20 flex items-center justify-center">
+                                    <Zap className="h-5 w-5 text-[var(--color-acid)]" />
+                                </div>
+                                <div>
+                                    <h4 className="font-medium text-[var(--text-sovereign-primary)]">Spotlight Effect</h4>
+                                    <p className="text-xs text-[var(--text-sovereign-muted)]">Move cursor to see</p>
+                                </div>
+                            </div>
+                            <p className="text-sm text-[var(--text-sovereign-muted)]">
+                                A subtle radial gradient follows your cursor, creating a spotlight
+                                effect that highlights content as you explore.
+                            </p>
+                        </div>
+                    </SpotlightCard>
+
+                    <SpotlightCard>
+                        <div className="p-6">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="h-10 w-10 rounded-lg bg-[var(--color-aurora-purple)]/20 flex items-center justify-center">
+                                    <Clock className="h-5 w-5 text-[var(--color-aurora-purple)]" />
+                                </div>
+                                <div>
+                                    <h4 className="font-medium text-[var(--text-sovereign-primary)]">Physics-Based</h4>
+                                    <p className="text-xs text-[var(--text-sovereign-muted)]">Spring animations</p>
+                                </div>
+                            </div>
+                            <p className="text-sm text-[var(--text-sovereign-muted)]">
+                                All interactions use spring physics (stiffness: 400, damping: 30)
+                                for natural, responsive motion.
+                            </p>
+                        </div>
+                    </SpotlightCard>
+                </div>
+            </div>
 
             {/* Footer Status Bar */}
             <footer className="fixed bottom-0 left-0 right-0 bg-[var(--color-void)] border-t border-[var(--glass-sovereign-border)] px-4 py-2">
