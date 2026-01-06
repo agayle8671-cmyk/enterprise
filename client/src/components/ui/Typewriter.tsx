@@ -183,3 +183,6 @@ export function StaggerText({ text, className = '', staggerDelay = 0.03 }: Stagg
 }
 
 export default TypewriterText;
+
+// Alias for backwards compatibility
+export { TypewriterText as Typewriter };

@@ -133,7 +133,7 @@ export function CommandCenter({ isOpen, onClose }: CommandCenterProps) {
                                 <div className="relative flex-1 bg-card/30 border border-white/10 rounded-xl px-4 py-2.5 focus-within:ring-2 focus-within:ring-primary/50 transition-all flex items-center h-[42px]">
                                     {!input && (
                                         <Typewriter
-                                            phrases={[
+                                            strings={[
                                                 "Ask AI anything...",
                                                 "Draft monthly report...",
                                                 "Analyze Q3 metrics...",
@@ -141,7 +141,6 @@ export function CommandCenter({ isOpen, onClose }: CommandCenterProps) {
                                                 "Optimize my schedule..."
                                             ]}
                                             className="absolute top-1/2 -translate-y-1/2 left-4 text-muted-foreground pointer-events-none text-sm opacity-60"
-                                            cursorColor="var(--raycast-cursor)"
                                         />
                                     )}
                                     <input
