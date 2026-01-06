@@ -102,3 +102,9 @@ export function BentoContent({ children, className, noPadding }: BentoContentPro
         </div>
     );
 }
+
+// Re-export StatCard as BentoStat for backwards compatibility  
+export { StatCard as BentoStat } from "./StatCard";
+
+// Alias BentoCard as BentoItem for backwards compatibility
+export { BentoCard as BentoItem };
