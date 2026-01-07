@@ -22,13 +22,13 @@ interface AgentThoughtProps {
   position?: { x: number; y: number };
 }
 
-export function AgentThought({ 
-  thought, 
-  stage, 
+export function AgentThought({
+  thought,
+  stage,
   className,
-  position 
+  position
 }: AgentThoughtProps) {
-  
+
   const stageLabels: Record<AgentStage, string> = {
     perception: 'perceiving',
     reasoning: 'reasoning',
@@ -44,26 +44,25 @@ export function AgentThought({
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
         className={cn(
-          "absolute flex items-center gap-3 p-4 rounded-2xl border backdrop-blur-md",
+          "relative flex items-center gap-3 p-4 rounded-2xl border backdrop-blur-md",
           "bg-[var(--color-sos-base)]/90",
           "border-[var(--color-sos-soul)]/20",
           className
         )}
         style={{
           boxShadow: 'var(--shadow-tactile-md)',
-          left: position?.x,
-          top: position?.y,
+          ...(position ? { position: 'absolute', left: position.x, top: position.y } : {})
         }}
       >
         {/* Pulsing "Soul" Indicator */}
         <div className="relative w-3 h-3 flex-shrink-0">
           <motion.div
-            animate={{ 
-              scale: [1, 1.5, 1], 
-              opacity: [1, 0.5, 1] 
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [1, 0.5, 1]
             }}
-            transition={{ 
-              repeat: Infinity, 
+            transition={{
+              repeat: Infinity,
               duration: 1.5,
               ease: "easeInOut"
             }}
@@ -71,16 +70,16 @@ export function AgentThought({
             style={{ background: 'var(--color-sos-soul)' }}
           />
         </div>
-        
+
         {/* Thought Text */}
         <div className="flex flex-col gap-1">
-          <span 
+          <span
             className="text-[10px] font-mono uppercase tracking-wider"
             style={{ color: 'var(--color-sos-soul)' }}
           >
             {stageLabels[stage]}
           </span>
-          <span 
+          <span
             className="text-sm font-medium"
             style={{ color: 'var(--color-sos-text)' }}
           >
@@ -116,7 +115,7 @@ export function AgentThoughtStream({ thoughts, className }: AgentThoughtStreamPr
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            transition={{ 
+            transition={{
               delay: index * 0.1,
               type: "spring",
               stiffness: 300,
@@ -145,11 +144,11 @@ interface GhostActionProps {
   className?: string;
 }
 
-export function GhostAction({ 
-  children, 
-  onConfirm, 
+export function GhostAction({
+  children,
+  onConfirm,
   onReject,
-  className 
+  className
 }: GhostActionProps) {
   return (
     <motion.div
@@ -161,7 +160,7 @@ export function GhostAction({
       <div className="opacity-50 pointer-events-none">
         {children}
       </div>
-      
+
       {/* Confirmation overlay */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
