@@ -85,18 +85,37 @@
   --radius-2xl: 32px;
 
   /* =============================================================================
-     SOVEREIGN AESTHETIC - Electric Concrete Design Tokens
+     SOVEREIGN OS - COGNITIVE LUXURY DESIGN SYSTEM
+     Neo-Tactile Paradigm: Ceramic White Base with International Orange Agent
      ============================================================================= */
 
-  /* ========== SOVEREIGN COLORS (Electric Concrete) ========== */
+  /* ========== S.O.S. FIELD PALETTE (Cognitive Luxury) ========== */
+  --color-sos-base: #F2F7EB;
+  /* Ceramic White - Main application background, canvas */
+  --color-sos-panel: #E5EED6;
+  /* Engineering Grey - Sidebars, inactive panels, secondary zones */
+  --color-sos-shadow: #BEC8E4;
+  /* Deep Anodize - Shadows, dark mode toggle states, text */
+  --color-sos-highlight: #FFFFFF;
+  /* Photon White - Neumorphic highlights, active states */
+  --color-sos-soul: #FF4F00;
+  /* International Orange - AI Cursor, Active Thinking, Ghost Actions */
+  --color-sos-blue: #1270B8;
+  /* Attack Blue - Primary variable inputs (knobs, sliders) */
+  --color-sos-green: #1AA167;
+  /* Decay Green - Secondary variable inputs (confirmations) */
+  --color-sos-text: #2F2F36;
+  /* Soft Charcoal - Primary reading text */
+  --color-sos-muted: #5C5C74;
+  /* Graphite - Metadata, labels, inactive text */
+  --color-sos-red: #CE2021;
+  /* System Red - Errors and warnings */
+
+  /* Legacy Electric Concrete (for backwards compatibility) */
   --color-void: #050505;
-  /* Global background - deep charcoal, not pure black */
   --color-structure: #0A0A0A;
-  /* Surface backgrounds for Bento cells */
   --color-acid: #BBFF00;
-  /* Bloomberg Terminal Green - primary data, positive */
   --color-alarm: #FF3366;
-  /* Neon Red - errors, negative deltas */
   --color-aurora-cyan: #00F0FF;
   /* Aurora gradient color 1 */
   --color-aurora-purple: #7000FF;
@@ -129,6 +148,20 @@
   --glass-sovereign: rgba(10, 10, 10, 0.8);
   --glass-sovereign-border: rgba(255, 255, 255, 0.1);
   --glass-sovereign-blur: 20px;
+
+  /* ========== NEUMORPHISM 2.0 SHADOWS (Architectural Lighting) ========== */
+  /* Light source from top-left, creating tactile depth */
+  --shadow-tactile-sm: 4px 4px 8px #BEC8E4, -4px -4px 8px #FFFFFF;
+  --shadow-tactile-md: 8px 8px 16px #BEC8E4, -8px -8px 16px #FFFFFF;
+  --shadow-tactile-lg: 12px 12px 24px #BEC8E4, -12px -12px 24px #FFFFFF;
+  --shadow-tactile-inset: inset 6px 6px 12px #BEC8E4, inset -6px -6px 12px #FFFFFF;
+  --shadow-agent-glow: 0 0 15px rgba(255, 79, 0, 0.4);
+
+  /* ========== SPRING PHYSICS (Antigravity) ========== */
+  --spring-config-stiffness: 150;
+  --spring-config-damping: 25;
+  --spring-config-mass: 0.5;
+  --transition-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* =============================================================================
@@ -400,6 +433,74 @@
       transform: translateY(-10px) scale(1.02);
       filter: drop-shadow(0 0 60px oklch(0.60 0.28 275 / 0.4));
     }
+  }
+
+  /* =============================================================================
+     SOVEREIGN OS (S.O.S.) - Cognitive Luxury Utilities
+     ============================================================================= */
+  
+  /* Neumorphic shadows */
+  .shadow-tactile-sm {
+    box-shadow: var(--shadow-tactile-sm);
+  }
+
+  .shadow-tactile-md {
+    box-shadow: var(--shadow-tactile-md);
+  }
+
+  .shadow-tactile-lg {
+    box-shadow: var(--shadow-tactile-lg);
+  }
+
+  .shadow-tactile-inset {
+    box-shadow: var(--shadow-tactile-inset);
+  }
+
+  .shadow-agent-glow {
+    box-shadow: var(--shadow-agent-glow);
+  }
+
+  /* S.O.S. Color utilities */
+  .bg-sos-base {
+    background-color: var(--color-sos-base);
+  }
+
+  .bg-sos-panel {
+    background-color: var(--color-sos-panel);
+  }
+
+  .bg-sos-soul {
+    background-color: var(--color-sos-soul);
+  }
+
+  .text-sos-text {
+    color: var(--color-sos-text);
+  }
+
+  .text-sos-muted {
+    color: var(--color-sos-muted);
+  }
+
+  .text-sos-soul {
+    color: var(--color-sos-soul);
+  }
+
+  /* Magnetic element marker */
+  [data-magnetic] {
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Spring physics transition */
+  .transition-spring {
+    transition-timing-function: var(--transition-spring);
+  }
+
+  /* Naive lowercase headers (Teenage Engineering style) */
+  .naive-header {
+    text-transform: lowercase;
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
 }
 

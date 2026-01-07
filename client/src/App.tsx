@@ -6,22 +6,23 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SubscriptionProvider } from "@/lib/subscription";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/LandingBloomberg";
-import Auth from "@/pages/AuthRaycast";
-import DashboardLayout from "@/components/layout/DashboardLayoutRaycast";
-import Home from "@/pages/dashboard/HomeSovereign";
-import Founding50 from "@/pages/dashboard/Founding50";
-import Buyback from "@/pages/dashboard/Buyback";
-import Agents from "@/pages/dashboard/AgentsSovereign";
-import TimeAudit from "@/pages/dashboard/TimeAuditSovereign";
-import OfferArchitect from "@/pages/dashboard/OfferArchitect";
-import ToolBuilder from "@/pages/dashboard/ToolBuilder";
-import Proposals from "@/pages/dashboard/ProposalsSovereign";
-import ClientPortal from "@/pages/dashboard/ClientPortal";
-import HelpCenter from "@/pages/dashboard/HelpCenter";
-import Settings from "@/pages/dashboard/SettingsRaycast";
+import Landing from "@/pages/LandingSOSv2";
+import Auth from "@/pages/AuthSOS";
+import DashboardLayout from "@/components/layout/DashboardLayoutSOS";
+import Home from "@/pages/dashboard/HomeSOS";
+import Founding50 from "@/pages/dashboard/Founding50SOS";
+import Buyback from "@/pages/dashboard/BuybackSOS";
+import Agents from "@/pages/dashboard/AgentsSOS";
+import TimeAudit from "@/pages/dashboard/TimeAuditSOS";
+import OfferArchitect from "@/pages/dashboard/OfferArchitectSOS";
+import ToolBuilder from "@/pages/dashboard/ToolBuilderSOS";
+import Proposals from "@/pages/dashboard/ProposalsSOS";
+import ClientPortal from "@/pages/dashboard/ClientPortalSOS";
+import HelpCenter from "@/pages/dashboard/HelpCenterSOS";
+import Settings from "@/pages/dashboard/SettingsSOS";
 import SovereignDashboard from "@/pages/dashboard/SovereignDashboard";
 import SovereignShowcase from "@/pages/dashboard/SovereignShowcase";
+import SovereignOS from "@/pages/dashboard/SovereignOS";
 
 function Router() {
   return (
@@ -105,6 +106,10 @@ function Router() {
 
       <Route path="/dashboard/sovereign-showcase">
         <SovereignShowcase />
+      </Route>
+
+      <Route path="/dashboard/sovereign-os">
+        <SovereignOS />
       </Route>
 
       {/* Catch-all */}
