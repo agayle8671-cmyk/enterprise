@@ -1,11 +1,23 @@
+/**
+ * Buyback Page - Sovereign Aesthetic
+ * 
+ * Visualization of time bought back with:
+ * - Glass DRIP Matrix
+ * - Terminal stats
+ * - Agent management
+ */
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PlayCircle, PauseCircle, Settings, Activity, Clock, ArrowRight, Plus } from "lucide-react";
+import { PlayCircle, PauseCircle, Settings, Activity, Clock, ArrowRight, Plus, Pause, Play, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useAgents, useUpdateAgent } from "@/lib/api";
-import { WaveText } from "@/components/WaveText";
+import { GlowButton, GlassCard, SpotlightCard } from "@/components/GlassCard";
+import { BentoGrid, BentoItem, BentoDataCard } from "@/components/BentoGrid";
+import { TypewriterText, PulseRing } from "@/components/Physics";
+import { motion } from "framer-motion";
+import { PHYSICS } from "@/lib/animation-constants";
 
 export default function Buyback() {
   const { toast } = useToast();
@@ -20,28 +32,15 @@ export default function Buyback() {
     });
   };
 
-  const handleDeployFix = () => {
-    toast({
-      title: "Workflow Fix Applied",
-      description: "Schedule Bot has been activated for your calendar.",
-      duration: 3000,
-    });
-  };
-
   const toggleAgentStatus = async (agentId: number, currentStatus: string) => {
     const newStatus = currentStatus === "Running" ? "Paused" : "Running";
     await updateAgent.mutateAsync({ id: agentId, status: newStatus });
-    toast({
-      title: newStatus === "Running" ? "Agent Resumed" : "Agent Paused",
-      description: `Agent has been ${newStatus.toLowerCase()}.`,
-      duration: 2000,
-    });
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="h-8 w-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+        <PulseRing color="var(--color-acid)" size={60} duration={1.5} />
       </div>
     );
   }
@@ -51,159 +50,156 @@ export default function Buyback() {
   const minutes = totalTimeSaved % 60;
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="Buyback Autopilot" /></h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your fleet of autonomous agents and reclaim your time.</p>
+          <h1 className="text-terminal text-2xl text-[var(--text-sovereign-primary)]">
+            BUYBACK AUTOPILOT
+          </h1>
+          <p className="text-sm text-[var(--text-sovereign-muted)] mt-1">
+            Manage your fleet of autonomous agents
+          </p>
         </div>
-        <div className="flex gap-4">
-           <Card className="bg-slate-900 text-white border-none shadow-lg px-4 py-2 flex items-center gap-3">
-             <div className="text-right">
-               <p className="text-xs text-slate-400 uppercase font-semibold">Time Saved Total</p>
-               <p className="text-xl font-bold font-mono" data-testid="text-time-saved">{String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:00</p>
-             </div>
-             <Activity className="h-8 w-8 text-emerald-400" />
-           </Card>
+        <div className="text-right">
+          <div className="text-terminal text-[10px] text-[var(--text-sovereign-muted)] mb-1">TOTAL TIME SAVED</div>
+          <div className="text-3xl font-bold text-[var(--color-acid)]" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+            {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:00
+          </div>
         </div>
       </div>
 
       {/* DRIP Matrix Visualization */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border-slate-200 dark:border-slate-800">
-           <CardHeader>
-             <CardTitle>DRIP Matrix Allocation</CardTitle>
-             <CardDescription>Your time investment vs. automation coverage.</CardDescription>
-           </CardHeader>
-           <CardContent>
-             <div className="relative h-[300px] border border-slate-200 rounded-lg bg-slate-50 p-4 grid grid-cols-2 gap-4">
-                {/* Quadrants */}
-                <div className="bg-white p-4 rounded border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-blue-200 transition-colors cursor-pointer">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Replace</span>
-                    <Badge variant="destructive">High Priority</Badge>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-slate-900">3 Agents</p>
-                    <p className="text-sm text-slate-500">Handling Admin & Email</p>
-                  </div>
-                </div>
+        <GlassCard intensity="medium" className="p-6">
+          <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+            DRIP MATRIX ALLOCATION
+          </h3>
+          <div className="relative h-[300px] grid grid-cols-2 gap-4">
+            {/* Quadrants */}
+            <div className="glass-panel p-4 rounded-lg border border-[var(--color-alarm)] bg-[rgba(255,51,102,0.05)] hover:bg-[rgba(255,51,102,0.1)] transition-colors cursor-pointer group">
+              <div className="flex justify-between items-start">
+                <span className="text-terminal text-xs text-[var(--color-alarm)]">REPLACE</span>
+                <span className="text-[10px] bg-[var(--color-alarm)] text-black px-2 py-0.5 rounded">HIGH PRIORITY</span>
+              </div>
+              <div className="mt-4">
+                <p className="text-xl font-bold text-[var(--text-sovereign-primary)]">3 AGENTS</p>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Handling Admin & Email</p>
+              </div>
+            </div>
 
-                <div className="bg-white p-4 rounded border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-purple-200 transition-colors cursor-pointer">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Produce</span>
-                    <Badge className="bg-emerald-500 hover:bg-emerald-600">Focus Here</Badge>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-slate-900">You</p>
-                    <p className="text-sm text-slate-500">Strategy & Closing</p>
-                  </div>
-                </div>
+            <div className="glass-panel p-4 rounded-lg border border-[var(--color-acid)] bg-[rgba(187,255,0,0.05)] hover:bg-[rgba(187,255,0,0.1)] transition-colors cursor-pointer group">
+              <div className="flex justify-between items-start">
+                <span className="text-terminal text-xs text-[var(--color-acid)]">PRODUCE</span>
+                <span className="text-[10px] bg-[var(--color-acid)] text-black px-2 py-0.5 rounded">FOCUS HERE</span>
+              </div>
+              <div className="mt-4">
+                <p className="text-xl font-bold text-[var(--text-sovereign-primary)]">YOU</p>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Strategy & Closing</p>
+              </div>
+            </div>
 
-                <div className="bg-slate-100 p-4 rounded border border-slate-200 flex flex-col justify-between opacity-70">
-                   <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Delegate</span>
-                  </div>
-                  <div>
-                    <p className="text-xl font-bold text-slate-700">1 Assistant</p>
-                    <p className="text-sm text-slate-500">Research Tasks</p>
-                  </div>
-                </div>
+            <div className="glass-panel p-4 rounded-lg border border-[var(--glass-sovereign-border)] opacity-60 hover:opacity-100 transition-opacity">
+              <div className="flex justify-between items-start">
+                <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">DELEGATE</span>
+              </div>
+              <div className="mt-4">
+                <p className="text-xl font-bold text-[var(--text-sovereign-primary)]">1 ASSISTANT</p>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Research Tasks</p>
+              </div>
+            </div>
 
-                <div className="bg-slate-100 p-4 rounded border border-slate-200 flex flex-col justify-between opacity-70">
-                   <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Invest</span>
-                  </div>
-                  <div>
-                    <p className="text-xl font-bold text-slate-700">2 Tools</p>
-                    <p className="text-sm text-slate-500">Market Intelligence</p>
-                  </div>
-                </div>
+            <div className="glass-panel p-4 rounded-lg border border-[var(--glass-sovereign-border)] opacity-60 hover:opacity-100 transition-opacity">
+              <div className="flex justify-between items-start">
+                <span className="text-terminal text-xs text-[var(--color-aurora-purple)]">INVEST</span>
+              </div>
+              <div className="mt-4">
+                <p className="text-xl font-bold text-[var(--text-sovereign-primary)]">2 TOOLS</p>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Market Intelligence</p>
+              </div>
+            </div>
 
-                {/* Axes Labels */}
-                <div className="absolute left-1/2 bottom-2 -translate-x-1/2 text-xs font-semibold text-slate-400">Financial Value →</div>
-                <div className="absolute left-2 top-1/2 -translate-y-1/2 -rotate-90 text-xs font-semibold text-slate-400">Energy Cost →</div>
-             </div>
-           </CardContent>
-        </Card>
+            {/* Axes Labels */}
+            <div className="absolute left-1/2 bottom-2 -translate-x-1/2 text-[10px] text-[var(--text-sovereign-muted)]">FINANCIAL VALUE →</div>
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] text-[var(--text-sovereign-muted)]">ENERGY COST →</div>
+          </div>
+        </GlassCard>
 
         {/* Active Agents List */}
-        <Card className="border-slate-200 dark:border-slate-800">
-          <CardHeader>
-            <CardTitle>Active Agents</CardTitle>
-            <CardDescription>Manage your digital workforce.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-             {(agents || []).map((agent: any) => (
-               <div key={agent.id} className="flex items-center justify-between p-4 rounded-lg border border-slate-100 bg-white hover:border-slate-200 transition-colors" data-testid={`card-agent-${agent.id}`}>
-                 <div className="flex items-center gap-4">
-                   <div className={`h-10 w-10 rounded-lg ${agent.color} flex items-center justify-center text-white font-bold shadow-md`}>
-                     {agent.name.charAt(0)}
-                   </div>
-                   <div>
-                     <p className="font-semibold text-slate-900" data-testid={`text-agent-name-${agent.id}`}>{agent.name}</p>
-                     <p className="text-sm text-slate-500" data-testid={`text-agent-role-${agent.id}`}>{agent.role}</p>
-                   </div>
-                 </div>
-                 <div className="flex items-center gap-4">
-                   <Badge 
-                     variant={agent.status === "Running" ? "default" : "secondary"} 
-                     className={agent.status === "Running" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
-                     data-testid={`badge-agent-status-${agent.id}`}
-                   >
-                     {agent.status}
-                   </Badge>
-                   <span className="text-xs text-slate-500" data-testid={`text-agent-uptime-${agent.id}`}>{agent.uptime}</span>
-                   <Button 
-                     variant="ghost" 
-                     size="icon"
-                     onClick={() => toggleAgentStatus(agent.id, agent.status)}
-                     data-testid={`button-agent-toggle-${agent.id}`}
-                   >
-                     {agent.status === "Running" ? (
-                       <PauseCircle className="h-5 w-5 text-slate-400 hover:text-slate-600" />
-                     ) : (
-                       <PlayCircle className="h-5 w-5 text-emerald-500 hover:text-emerald-600" />
-                     )}
-                   </Button>
-                   <Link href="/dashboard/settings">
-                     <Button variant="ghost" size="icon" data-testid={`button-agent-settings-${agent.id}`}>
-                       <Settings className="h-4 w-4 text-slate-400" />
-                     </Button>
-                   </Link>
-                 </div>
-               </div>
-             ))}
-             
-             <Button 
-               className="w-full mt-4 border-dashed border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:border-slate-300"
-               onClick={handleDeployAgent}
-             >
-               <Plus className="mr-2 h-4 w-4" /> Deploy New Agent
-             </Button>
-          </CardContent>
-        </Card>
+        <GlassCard intensity="medium" className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)]">ACTIVE AGENTS</h3>
+              <p className="text-sm text-[var(--text-sovereign-muted)]">Manage your digital workforce</p>
+            </div>
+            <GlowButton variant="acid" size="sm" onClick={handleDeployAgent} className="h-8">
+              <Plus className="h-4 w-4 mr-1" /> DEPLOY
+            </GlowButton>
+          </div>
+
+          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            {(agents || []).map((agent: any) => (
+              <motion.div
+                key={agent.id}
+                className="flex items-center justify-between p-3 rounded-lg border border-[var(--glass-sovereign-border)] bg-[var(--color-void)] hover:border-[var(--color-acid)] transition-colors"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center text-black font-bold text-xs`} style={{ background: agent.status === 'Running' ? 'var(--color-acid)' : 'var(--text-sovereign-muted)' }}>
+                    {agent.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[var(--text-sovereign-primary)]">{agent.name}</p>
+                    <p className="text-[10px] text-[var(--text-sovereign-muted)]">{agent.role}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] px-2 py-0.5 rounded ${agent.status === 'Running'
+                      ? 'bg-[rgba(187,255,0,0.15)] text-[var(--color-acid)]'
+                      : 'bg-white/5 text-[var(--text-sovereign-muted)]'
+                    }`}>
+                    {agent.status.toUpperCase()}
+                  </span>
+                  <button
+                    onClick={() => toggleAgentStatus(agent.id, agent.status)}
+                    className="text-[var(--text-sovereign-muted)] hover:text-[var(--color-acid)] transition-colors"
+                  >
+                    {agent.status === "Running" ? (
+                      <Pause className="h-4 w-4" />
+                    ) : (
+                      <Play className="h-4 w-4" />
+                    )}
+                  </button>
+                  <Link href="/dashboard/settings">
+                    <button className="text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)]">
+                      <Settings className="h-3 w-3" />
+                    </button>
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </GlassCard>
       </div>
-      
+
       {/* Time Assassin Detector */}
-       <Card className="bg-slate-900 text-white border-none relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/50 to-blue-900/50"></div>
-        <CardContent className="relative z-10 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-           <div>
-             <div className="flex items-center gap-2 mb-2">
-               <Badge variant="destructive" className="animate-pulse">Alert</Badge>
-               <span className="text-sm text-slate-300">New Time Assassin Detected</span>
-             </div>
-             <h3 className="text-2xl font-bold mb-2">Manual Calendar Scheduling</h3>
-             <p className="text-slate-300 max-w-xl">
-               You spent <span className="text-white font-bold">4.5 hours</span> this week coordinating meetings. Deploy the "Schedule Bot" to reclaim this time immediately.
-             </p>
-           </div>
-           <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 whitespace-nowrap" onClick={handleDeployFix}>
-             Deploy Fix <ArrowRight className="ml-2 h-4 w-4" />
-           </Button>
-        </CardContent>
-       </Card>
+      <SpotlightCard className="p-8 border-l-4 border-l-[var(--color-alarm)]">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="animate-pulse h-2 w-2 rounded-full bg-[var(--color-alarm)]"></span>
+              <span className="text-terminal text-xs text-[var(--color-alarm)]">NEW TIME ASSASSIN DETECTED</span>
+            </div>
+            <h3 className="text-2xl font-bold text-[var(--text-sovereign-primary)] mb-2">MANUAL CALENDAR SCHEDULING</h3>
+            <p className="text-[var(--text-sovereign-muted)] max-w-xl">
+              You spent <span className="text-[var(--color-acid)] font-bold">4.5 hours</span> this week coordinating meetings. Deploy the "Schedule Bot" to reclaim this time immediately.
+            </p>
+          </div>
+          <GlowButton variant="alarm" size="lg">
+            DEPLOY FIX <ArrowRight className="ml-2 h-4 w-4" />
+          </GlowButton>
+        </div>
+      </SpotlightCard>
 
     </div>
   );

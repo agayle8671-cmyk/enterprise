@@ -1,359 +1,409 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+/**
+ * Settings Page - Sovereign Aesthetic
+ * 
+ * Configuration center with:
+ * - Terminal typography
+ * - Glass panels
+ * - Tab navigation
+ */
+
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { PHYSICS } from "@/lib/animation-constants";
 import {
   CreditCard, Globe, Lock, Mail, User, Zap, Bell, Shield,
-  Users, Key, Activity, Search, FileText, Download, Filter, Cpu, HardDrive
+  Users, Key, Activity, FileText, Download, Cpu, HardDrive, Settings as SettingsIcon, Terminal
 } from "lucide-react";
-import { WaveText } from "@/components/WaveText";
-import { KernelStatus } from "@/components/KernelStatus";
-import { FileExplorer } from "@/components/FileExplorer";
+import { GlassCard, GlowButton, SpotlightCard } from "@/components/GlassCard";
+import { BentoGrid, BentoItem, BentoDataCard } from "@/components/BentoGrid";
+import { TypewriterText, PulseRing } from "@/components/Physics";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+
+const tabs = [
+  { id: 'general', label: 'GENERAL', icon: User },
+  { id: 'security', label: 'SECURITY', icon: Shield },
+  { id: 'team', label: 'TEAM', icon: Users },
+  { id: 'integrations', label: 'INTEGRATIONS', icon: Globe },
+  { id: 'system', label: 'SYSTEM', icon: Cpu },
+];
+
+const teamMembers = [
+  { name: 'James Doe', email: 'james@sovereign.os', role: 'Owner', status: 'active' },
+  { name: 'Sarah Chen', email: 'sarah@sovereign.os', role: 'Admin', status: 'active' },
+  { name: 'Mike Ross', email: 'mike@sovereign.os', role: 'Member', status: 'pending' },
+];
+
+const integrations = [
+  { name: 'Slack', connected: true, icon: '💬' },
+  { name: 'Google Calendar', connected: true, icon: '📅' },
+  { name: 'Stripe', connected: true, icon: '💳' },
+  { name: 'HubSpot', connected: false, icon: '🎯' },
+  { name: 'Notion', connected: false, icon: '📝' },
+];
 
 export default function Settings() {
+  const [activeTab, setActiveTab] = useState('general');
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white"><WaveText text="Settings & Administration" /></h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">Manage your organization, team permissions, and security compliance.</p>
+          <h1 className="text-terminal text-2xl text-[var(--text-sovereign-primary)]">
+            SYSTEM CONFIGURATION
+          </h1>
+          <div className="flex items-center gap-2 mt-2">
+            <SettingsIcon className="h-4 w-4 text-[var(--color-acid)]" />
+            <p className="text-sm text-[var(--text-sovereign-muted)]">
+              Manage organization, security, and preferences
+            </p>
+          </div>
         </div>
-        <Button variant="outline" className="gap-2">
-          <FileText className="h-4 w-4" /> Export Audit Log
-        </Button>
+        <GlowButton variant="aurora" size="sm">
+          <FileText className="h-4 w-4 mr-2" />
+          EXPORT LOGS
+        </GlowButton>
       </div>
 
-      <Tabs defaultValue="team" className="space-y-6">
-        <TabsList className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 h-auto w-full md:w-auto flex flex-wrap justify-start">
-          <TabsTrigger value="general" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">General</TabsTrigger>
-          <TabsTrigger value="billing" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Billing</TabsTrigger>
-          <TabsTrigger value="team" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Team & Roles</TabsTrigger>
-          <TabsTrigger value="security" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Security & Audit</TabsTrigger>
-          <TabsTrigger value="integrations" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Integrations</TabsTrigger>
-          <TabsTrigger value="system" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">System</TabsTrigger>
-          <TabsTrigger value="files" className="data-[state=active]:bg-slate-100 dark:data-[state=active]:bg-slate-800">Files</TabsTrigger>
-        </TabsList>
+      {/* Command Line */}
+      <SpotlightCard className="p-6">
+        <div className="flex items-center gap-4">
+          <Terminal className="h-6 w-6 text-[var(--color-aurora-cyan)]" />
+          <div className="flex-1">
+            <TypewriterText
+              text="System configuration loaded... All services operational..."
+              speed={25}
+              loop
+              pauseDuration={3000}
+              className="text-lg text-[var(--color-aurora-cyan)]"
+            />
+          </div>
+        </div>
+      </SpotlightCard>
 
-        {/* General Tab */}
-        <TabsContent value="general" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your public profile and personal details.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center gap-6">
-                <Avatar className="h-24 w-24 border-4 border-slate-100 dark:border-slate-800">
+      {/* Tab Navigation */}
+      <div className="glass-panel rounded-lg p-1 flex flex-wrap gap-1">
+        {tabs.map((tab) => (
+          <motion.button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-terminal text-xs transition-colors ${activeTab === tab.id
+                ? 'bg-[rgba(187,255,0,0.15)] text-[var(--color-acid)]'
+                : 'text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)]'
+              }`}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={PHYSICS.interaction}
+      >
+        {activeTab === 'general' && (
+          <div className="space-y-6">
+            <GlassCard intensity="medium" className="p-6">
+              <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-6">
+                PROFILE INFORMATION
+              </h3>
+
+              <div className="flex items-center gap-6 mb-8">
+                <Avatar className="h-20 w-20 border-2 border-[var(--glass-sovereign-border)]">
                   <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback className="bg-[var(--color-structure)] text-[var(--color-acid)]">JD</AvatarFallback>
                 </Avatar>
-                <div className="space-y-2">
-                  <Button variant="outline" size="sm">Change Avatar</Button>
-                  <p className="text-xs text-slate-500">JPG, GIF or PNG. Max size 2MB.</p>
+                <div>
+                  <GlowButton variant="aurora" size="sm">CHANGE AVATAR</GlowButton>
+                  <p className="text-terminal text-[10px] text-[var(--text-sovereign-muted)] mt-2">
+                    JPG, GIF or PNG. Max size 2MB
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First name</Label>
-                  <Input id="firstName" defaultValue="James" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last name</Label>
-                  <Input id="lastName" defaultValue="Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-                    <Input id="email" className="pl-9" defaultValue="james@sovereign.os" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
-                  <Input id="role" defaultValue="Sovereign Operator" disabled className="bg-slate-50 text-slate-500" />
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="border-t border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-end">
-              <Button>Save Changes</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        {/* Team & Roles Tab (RBAC) */}
-        <TabsContent value="team" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Team Members & Permissions</CardTitle>
-                <CardDescription>Manage access control and role assignments.</CardDescription>
-              </div>
-              <Button className="bg-slate-900 text-white gap-2">
-                <Users className="h-4 w-4" /> Invite Member
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-slate-200 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
-                    <tr>
-                      <th className="px-4 py-3">User</th>
-                      <th className="px-4 py-3">Role</th>
-                      <th className="px-4 py-3">Permissions</th>
-                      <th className="px-4 py-3">Last Active</th>
-                      <th className="px-4 py-3 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {[
-                      { name: "James Doe", email: "james@sovereign.os", role: "Owner", roleColor: "bg-purple-100 text-purple-700", perms: "Full Access", active: "Now" },
-                      { name: "Sarah Connor", email: "sarah@sovereign.os", role: "Admin", roleColor: "bg-blue-100 text-blue-700", perms: "Manage Agents, Billing", active: "2h ago" },
-                      { name: "Mike Ross", email: "mike@sovereign.os", role: "Editor", roleColor: "bg-slate-100 text-slate-700", perms: "Content, Launchpad", active: "1d ago" },
-                      { name: "AI Support", email: "support@agent.bot", role: "Service Account", roleColor: "bg-emerald-100 text-emerald-700", perms: "Read-Only", active: "5m ago" },
-                    ].map((user, i) => (
-                      <tr key={i} className="group hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium text-slate-900">{user.name}</p>
-                              <p className="text-xs text-slate-500">{user.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge variant="secondary" className={`${user.roleColor} border-none`}>{user.role}</Badge>
-                        </td>
-                        <td className="px-4 py-3 text-slate-500">{user.perms}</td>
-                        <td className="px-4 py-3 text-slate-500">{user.active}</td>
-                        <td className="px-4 py-3 text-right">
-                          <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">Edit</Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Security & Audit Tab */}
-        <TabsContent value="security" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="border-slate-200">
-              <CardHeader>
-                <CardTitle className="text-base">MFA Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-emerald-600 font-medium">
-                    <Shield className="h-5 w-5" /> Enabled
-                  </div>
-                  <Switch checked />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200">
-              <CardHeader>
-                <CardTitle className="text-base">SSO Configuration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-500 font-medium">
-                    <Key className="h-5 w-5" /> Disabled
-                  </div>
-                  <Switch />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200">
-              <CardHeader>
-                <CardTitle className="text-base">Session Timeout</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-900 font-medium">30 Minutes</span>
-                  <Button variant="ghost" size="sm">Edit</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Audit Logs</CardTitle>
-                <CardDescription>Track all system activity and sensitive actions.</CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-                  <Input placeholder="Filter logs..." className="pl-9 w-64" />
-                </div>
-                <Button variant="outline"><Filter className="h-4 w-4 mr-2" /> Filter</Button>
-                <Button variant="outline"><Download className="h-4 w-4 mr-2" /> CSV</Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-slate-200 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
-                    <tr>
-                      <th className="px-4 py-3">Event</th>
-                      <th className="px-4 py-3">User</th>
-                      <th className="px-4 py-3">IP Address</th>
-                      <th className="px-4 py-3">Date</th>
-                      <th className="px-4 py-3 text-right">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {[
-                      { event: "Agent Deployed: Invoice Chaser", user: "James Doe", ip: "192.168.1.1", date: "Jan 04, 14:30", status: "Success" },
-                      { event: "Billing Method Updated", user: "Sarah Connor", ip: "10.0.0.42", date: "Jan 04, 11:15", status: "Success" },
-                      { event: "Failed Login Attempt", user: "Unknown", ip: "45.22.19.11", date: "Jan 03, 23:40", status: "Failed" },
-                      { event: "Exported Client List", user: "Mike Ross", ip: "192.168.1.5", date: "Jan 03, 09:20", status: "Warning" },
-                      { event: "API Key Generated", user: "James Doe", ip: "192.168.1.1", date: "Jan 02, 16:45", status: "Success" },
-                    ].map((log, i) => (
-                      <tr key={i} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3 font-medium text-slate-900">{log.event}</td>
-                        <td className="px-4 py-3 text-slate-500">{log.user}</td>
-                        <td className="px-4 py-3 font-mono text-xs text-slate-400">{log.ip}</td>
-                        <td className="px-4 py-3 text-slate-500">{log.date}</td>
-                        <td className="px-4 py-3 text-right">
-                          <Badge variant="outline" className={
-                            log.status === "Success" ? "text-emerald-600 border-emerald-200 bg-emerald-50" :
-                              log.status === "Failed" ? "text-red-600 border-red-200 bg-red-50" :
-                                "text-orange-600 border-orange-200 bg-orange-50"
-                          }>
-                            {log.status}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Billing Tab */}
-        <TabsContent value="billing" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <Card className="border-slate-200 dark:border-slate-800 bg-slate-900 text-white">
-            <CardHeader>
-              <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-white">Sovereign Pro Plan</CardTitle>
-                  <CardDescription className="text-slate-400">Everything you need to scale to $1M ARR.</CardDescription>
+                  <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                    FIRST NAME
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue="James"
+                    className="w-full p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-primary)] outline-none focus:border-[var(--color-acid)]"
+                    style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                  />
                 </div>
-                <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-none">Active</Badge>
+                <div>
+                  <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                    LAST NAME
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue="Doe"
+                    className="w-full p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-primary)] outline-none focus:border-[var(--color-acid)]"
+                    style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                  />
+                </div>
+                <div>
+                  <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                    EMAIL
+                  </label>
+                  <input
+                    type="email"
+                    defaultValue="james@sovereign.os"
+                    className="w-full p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-primary)] outline-none focus:border-[var(--color-acid)]"
+                    style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                  />
+                </div>
+                <div>
+                  <label className="text-terminal text-xs text-[var(--text-sovereign-muted)] block mb-2">
+                    ROLE
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue="Sovereign Operator"
+                    disabled
+                    className="w-full p-3 rounded-lg bg-[var(--color-structure)] border border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-muted)] cursor-not-allowed"
+                    style={{ fontFamily: 'var(--font-sovereign-mono)' }}
+                  />
+                </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-3xl font-display font-bold">$299<span className="text-lg text-slate-400 font-normal">/month</span></div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-300">Agent Usage</span>
-                  <span className="font-medium">14,250 / 50,000 tokens</span>
-                </div>
-                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full w-[28%] bg-blue-500 rounded-full" />
-                </div>
+              <div className="flex justify-end mt-6">
+                <GlowButton variant="acid">SAVE CHANGES</GlowButton>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm text-slate-300">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-blue-400" /> 10 Active Agents
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-emerald-400" /> Enterprise Security
-                </div>
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-purple-400" /> Custom Domain
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-orange-400" /> Priority Support
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="border-t border-slate-800 pt-6">
-              <Button variant="secondary" className="w-full sm:w-auto">Manage Subscription</Button>
-            </CardFooter>
-          </Card>
-
-          <Card className="border-slate-200 dark:border-slate-800">
-            <CardHeader>
-              <CardTitle>Payment Method</CardTitle>
-              <CardDescription>Manage your credit cards and billing details.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg">
-                <div className="h-10 w-14 bg-slate-100 rounded flex items-center justify-center">
-                  <CreditCard className="h-6 w-6 text-slate-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-slate-900">Visa ending in 4242</p>
-                  <p className="text-sm text-slate-500">Expiry 12/2028</p>
-                </div>
-                <Button variant="ghost" size="sm">Edit</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Integrations Tab */}
-        <TabsContent value="integrations" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              { name: "Stripe", desc: "Sync revenue data for Profit Analytics.", status: "Connected", color: "bg-[#635BFF]" },
-              { name: "Slack", desc: "Receive agent alerts in your team channel.", status: "Connected", color: "bg-[#4A154B]" },
-              { name: "Gmail", desc: "Allow 'Inbox Zero' agent to read/write emails.", status: "Connected", color: "bg-[#EA4335]" },
-              { name: "HubSpot", desc: "Sync leads from Founding 50 waitlist.", status: "Disconnected", color: "bg-[#FF7A59]" },
-              { name: "Notion", desc: "Export SOPs generated by the system.", status: "Disconnected", color: "bg-[#000000]" },
-              { name: "OpenAI", desc: "Bring your own API key for custom agents.", status: "Disconnected", color: "bg-[#10A37F]" },
-            ].map((integration, i) => (
-              <Card key={i} className="border-slate-200 dark:border-slate-800 hover:border-slate-300 transition-colors">
-                <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                  <div className={`h-12 w-12 rounded-lg ${integration.color} flex items-center justify-center text-white font-bold text-xl`}>
-                    {integration.name[0]}
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base">{integration.name}</CardTitle>
-                    <CardDescription className="mt-1">{integration.desc}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardFooter>
-                  {integration.status === "Connected" ? (
-                    <Button variant="outline" className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">Connected</Button>
-                  ) : (
-                    <Button variant="outline" className="w-full">Connect</Button>
-                  )}
-                </CardFooter>
-              </Card>
-            ))}
+            </GlassCard>
           </div>
-        </TabsContent>
+        )}
 
-        {/* System Tab - Kernel Management */}
-        <TabsContent value="system" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <KernelStatus />
-        </TabsContent>
+        {activeTab === 'security' && (
+          <div className="space-y-6">
+            <BentoGrid columns={12} gap="normal">
+              <BentoItem colSpan={4}>
+                <BentoDataCard
+                  label="2FA STATUS"
+                  value="ENABLED"
+                  trend="up"
+                  icon={<Shield className="h-4 w-4" />}
+                />
+              </BentoItem>
+              <BentoItem colSpan={4}>
+                <BentoDataCard
+                  label="LAST LOGIN"
+                  value="2min ago"
+                  trend="neutral"
+                  icon={<Activity className="h-4 w-4" />}
+                />
+              </BentoItem>
+              <BentoItem colSpan={4}>
+                <BentoDataCard
+                  label="SESSIONS"
+                  value="3"
+                  trend="neutral"
+                  icon={<Key className="h-4 w-4" />}
+                />
+              </BentoItem>
+            </BentoGrid>
 
-        {/* Files Tab - Sovereign File System */}
-        <TabsContent value="files" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <FileExplorer />
-        </TabsContent>
-      </Tabs>
+            <GlassCard intensity="medium" className="p-6">
+              <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-6">
+                SECURITY SETTINGS
+              </h3>
+
+              <div className="space-y-4">
+                {[
+                  { label: 'Two-Factor Authentication', desc: 'Require 2FA for all logins', enabled: true },
+                  { label: 'Login Notifications', desc: 'Get notified of new sign-ins', enabled: true },
+                  { label: 'Session Timeout', desc: 'Auto-logout after 30min inactivity', enabled: false },
+                ].map((setting, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)]">
+                    <div>
+                      <p className="text-sm text-[var(--text-sovereign-primary)]">{setting.label}</p>
+                      <p className="text-terminal text-[10px] text-[var(--text-sovereign-muted)]">{setting.desc}</p>
+                    </div>
+                    <Switch defaultChecked={setting.enabled} />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 p-4 rounded-lg bg-[rgba(255,51,102,0.1)] border border-[var(--color-alarm)]">
+                <h4 className="text-terminal text-sm text-[var(--color-alarm)] mb-2">DANGER ZONE</h4>
+                <p className="text-xs text-[var(--text-sovereign-muted)] mb-4">
+                  Permanently delete your account and all associated data
+                </p>
+                <button className="text-terminal text-xs text-[var(--color-alarm)] hover:underline">
+                  DELETE ACCOUNT
+                </button>
+              </div>
+            </GlassCard>
+          </div>
+        )}
+
+        {activeTab === 'team' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)]">
+                TEAM MEMBERS
+              </h3>
+              <GlowButton variant="acid" size="sm">
+                <Users className="h-4 w-4 mr-2" />
+                INVITE MEMBER
+              </GlowButton>
+            </div>
+
+            <div className="space-y-2">
+              {teamMembers.map((member, idx) => (
+                <motion.div
+                  key={idx}
+                  className="glass-panel rounded-lg p-4 flex items-center justify-between"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-10 w-10 border border-[var(--glass-sovereign-border)]">
+                      <AvatarFallback className="bg-[var(--color-structure)] text-[var(--color-acid)] text-xs">
+                        {member.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm text-[var(--text-sovereign-primary)]">{member.name}</p>
+                      <p className="text-terminal text-[10px] text-[var(--text-sovereign-muted)]">{member.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className={`text-terminal text-xs px-2 py-1 rounded ${member.status === 'active'
+                        ? 'bg-[rgba(187,255,0,0.15)] text-[var(--color-acid)]'
+                        : 'bg-[rgba(255,255,255,0.1)] text-[var(--text-sovereign-muted)]'
+                      }`}>
+                      {member.status.toUpperCase()}
+                    </span>
+                    <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                      {member.role.toUpperCase()}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'integrations' && (
+          <div className="space-y-6">
+            <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)]">
+              CONNECTED SERVICES
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {integrations.map((integration, idx) => (
+                <GlassCard key={idx} intensity="medium" variant={integration.connected ? 'acid' : 'default'}>
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-2xl">{integration.icon}</span>
+                      <span className={`h-2 w-2 rounded-full ${integration.connected ? 'bg-[var(--color-acid)]' : 'bg-[var(--text-sovereign-muted)]'
+                        }`} />
+                    </div>
+                    <h4 className="text-sm text-[var(--text-sovereign-primary)]">{integration.name}</h4>
+                    <p className="text-terminal text-[10px] text-[var(--text-sovereign-muted)] mt-1">
+                      {integration.connected ? 'CONNECTED' : 'NOT CONNECTED'}
+                    </p>
+                    <motion.button
+                      className="w-full mt-4 py-2 rounded-lg text-terminal text-xs"
+                      style={{
+                        background: integration.connected ? 'var(--color-structure)' : 'var(--color-acid)',
+                        color: integration.connected ? 'var(--text-sovereign-muted)' : '#000',
+                        border: integration.connected ? '1px solid var(--glass-sovereign-border)' : 'none'
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {integration.connected ? 'DISCONNECT' : 'CONNECT'}
+                    </motion.button>
+                  </div>
+                </GlassCard>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'system' && (
+          <div className="space-y-6">
+            <BentoGrid columns={12} gap="normal">
+              <BentoItem colSpan={3}>
+                <div className="p-4 h-full relative">
+                  <div className="absolute top-4 right-4">
+                    <PulseRing color="var(--color-acid)" size={24} duration={2} />
+                  </div>
+                  <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                    CPU USAGE
+                  </span>
+                  <p className="text-2xl font-bold text-[var(--color-acid)] mt-2" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                    67%
+                  </p>
+                </div>
+              </BentoItem>
+              <BentoItem colSpan={3}>
+                <div className="p-4 h-full">
+                  <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                    MEMORY
+                  </span>
+                  <p className="text-2xl font-bold text-[var(--color-aurora-cyan)] mt-2" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                    4.2GB
+                  </p>
+                </div>
+              </BentoItem>
+              <BentoItem colSpan={3}>
+                <div className="p-4 h-full">
+                  <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                    STORAGE
+                  </span>
+                  <p className="text-2xl font-bold text-[var(--color-aurora-purple)] mt-2" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                    128GB
+                  </p>
+                </div>
+              </BentoItem>
+              <BentoItem colSpan={3}>
+                <div className="p-4 h-full">
+                  <span className="text-terminal text-xs text-[var(--text-sovereign-muted)]">
+                    UPTIME
+                  </span>
+                  <p className="text-2xl font-bold text-[var(--text-sovereign-primary)] mt-2" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                    99.97%
+                  </p>
+                </div>
+              </BentoItem>
+            </BentoGrid>
+
+            <GlassCard intensity="medium" className="p-6">
+              <h3 className="text-terminal text-lg text-[var(--text-sovereign-primary)] mb-4">
+                SYSTEM INFORMATION
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'VERSION', value: 'v1.0.0' },
+                  { label: 'ENVIRONMENT', value: 'PRODUCTION' },
+                  { label: 'REGION', value: 'US-EAST-1' },
+                  { label: 'LAST DEPLOY', value: '2h ago' },
+                ].map((item, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)]">
+                    <span className="text-terminal text-[10px] text-[var(--text-sovereign-muted)]">{item.label}</span>
+                    <p className="text-sm text-[var(--color-acid)]" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }

@@ -1,7 +1,15 @@
+/**
+ * Offer Architect Page - Sovereign Aesthetic
+ * 
+ * High-ticket offer creation wizard with:
+ * - Glass panel wizard steps
+ * - Aurora generation effects
+ * - Terminal typography output
+ */
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PHYSICS } from '@/lib/animation-constants';
-import { Button } from '@/components/ui/button';
 import {
     Sparkles,
     ArrowRight,
@@ -13,14 +21,17 @@ import {
     Loader2,
     Wand2,
     BookOpen,
-    Copy
+    Copy,
+    Brain
 } from 'lucide-react';
+import { GlassCard, GlowButton, SpotlightCard } from '@/components/GlassCard';
+import { TypewriterText, PulseRing } from '@/components/Physics';
 
 const WIZARD_STEPS = [
-    { id: 'skills', title: 'Your Expertise', icon: Sparkles },
-    { id: 'audience', title: 'Ideal Client', icon: Users },
-    { id: 'transformation', title: 'Transformation', icon: Target },
-    { id: 'offer', title: 'Your Offer', icon: DollarSign },
+    { id: 'skills', title: 'EXPERTISE', icon: Sparkles },
+    { id: 'audience', title: 'AUDIENCE', icon: Users },
+    { id: 'transformation', title: 'TRANSFORMATION', icon: Target },
+    { id: 'offer', title: 'OFFER GEN', icon: DollarSign },
 ];
 
 export default function OfferArchitect() {
@@ -71,28 +82,29 @@ export default function OfferArchitect() {
         }
     };
 
-    const currentStepData = WIZARD_STEPS[currentStep];
-
     return (
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-headline text-foreground">Offer Architect</h1>
-                <p className="text-muted-foreground mt-1">
-                    Build a high-ticket offer that positions you as the obvious choice
-                </p>
+                <h1 className="text-terminal text-2xl text-[var(--text-sovereign-primary)]">OFFER ARCHITECT</h1>
+                <div className="flex items-center gap-2 mt-2">
+                    <Brain className="h-4 w-4 text-[var(--color-acid)]" />
+                    <p className="text-sm text-[var(--text-sovereign-muted)]">
+                        Construct high-ticket offers using algorithmic positioning
+                    </p>
+                </div>
             </div>
 
             {/* Progress Steps */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-4">
                 {WIZARD_STEPS.map((step, index) => (
-                    <div key={step.id} className="flex items-center">
+                    <div key={step.id} className="flex items-center relative z-10">
                         <motion.div
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl ${index === currentStep
-                                    ? 'bg-primary text-primary-foreground'
-                                    : index < currentStep
-                                        ? 'bg-success/20 text-success'
-                                        : 'bg-card/50 text-muted-foreground'
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${index === currentStep
+                                ? 'bg-[var(--color-acid)] text-black border-[var(--color-acid)]'
+                                : index < currentStep
+                                    ? 'bg-[rgba(187,255,0,0.15)] text-[var(--color-acid)] border-[var(--color-acid)]'
+                                    : 'bg-[var(--color-structure)] text-[var(--text-sovereign-muted)] border-[var(--glass-sovereign-border)]'
                                 }`}
                             animate={{ scale: index === currentStep ? 1.05 : 1 }}
                             transition={PHYSICS.interaction}
@@ -102,18 +114,19 @@ export default function OfferArchitect() {
                             ) : (
                                 <step.icon className="h-4 w-4" />
                             )}
-                            <span className="text-sm font-medium hidden md:inline">{step.title}</span>
+                            <span className="text-terminal text-xs font-bold hidden md:inline">{step.title}</span>
                         </motion.div>
                         {index < WIZARD_STEPS.length - 1 && (
-                            <div className={`w-8 lg:w-16 h-0.5 mx-2 ${index < currentStep ? 'bg-success' : 'bg-border'
-                                }`} />
+                            <div className="hidden md:block w-12 h-px mx-2"
+                                style={{ background: index < currentStep ? 'var(--color-acid)' : 'var(--glass-sovereign-border)' }}
+                            />
                         )}
                     </div>
                 ))}
             </div>
 
             {/* Form Content */}
-            <div className="raycast-panel p-8">
+            <GlassCard intensity="medium" className="p-8 min-h-[500px] flex flex-col justify-between">
                 <AnimatePresence mode="wait">
                     {!generatedOffer ? (
                         <motion.div
@@ -122,6 +135,7 @@ export default function OfferArchitect() {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={PHYSICS.interaction}
+                            className="flex-1"
                         >
                             {currentStep === 0 && (
                                 <StepSkills formData={formData} setFormData={setFormData} />
@@ -155,41 +169,65 @@ export default function OfferArchitect() {
 
                 {/* Navigation */}
                 {!generatedOffer && (
-                    <div className="flex justify-between mt-8 pt-6 border-t border-border/30">
-                        <Button
-                            variant="ghost"
+                    <div className="flex justify-between mt-8 pt-6" style={{ borderTop: '1px solid var(--glass-sovereign-border)' }}>
+                        <button
                             onClick={handleBack}
                             disabled={currentStep === 0}
-                            disablePhysics
+                            className={`flex items-center gap-2 text-terminal text-sm px-4 py-2 rounded transition-colors ${currentStep === 0 ? 'text-[var(--text-sovereign-muted)] opacity-50 cursor-not-allowed' : 'text-[var(--text-sovereign-primary)] hover:bg-white/5'
+                                }`}
                         >
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back
-                        </Button>
-                        <Button
+                            <ArrowLeft className="h-4 w-4" />
+                            BACK
+                        </button>
+                        <GlowButton
                             onClick={handleNext}
                             disabled={isGenerating}
-                            className="bg-gradient-primary"
+                            variant="acid"
                         >
                             {isGenerating ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Generating...
-                                </>
+                                <div className="flex items-center gap-2">
+                                    <PulseRing color="black" size={16} />
+                                    GENERATING...
+                                </div>
                             ) : currentStep === WIZARD_STEPS.length - 1 ? (
                                 <>
                                     <Wand2 className="h-4 w-4 mr-2" />
-                                    Generate Offer
+                                    GENERATE OFFER
                                 </>
                             ) : (
                                 <>
-                                    Next
+                                    NEXT
                                     <ArrowRight className="h-4 w-4 ml-2" />
                                 </>
                             )}
-                        </Button>
+                        </GlowButton>
                     </div>
                 )}
-            </div>
+            </GlassCard>
+        </div>
+    );
+}
+
+function InputField({ label, value, onChange, placeholder, multiline = false }: any) {
+    return (
+        <div>
+            <label className="block text-terminal text-xs text-[var(--text-sovereign-muted)] mb-2">{label.toUpperCase()}</label>
+            {multiline ? (
+                <textarea
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="w-full bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] rounded-lg px-4 py-3 text-sm text-[var(--text-sovereign-primary)] placeholder:text-[var(--text-sovereign-muted)] min-h-[100px] outline-none focus:border-[var(--color-acid)] transition-colors"
+                />
+            ) : (
+                <input
+                    type="text"
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="w-full bg-[var(--color-void)] border border-[var(--glass-sovereign-border)] rounded-lg px-4 py-3 text-sm text-[var(--text-sovereign-primary)] placeholder:text-[var(--text-sovereign-muted)] outline-none focus:border-[var(--color-acid)] transition-colors"
+                />
+            )}
         </div>
     );
 }
@@ -198,41 +236,31 @@ function StepSkills({ formData, setFormData }: any) {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-title text-foreground mb-2">What's Your Expertise?</h2>
-                <p className="text-muted-foreground">Tell us about your skills and experience</p>
+                <h2 className="text-lg font-medium text-[var(--text-sovereign-primary)] mb-2">Identify Expertise</h2>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Input your core competencies and track record</p>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Your Core Expertise</label>
-                <textarea
-                    value={formData.expertise}
-                    onChange={(e) => setFormData({ ...formData, expertise: e.target.value })}
-                    placeholder="e.g., I help agencies automate their operations, I'm a conversion copywriter for SaaS..."
-                    className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground min-h-[100px]"
-                />
-            </div>
+            <InputField
+                label="Core Expertise"
+                value={formData.expertise}
+                onChange={(e: any) => setFormData({ ...formData, expertise: e.target.value })}
+                placeholder="e.g., I help agencies automate their operations..."
+                multiline
+            />
 
             <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Years of Experience</label>
-                    <input
-                        type="text"
-                        value={formData.years}
-                        onChange={(e) => setFormData({ ...formData, years: e.target.value })}
-                        placeholder="e.g., 8 years"
-                        className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Key Achievements</label>
-                    <input
-                        type="text"
-                        value={formData.achievements}
-                        onChange={(e) => setFormData({ ...formData, achievements: e.target.value })}
-                        placeholder="e.g., Helped 50+ clients scale to $1M+"
-                        className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground"
-                    />
-                </div>
+                <InputField
+                    label="Years Experience"
+                    value={formData.years}
+                    onChange={(e: any) => setFormData({ ...formData, years: e.target.value })}
+                    placeholder="e.g., 8 years"
+                />
+                <InputField
+                    label="Key Achievements"
+                    value={formData.achievements}
+                    onChange={(e: any) => setFormData({ ...formData, achievements: e.target.value })}
+                    placeholder="e.g., Scaled 50+ clients"
+                />
             </div>
         </div>
     );
@@ -242,41 +270,31 @@ function StepAudience({ formData, setFormData }: any) {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-title text-foreground mb-2">Who's Your Ideal Client?</h2>
-                <p className="text-muted-foreground">Define who you serve best</p>
+                <h2 className="text-lg font-medium text-[var(--text-sovereign-primary)] mb-2">Target Profile</h2>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Define the ideal client avatar</p>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Ideal Client Profile</label>
-                <input
-                    type="text"
-                    value={formData.audience}
-                    onChange={(e) => setFormData({ ...formData, audience: e.target.value })}
-                    placeholder="e.g., SaaS founders doing $500K-$2M ARR"
-                    className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground"
-                />
-            </div>
+            <InputField
+                label="Ideal Client Profile"
+                value={formData.audience}
+                onChange={(e: any) => setFormData({ ...formData, audience: e.target.value })}
+                placeholder="e.g., SaaS founders doing $500K-$2M ARR"
+            />
 
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Their Biggest Pain Points</label>
-                <textarea
-                    value={formData.painPoints}
-                    onChange={(e) => setFormData({ ...formData, painPoints: e.target.value })}
-                    placeholder="e.g., Stuck at revenue plateau, working 60+ hour weeks, can't hire effectively..."
-                    className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground min-h-[100px]"
-                />
-            </div>
+            <InputField
+                label="Pain Points"
+                value={formData.painPoints}
+                onChange={(e: any) => setFormData({ ...formData, painPoints: e.target.value })}
+                placeholder="e.g., Stuck at revenue plateau, working 60+ hour weeks..."
+                multiline
+            />
 
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">What Are They Currently Trying?</label>
-                <input
-                    type="text"
-                    value={formData.currentSolutions}
-                    onChange={(e) => setFormData({ ...formData, currentSolutions: e.target.value })}
-                    placeholder="e.g., Hiring VAs, using multiple tools, reading books..."
-                    className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground"
-                />
-            </div>
+            <InputField
+                label="Current Failed Solutions"
+                value={formData.currentSolutions}
+                onChange={(e: any) => setFormData({ ...formData, currentSolutions: e.target.value })}
+                placeholder="e.g., Hiring VAs, multiple tools..."
+            />
         </div>
     );
 }
@@ -285,27 +303,25 @@ function StepTransformation({ formData, setFormData }: any) {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-title text-foreground mb-2">What Transformation Do You Deliver?</h2>
-                <p className="text-muted-foreground">Describe the end result your clients achieve</p>
+                <h2 className="text-lg font-medium text-[var(--text-sovereign-primary)] mb-2">Desired Outcome</h2>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">Quantify the transformation delivered</p>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-foreground mb-2">The Dream Outcome</label>
-                <textarea
-                    value={formData.transformation}
-                    onChange={(e) => setFormData({ ...formData, transformation: e.target.value })}
-                    placeholder="e.g., A fully automated business that runs without them, 10 hours of time reclaimed weekly..."
-                    className="w-full bg-card/50 border border-border/30 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground min-h-[120px]"
-                />
-            </div>
+            <InputField
+                label="Dream Outcome"
+                value={formData.transformation}
+                onChange={(e: any) => setFormData({ ...formData, transformation: e.target.value })}
+                placeholder="e.g., A fully automated business that runs without them..."
+                multiline
+            />
 
-            <div className="raycast-panel p-4 border-l-4 border-primary">
-                <h4 className="font-medium text-foreground mb-2">💡 Transformation Formula</h4>
-                <p className="text-sm text-muted-foreground">
-                    <strong>From:</strong> {formData.painPoints.split(',')[0] || '[Current pain]'}<br />
-                    <strong>To:</strong> {formData.transformation || '[Dream outcome]'}<br />
-                    <strong>Without:</strong> {formData.currentSolutions.split(',')[0] || '[Failed solution]'}
-                </p>
+            <div className="glass-panel p-4 border-l-2 border-[var(--color-acid)] bg-[rgba(187,255,0,0.05)]">
+                <h4 className="text-terminal text-sm text-[var(--text-sovereign-primary)] mb-2">TRANSFORMATION FORMULA</h4>
+                <div className="space-y-1 text-xs text-[var(--text-sovereign-muted)]" style={{ fontFamily: 'var(--font-sovereign-mono)' }}>
+                    <p><span className="text-[var(--color-acid)]">FROM:</span> {formData.painPoints.split(',')[0] || '[PAIN]'}</p>
+                    <p><span className="text-[var(--color-acid)]">TO:</span> {formData.transformation || '[OUTCOME]'}</p>
+                    <p><span className="text-[var(--color-acid)]">WITHOUT:</span> {formData.currentSolutions.split(',')[0] || '[EFFORT]'}</p>
+                </div>
             </div>
         </div>
     );
@@ -315,35 +331,29 @@ function StepOffer({ formData, isGenerating }: any) {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-title text-foreground mb-2">Generate Your Offer</h2>
-                <p className="text-muted-foreground">
-                    We'll create your transformation statement, methodology map, and pricing guidance
+                <h2 className="text-lg font-medium text-[var(--text-sovereign-primary)] mb-2">Summary Review</h2>
+                <p className="text-sm text-[var(--text-sovereign-muted)]">
+                    System will generate positioning based on inputs
                 </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <div className="raycast-panel p-4">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Expertise</h4>
-                    <p className="text-foreground">{formData.expertise || 'Not specified'}</p>
-                </div>
-                <div className="raycast-panel p-4">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Ideal Client</h4>
-                    <p className="text-foreground">{formData.audience || 'Not specified'}</p>
-                </div>
-                <div className="raycast-panel p-4">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Pain Points</h4>
-                    <p className="text-foreground">{formData.painPoints || 'Not specified'}</p>
-                </div>
-                <div className="raycast-panel p-4">
-                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Transformation</h4>
-                    <p className="text-foreground">{formData.transformation || 'Not specified'}</p>
-                </div>
+                {[
+                    { label: 'EXPERTISE', val: formData.expertise },
+                    { label: 'AUDIENCE', val: formData.audience },
+                    { label: 'PAIN POINTS', val: formData.painPoints },
+                    { label: 'TRANSFORMATION', val: formData.transformation },
+                ].map((item, i) => (
+                    <div key={i} className="glass-panel p-4 bg-[var(--color-void)]">
+                        <h4 className="text-terminal text-[10px] text-[var(--text-sovereign-muted)] mb-2">{item.label}</h4>
+                        <p className="text-sm text-[var(--text-sovereign-primary)] line-clamp-2">{item.val || 'Pending...'}</p>
+                    </div>
+                ))}
             </div>
 
             {isGenerating && (
-                <div className="text-center py-8">
-                    <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto mb-4" />
-                    <p className="text-muted-foreground">Crafting your high-ticket offer...</p>
+                <div className="text-center py-12">
+                    <TypewriterText text="Analyzing market positioning... constructing offer..." speed={50} loop className="text-[var(--color-acid)] text-terminal" />
                 </div>
             )}
         </div>
@@ -366,32 +376,32 @@ function GeneratedOffer({ offer, onReset }: { offer: any; onReset: () => void })
             transition={PHYSICS.interaction}
             className="space-y-6"
         >
-            <div className="flex items-center gap-3">
-                <div className="h-12 w-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                    <CheckCircle className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-[var(--color-acid)] flex items-center justify-center">
+                    <CheckCircle className="h-6 w-6 text-black" />
                 </div>
                 <div>
-                    <h2 className="text-title text-foreground">Your Offer is Ready!</h2>
-                    <p className="text-muted-foreground">Here's your high-ticket offer framework</p>
+                    <h2 className="text-lg font-bold text-[var(--text-sovereign-primary)]">OFFER GENERATED</h2>
+                    <p className="text-terminal text-xs text-[var(--text-sovereign-muted)]">High-ticket framework ready</p>
                 </div>
             </div>
 
             {/* Transformation Statement */}
-            <div className="raycast-panel p-6 border-l-4 border-primary">
+            <SpotlightCard className="p-6 border border-[var(--color-acid)]">
                 <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-foreground">Transformation Statement</h3>
-                    <Button variant="ghost" size="sm" onClick={copyToClipboard} disablePhysics>
-                        {copied ? <CheckCircle className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-                    </Button>
+                    <h3 className="text-terminal text-sm text-[var(--color-acid)]">CORE PROMISE</h3>
+                    <button onClick={copyToClipboard} className="text-[var(--text-sovereign-muted)] hover:text-[var(--color-acid)]">
+                        {copied ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </button>
                 </div>
-                <p className="text-lg text-foreground leading-relaxed">{offer.statement}</p>
-            </div>
+                <p className="text-lg text-[var(--text-sovereign-primary)] leading-relaxed font-light">"{offer.statement}"</p>
+            </SpotlightCard>
 
             {/* Methodology Map */}
-            <div className="raycast-panel p-6">
+            <div className="glass-panel p-6">
                 <div className="flex items-center gap-2 mb-4">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-foreground">Methodology Map</h3>
+                    <BookOpen className="h-5 w-5 text-[var(--color-aurora-cyan)]" />
+                    <h3 className="text-terminal text-sm text-[var(--text-sovereign-primary)]">METHODOLOGY MAP</h3>
                 </div>
                 <div className="space-y-3">
                     {offer.methodology.map((step: string, i: number) => (
@@ -400,12 +410,12 @@ function GeneratedOffer({ offer, onReset }: { offer: any; onReset: () => void })
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="flex items-center gap-3 p-3 bg-card/30 rounded-lg"
+                            className="flex items-center gap-3 p-3 rounded-lg bg-[var(--color-void)] border border-[var(--glass-sovereign-border)]"
                         >
-                            <div className="h-8 w-8 bg-primary/15 rounded-lg flex items-center justify-center text-primary font-bold text-sm">
+                            <div className="h-6 w-6 rounded flex items-center justify-center text-[var(--color-acid)] font-bold text-xs bg-[rgba(187,255,0,0.1)]">
                                 {i + 1}
                             </div>
-                            <span className="text-foreground">{step}</span>
+                            <span className="text-sm text-[var(--text-sovereign-primary)]">{step}</span>
                         </motion.div>
                     ))}
                 </div>
@@ -413,26 +423,29 @@ function GeneratedOffer({ offer, onReset }: { offer: any; onReset: () => void })
 
             {/* Pricing & Guarantee */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="raycast-panel p-4">
+                <div className="glass-panel p-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <DollarSign className="h-4 w-4 text-success" />
-                        <h4 className="font-medium text-foreground">Pricing Guidance</h4>
+                        <DollarSign className="h-4 w-4 text-[var(--color-aurora-purple)]" />
+                        <h4 className="text-terminal text-xs text-[var(--text-sovereign-muted)]">PRICING</h4>
                     </div>
-                    <p className="text-sm text-muted-foreground">{offer.pricing}</p>
+                    <p className="text-sm text-[var(--text-sovereign-primary)]">{offer.pricing}</p>
                 </div>
-                <div className="raycast-panel p-4">
+                <div className="glass-panel p-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <Target className="h-4 w-4 text-warning" />
-                        <h4 className="font-medium text-foreground">Guarantee</h4>
+                        <Target className="h-4 w-4 text-[var(--color-alarm)]" />
+                        <h4 className="text-terminal text-xs text-[var(--text-sovereign-muted)]">GUARANTEE</h4>
                     </div>
-                    <p className="text-sm text-muted-foreground">{offer.guarantee}</p>
+                    <p className="text-sm text-[var(--text-sovereign-primary)]">{offer.guarantee}</p>
                 </div>
             </div>
 
             <div className="flex justify-end">
-                <Button variant="outline" onClick={onReset} disablePhysics>
-                    Start Over
-                </Button>
+                <button
+                    onClick={onReset}
+                    className="text-terminal text-xs text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)] border-b border-transparent hover:border-[var(--text-sovereign-primary)] transition-all"
+                >
+                    RESET WIZARD
+                </button>
             </div>
         </motion.div>
     );

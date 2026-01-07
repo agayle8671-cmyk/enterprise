@@ -6,20 +6,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SubscriptionProvider } from "@/lib/subscription";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/Landing";
-import Auth from "@/pages/Auth";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import Home from "@/pages/dashboard/Home";
+import Landing from "@/pages/LandingRaycast";
+import Auth from "@/pages/AuthRaycast";
+import DashboardLayout from "@/components/layout/DashboardLayoutRaycast";
+import Home from "@/pages/dashboard/HomeRaycast";
 import Founding50 from "@/pages/dashboard/Founding50";
 import Buyback from "@/pages/dashboard/Buyback";
-import Agents from "@/pages/dashboard/Agents";
+import Agents from "@/pages/dashboard/AgentsRaycast";
 import TimeAudit from "@/pages/dashboard/TimeAudit";
 import OfferArchitect from "@/pages/dashboard/OfferArchitect";
 import ToolBuilder from "@/pages/dashboard/ToolBuilder";
 import Proposals from "@/pages/dashboard/Proposals";
 import ClientPortal from "@/pages/dashboard/ClientPortal";
 import HelpCenter from "@/pages/dashboard/HelpCenter";
-import Settings from "@/pages/dashboard/Settings";
+import Settings from "@/pages/dashboard/SettingsRaycast";
 import SovereignDashboard from "@/pages/dashboard/SovereignDashboard";
 
 function Router() {

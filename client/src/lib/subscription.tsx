@@ -9,6 +9,7 @@ interface SubscriptionContextType {
     isEnterprise: boolean;
     canUse: (feature: FeatureKey) => boolean;
     getLimit: (feature: FeatureKey) => number | 'unlimited';
+    canAccessAgent: (agentName: string) => boolean;
 }
 
 // Feature keys that can be gated
@@ -93,8 +94,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         return FEATURE_LIMITS[tier][feature] ?? 0;
     };
 
+    const canAccessAgent = (agentName: string): boolean => {
+        const tierRequired = AGENT_TIERS[agentName] || 'pro';
+        if (tierRequired === 'free') return true;
+        if (tierRequired === 'pro') return isPro;
+        if (tierRequired === 'enterprise') return isEnterprise;
+        return false;
+    };
+
     return (
-        <SubscriptionContext.Provider value={{ tier, setTier, isPro, isEnterprise, canUse, getLimit }}>
+        <SubscriptionContext.Provider value={{ tier, setTier, isPro, isEnterprise, canUse, getLimit, canAccessAgent }}>
             {children}
         </SubscriptionContext.Provider>
     );
