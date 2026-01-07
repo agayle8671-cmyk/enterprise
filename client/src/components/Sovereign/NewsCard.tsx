@@ -11,7 +11,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Clock, TrendingUp, Bot, DollarSign, Users } from "lucide-react";
+import { Clock, TrendingUp, Bot, DollarSign, Users, BarChart3 } from "lucide-react";
 
 interface NewsCardProps {
   title: string;
