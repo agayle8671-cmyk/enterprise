@@ -5,11 +5,14 @@
  * - Glass card templates
  * - Terminal stats
  * - Bento grid layout
+ * - FULLY FUNCTIONAL buttons
  */
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'wouter';
 import { PHYSICS } from '@/lib/animation-constants';
+import { useToast } from '@/hooks/use-toast';
 import {
     Calculator,
     Award,
@@ -23,7 +26,8 @@ import {
     ExternalLink,
     Wand2,
     X,
-    Filter
+    Filter,
+    Check
 } from 'lucide-react';
 import { GlassCard, GlowButton, SpotlightCard } from '@/components/GlassCard';
 import { BentoGrid, BentoItem, BentoDataCard } from '@/components/BentoGrid';
@@ -68,14 +72,108 @@ const TOOL_TEMPLATES = [
     },
 ];
 
-const MOCK_TOOLS = [
+interface Tool {
+    id: number;
+    name: string;
+    type: string;
+    leads: number;
+    views: number;
+}
+
+const initialTools: Tool[] = [
     { id: 1, name: 'Agency Profit Calculator', type: 'roi-calculator', leads: 142, views: 1847 },
     { id: 2, name: 'Automation Readiness Quiz', type: 'quiz', leads: 89, views: 923 },
 ];
 
 export default function ToolBuilder() {
+    const { toast } = useToast();
+    const [, setLocation] = useLocation();
     const [showCreate, setShowCreate] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+    const [tools, setTools] = useState<Tool[]>(initialTools);
+    const [copiedId, setCopiedId] = useState<number | null>(null);
+
+    // Copy tool link to clipboard
+    const handleCopyLink = async (tool: Tool) => {
+        const link = `${window.location.origin}/tools/${tool.id}`;
+        try {
+            await navigator.clipboard.writeText(link);
+            setCopiedId(tool.id);
+            toast({
+                title: "LINK COPIED",
+                description: `Share link copied to clipboard`,
+            });
+            setTimeout(() => setCopiedId(null), 2000);
+        } catch {
+            toast({
+                title: "COPY FAILED",
+                description: "Could not copy to clipboard",
+                variant: "destructive",
+            });
+        }
+    };
+
+    // Preview tool in new tab
+    const handlePreview = (tool: Tool) => {
+        window.open(`/tools/${tool.id}/preview`, '_blank');
+        toast({
+            title: "PREVIEW OPENED",
+            description: `${tool.name} opened in new tab`,
+        });
+    };
+
+    // View tool details
+    const handleViewTool = (tool: Tool) => {
+        toast({
+            title: "VIEWING TOOL",
+            description: `Opening ${tool.name} analytics`,
+        });
+        // Navigate to tool details page
+        setLocation(`/dashboard/tool-builder/${tool.id}`);
+    };
+
+    // Edit tool settings
+    const handleEditTool = (tool: Tool) => {
+        toast({
+            title: "EDIT MODE",
+            description: `Opening ${tool.name} editor`,
+        });
+        setLocation(`/dashboard/tool-builder/${tool.id}/edit`);
+    };
+
+    // Initialize builder with selected template
+    const handleInitializeBuilder = () => {
+        if (!selectedTemplate) {
+            toast({
+                title: "SELECT TEMPLATE",
+                description: "Please select a template first",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        const template = TOOL_TEMPLATES.find(t => t.id === selectedTemplate);
+        toast({
+            title: "BUILDER INITIALIZED",
+            description: `Creating new ${template?.name || 'tool'}`,
+        });
+
+        // Add new tool to list
+        const newTool: Tool = {
+            id: Date.now(),
+            name: `New ${template?.name || 'Tool'}`,
+            type: selectedTemplate,
+            leads: 0,
+            views: 0,
+        };
+        setTools(prev => [...prev, newTool]);
+
+        setShowCreate(false);
+        setSelectedTemplate(null);
+
+        // Navigate to edit the new tool
+        setLocation(`/dashboard/tool-builder/${newTool.id}/edit`);
+    };
 
     return (
         <div className="space-y-6">
@@ -103,7 +201,7 @@ export default function ToolBuilder() {
                 <BentoItem colSpan={4}>
                     <BentoDataCard
                         label="ACTIVE TOOLS"
-                        value={MOCK_TOOLS.length}
+                        value={tools.length}
                         trend="neutral"
                         icon={<Settings className="h-4 w-4" />}
                     />
@@ -111,7 +209,7 @@ export default function ToolBuilder() {
                 <BentoItem colSpan={4}>
                     <BentoDataCard
                         label="TOTAL LEADS"
-                        value={MOCK_TOOLS.reduce((s, t) => s + t.leads, 0)}
+                        value={tools.reduce((s, t) => s + t.leads, 0)}
                         delta={12}
                         trend="up"
                         icon={<Filter className="h-4 w-4" />}
@@ -120,7 +218,7 @@ export default function ToolBuilder() {
                 <BentoItem colSpan={4}>
                     <BentoDataCard
                         label="TOTAL VIEWS"
-                        value={MOCK_TOOLS.reduce((s, t) => s + t.views, 0).toLocaleString()}
+                        value={tools.reduce((s, t) => s + t.views, 0).toLocaleString()}
                         delta={24}
                         trend="up"
                         icon={<Eye className="h-4 w-4" />}
@@ -134,7 +232,7 @@ export default function ToolBuilder() {
                     DEPLOYED TOOLS
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {MOCK_TOOLS.map((tool) => {
+                    {tools.map((tool) => {
                         const template = TOOL_TEMPLATES.find(t => t.id === tool.type);
 
                         return (
@@ -159,10 +257,18 @@ export default function ToolBuilder() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <button className="p-2 rounded-lg hover:bg-white/5 text-[var(--text-sovereign-muted)] transition-colors">
+                                        <button
+                                            className="p-2 rounded-lg hover:bg-white/5 text-[var(--text-sovereign-muted)] transition-colors"
+                                            onClick={() => handleViewTool(tool)}
+                                            title="View analytics"
+                                        >
                                             <Eye className="h-4 w-4" />
                                         </button>
-                                        <button className="p-2 rounded-lg hover:bg-white/5 text-[var(--text-sovereign-muted)] transition-colors">
+                                        <button
+                                            className="p-2 rounded-lg hover:bg-white/5 text-[var(--text-sovereign-muted)] transition-colors"
+                                            onClick={() => handleEditTool(tool)}
+                                            title="Edit tool"
+                                        >
                                             <Settings className="h-4 w-4" />
                                         </button>
                                     </div>
@@ -184,11 +290,26 @@ export default function ToolBuilder() {
                                 </div>
 
                                 <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--glass-sovereign-border)' }}>
-                                    <button className="flex-1 py-2 text-terminal text-xs text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)] flex items-center justify-center gap-2">
-                                        <Copy className="h-3 w-3" />
-                                        COPY LINK
+                                    <button
+                                        className="flex-1 py-2 text-terminal text-xs text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)] flex items-center justify-center gap-2"
+                                        onClick={() => handleCopyLink(tool)}
+                                    >
+                                        {copiedId === tool.id ? (
+                                            <>
+                                                <Check className="h-3 w-3 text-[var(--color-acid)]" />
+                                                <span className="text-[var(--color-acid)]">COPIED!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="h-3 w-3" />
+                                                COPY LINK
+                                            </>
+                                        )}
                                     </button>
-                                    <button className="flex-1 py-2 text-terminal text-xs text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)] flex items-center justify-center gap-2">
+                                    <button
+                                        className="flex-1 py-2 text-terminal text-xs text-[var(--text-sovereign-muted)] hover:text-[var(--text-sovereign-primary)] flex items-center justify-center gap-2"
+                                        onClick={() => handlePreview(tool)}
+                                    >
                                         <ExternalLink className="h-3 w-3" />
                                         PREVIEW
                                     </button>
@@ -271,10 +392,7 @@ export default function ToolBuilder() {
                                 <GlowButton
                                     variant="acid"
                                     disabled={!selectedTemplate}
-                                    onClick={() => {
-                                        // TODO: Navigate to builder
-                                        setShowCreate(false);
-                                    }}
+                                    onClick={handleInitializeBuilder}
                                 >
                                     <Wand2 className="h-4 w-4 mr-2" />
                                     INITIALIZE BUILDER

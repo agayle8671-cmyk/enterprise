@@ -9,7 +9,9 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'wouter';
 import { PHYSICS } from '@/lib/animation-constants';
+import { useToast } from '@/hooks/use-toast';
 import {
     Search,
     BookOpen,
@@ -206,9 +208,21 @@ const QUICK_WORKFLOWS = [
 ];
 
 export default function HelpCenter() {
+    const { toast } = useToast();
+    const [, setLocation] = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedModule, setExpandedModule] = useState<string | null>('getting-started');
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+    // Open Command Center
+    const handleOpenCommandCenter = () => {
+        toast({
+            title: "COMMAND CENTER",
+            description: "Opening AI assistant...",
+        });
+        // Dispatch event to open command center modal
+        window.dispatchEvent(new CustomEvent('openCommandCenter'));
+    };
 
     // Search filtering
     const filteredModules = useMemo(() => {
@@ -409,7 +423,7 @@ export default function HelpCenter() {
                                     </p>
                                 </div>
                             </div>
-                            <GlowButton variant="acid" size="sm">
+                            <GlowButton variant="acid" size="sm" onClick={handleOpenCommandCenter}>
                                 OPEN COMMAND CENTER
                             </GlowButton>
                         </SpotlightCard>

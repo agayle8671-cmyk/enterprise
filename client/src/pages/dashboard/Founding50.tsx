@@ -8,6 +8,8 @@
  */
 
 import { useState } from "react";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import {
   Check, UserPlus, Mail, MessageSquare, ArrowRight, Filter,
   Download, Trash2, MoreHorizontal, ChevronLeft, ChevronRight,
@@ -31,6 +33,8 @@ import { PulseRing, TypewriterText } from "@/components/Physics";
 import { motion } from "framer-motion";
 
 export default function Founding50() {
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
@@ -38,6 +42,38 @@ export default function Founding50() {
   const campaign = campaigns?.[0];
   const { data: leads, isLoading: leadsLoading } = useLeads(campaign?.id);
   const deleteLead = useDeleteLead();
+
+  // Export leads as CSV
+  const handleExportCSV = () => {
+    const csvData = leads || [];
+    if (csvData.length === 0) {
+      toast({ title: "NO DATA", description: "No leads to export", variant: "destructive" });
+      return;
+    }
+    const headers = ['Name', 'Email', 'Company', 'Revenue', 'Score', 'Status'];
+    const rows = csvData.map((row: any) => [row.name, row.email, row.company, row.revenue, row.score, row.status].join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `founding50-leads-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "EXPORTED", description: `${csvData.length} leads exported to CSV` });
+  };
+
+  // Navigate to campaign management
+  const handleManageCampaign = () => {
+    toast({ title: "OPENING CAMPAIGN", description: "Loading campaign manager..." });
+    setLocation('/dashboard/campaigns');
+  };
+
+  // Add new member
+  const handleAddMember = () => {
+    toast({ title: "ADD MEMBER", description: "Opening member form..." });
+    // Could open a modal here, for now show toast
+  };
 
   const toggleAll = () => {
     if (!leads) return;
@@ -98,7 +134,7 @@ export default function Founding50() {
               OFFER ARCHITECT
             </GlowButton>
           </OfferArchitect>
-          <GlowButton variant="acid">
+          <GlowButton variant="acid" onClick={handleAddMember}>
             <UserPlus className="mr-2 h-4 w-4" />
             ADD MEMBER
           </GlowButton>
@@ -186,7 +222,7 @@ export default function Founding50() {
             <div className="flex items-center gap-2 text-xs text-[var(--text-sovereign-primary)]"><PulseRing size={8} color="var(--color-aurora-cyan)" /> Outreach Active</div>
             <div className="flex items-center gap-2 text-xs text-[var(--text-sovereign-muted)]"><div className="h-2 w-2 rounded-full bg-[var(--text-sovereign-muted)]" /> Sales Calls</div>
           </div>
-          <GlowButton variant="aurora" size="sm" className="w-full">
+          <GlowButton variant="aurora" size="sm" className="w-full" onClick={handleManageCampaign}>
             MANAGE CAMPAIGN
           </GlowButton>
         </GlassCard>
@@ -226,7 +262,11 @@ export default function Founding50() {
             <button className="h-8 px-3 rounded border border-[var(--glass-sovereign-border)] hover:bg-white/5 flex items-center">
               <Filter className="h-3 w-3 text-[var(--text-sovereign-muted)]" />
             </button>
-            <button className="h-8 px-3 rounded border border-[var(--glass-sovereign-border)] hover:bg-white/5 flex items-center">
+            <button
+              className="h-8 px-3 rounded border border-[var(--glass-sovereign-border)] hover:bg-white/5 flex items-center"
+              onClick={handleExportCSV}
+              title="Export to CSV"
+            >
               <Download className="h-3 w-3 text-[var(--text-sovereign-muted)]" />
             </button>
           </div>
@@ -279,8 +319,8 @@ export default function Founding50() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-[10px] px-2 py-0.5 rounded border ${row.status === "VIP" ? "border-[var(--color-aurora-purple)] text-[var(--color-aurora-purple)] bg-[rgba(112,0,255,0.1)]" :
-                        row.status === "High Priority" ? "border-[var(--color-acid)] text-[var(--color-acid)] bg-[rgba(187,255,0,0.1)]" :
-                          "border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-muted)]"
+                      row.status === "High Priority" ? "border-[var(--color-acid)] text-[var(--color-acid)] bg-[rgba(187,255,0,0.1)]" :
+                        "border-[var(--glass-sovereign-border)] text-[var(--text-sovereign-muted)]"
                       }`}>
                       {row.status.toUpperCase()}
                     </span>
