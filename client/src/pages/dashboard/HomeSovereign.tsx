@@ -24,7 +24,13 @@ import {
   BentoItem, 
   BentoCell,
   SystemTicker,
-  SystemVitals 
+  SystemVitals,
+  SparklineThumb,
+  CryptoThumb,
+  HeroChart,
+  HeroStat,
+  CinematicBackground,
+  ScanlineOverlay
 } from "@/components/Sovereign";
 import { TypewriterText } from "@/components/TypewriterText";
 import { 
@@ -39,8 +45,21 @@ export default function HomeSovereign() {
   const activities = generateAgentActivities(50);
   const agentMetrics = generateAgentMetrics();
 
+  // Generate mock crypto data
+  const generateCryptoData = () => {
+    const data = [];
+    for (let i = 0; i < 50; i++) {
+      data.push(40000 + Math.random() * 10000 + Math.sin(i / 5) * 5000);
+    }
+    return data;
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--color-void)] text-[var(--color-text-primary)]">
+    <div className="min-h-screen bg-[var(--color-void)] text-[var(--color-text-primary)] relative">
+      
+      {/* Cinematic Background - "Living Concrete" */}
+      <CinematicBackground intensity="medium" color="#BBFF00" speed={0.3} />
+      <ScanlineOverlay />
       
       {/* SYSTEM TICKER - Always visible at top */}
       <SystemVitals className="sticky top-0 z-50" />
@@ -86,33 +105,57 @@ export default function HomeSovereign() {
           </div>
         </AnimatedBorder>
 
-        {/* MAIN BENTO GRID */}
+        {/* MAIN BENTO GRID - "HUGE and Compact" Layout */}
         <LiveBentoGrid columns={12} gap={8}>
           
-          {/* PRIMARY METRICS - Top Row with Magnetic Cards */}
+          {/* HERO MODULE - Large BTC Chart (4x4 "Cinema" mode) */}
+          <BentoItem colSpan={6} rowSpan={4} glowOnHover animated>
+            <GravityCard magneticRange={200} magneticStrength={20}>
+              <HeroChart
+                title="BTC/USD"
+                value="$67,432"
+                data={generateCryptoData()}
+                trend="up"
+                changePercent={8.34}
+              />
+            </GravityCard>
+          </BentoItem>
+
+          {/* CRYPTO THUMBNAILS - Compact 2x2 with Sparklines */}
           {[
-            { label: "HOURS SAVED", value: "23.5", change: +12, icon: Clock, color: "var(--color-acid)" },
-            { label: "TASKS AUTO", value: "156", change: +28, icon: Bot, color: "var(--color-aurora-cyan)" },
-            { label: "ROI", value: "340%", change: +45, icon: TrendingUp, color: "var(--color-acid)" },
-            { label: "ACTIVE AGENTS", value: "12", change: +2, icon: Zap, color: "var(--color-aurora-cyan)" },
+            { symbol: "ETH", price: 3842, change: 5.2, data: generateCryptoData().map(d => d / 17) },
+            { symbol: "SOL", price: 142, change: -2.1, data: generateCryptoData().map(d => d / 470) },
+            { symbol: "ADA", price: 0.89, change: 3.7, data: generateCryptoData().map(d => d / 75000) },
+          ].map((crypto, i) => (
+            <BentoItem key={i} colSpan={2} rowSpan={2} glowOnHover animated>
+              <GravityCard magneticRange={100}>
+                <CryptoThumb
+                  symbol={crypto.symbol}
+                  price={crypto.price}
+                  priceHistory={crypto.data}
+                  change24h={crypto.change}
+                  size="compact"
+                />
+              </GravityCard>
+            </BentoItem>
+          ))}
+
+          {/* PRIMARY METRICS - With Sparklines */}
+          {[
+            { label: "HOURS SAVED", value: "23.5", data: [20, 21, 19, 22, 23, 24, 23.5], icon: Clock },
+            { label: "TASKS AUTO", value: "156", data: [120, 130, 145, 150, 155, 156, 156], icon: Bot },
+            { label: "ROI", value: "340%", data: [280, 290, 310, 320, 330, 335, 340], icon: TrendingUp },
           ].map((metric, i) => (
-            <BentoItem key={i} colSpan={3} animated glowOnHover>
-              <GravityCard magneticRange={120} magneticStrength={15}>
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <metric.icon className="h-4 w-4" style={{ color: metric.color }} />
-                    <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-mono">
-                      {metric.label}
-                    </div>
-                  </div>
-                  <div className="text-3xl font-bold font-mono tracking-tight mb-1">
-                    {metric.value}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs" style={{ color: metric.color }}>
-                    <ArrowUpRight className="h-3 w-3" />
-                    {metric.change}% vs last week
-                  </div>
-                </div>
+            <BentoItem key={i} colSpan={2} rowSpan={2} animated glowOnHover>
+              <GravityCard magneticRange={100}>
+                <SparklineThumb
+                  symbol={metric.label}
+                  value={metric.value}
+                  data={metric.data}
+                  trend="up"
+                  size="compact"
+                  showChange={false}
+                />
               </GravityCard>
             </BentoItem>
           ))}
@@ -284,29 +327,38 @@ export default function HomeSovereign() {
             </div>
           </BentoItem>
 
-          {/* BOTTOM METRICS ROW */}
+          {/* HERO STAT - Large Pipeline Value (Wide 4x2) */}
+          <BentoItem colSpan={4} rowSpan={2} animated glowOnHover>
+            <HeroStat
+              label="PIPELINE"
+              value="$2.4M"
+              subtitle="Active deals in negotiation"
+              icon={<DollarSign className="h-12 w-12" />}
+              glowColor="#4AF6C3"
+            />
+          </BentoItem>
+
+          {/* MICRO METRICS - 1x1 "Spark" mode */}
           {[
-            { label: "PIPELINE", value: "$2.4M", icon: DollarSign },
             { label: "EMAILS", value: "156", icon: Mail },
             { label: "MEETINGS", value: "8", icon: Users },
             { label: "COMPLETION", value: "94%", icon: Target },
+            { label: "UPTIME", value: "99.9%", icon: Zap },
           ].map((item, i) => (
-            <BentoItem key={i} colSpan={3} animated glowOnHover>
-              <AnimatedBorder borderWidth={1} borderRadius={8} animationDuration={3}>
-                <GravityCard magneticRange={100}>
-                  <div className="p-4 bg-[var(--color-structure)]">
-                    <div className="flex items-center gap-2 mb-2">
-                      <item.icon className="h-3 w-3 text-[var(--color-acid)]" />
-                      <span className="text-[9px] uppercase tracking-wider text-[var(--color-text-muted)] font-mono">
-                        {item.label}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold font-mono tracking-tight text-[var(--color-acid)]">
-                      {item.value}
-                    </div>
+            <BentoItem key={i} colSpan={2} animated glowOnHover>
+              <GravityCard magneticRange={80}>
+                <div className="p-3 bg-[var(--color-structure)] h-full flex flex-col justify-between">
+                  <div className="flex items-center gap-2 mb-1">
+                    <item.icon className="h-3 w-3 text-[var(--color-acid)]" />
+                    <span className="text-[9px] uppercase tracking-wider text-[var(--color-text-muted)] font-mono">
+                      {item.label}
+                    </span>
                   </div>
-                </GravityCard>
-              </AnimatedBorder>
+                  <div className="text-xl font-bold font-mono tracking-tight text-[var(--color-acid)]">
+                    {item.value}
+                  </div>
+                </div>
+              </GravityCard>
             </BentoItem>
           ))}
 

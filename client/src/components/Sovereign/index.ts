@@ -20,3 +20,18 @@ export {
   BentoSection 
 } from "./LiveBentoGrid";
 export { SystemTicker, SystemVitals } from "./SystemTicker";
+export { 
+  SparklineThumb, 
+  CryptoThumb, 
+  MetricThumb 
+} from "./SparklineThumb";
+export { 
+  HeroModule, 
+  HeroChart, 
+  HeroStat 
+} from "./HeroModule";
+export { 
+  CinematicBackground, 
+  ScanlineOverlay, 
+  GrainOverlay 
+} from "./CinematicBackground";
