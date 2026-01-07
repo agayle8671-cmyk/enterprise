@@ -11,8 +11,9 @@ import { PHYSICS, VARIANTS } from "@/lib/animation-constants"
 // =============================================================================
 
 const buttonVariants = cva(
-  // Base styles with enhanced antialiasing
+  // Base styles with cognitive luxury polish
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium " +
+  "transition-all duration-200 " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
   "disabled:pointer-events-none disabled:opacity-50 " +
   "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
@@ -20,22 +21,22 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm",
+          "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)]",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm",
+          "bg-destructive text-destructive-foreground shadow-[0_2px_12px_rgba(239,68,68,0.15)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.25)]",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:bg-accent hover:text-accent-foreground hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm",
+          "bg-secondary text-secondary-foreground shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)]",
         ghost:
           "hover:bg-accent hover:text-accent-foreground",
         link:
           "text-primary underline-offset-4 hover:underline",
-        // New Apple-style variants
+        // Cognitive luxury variants
         glass:
-          "raycast-panel text-foreground",
+          "raycast-panel text-foreground shadow-[0_4px_20px_rgba(0,0,0,0.05)]",
         gradient:
-          "bg-gradient-primary text-white shadow-md",
+          "bg-gradient-primary text-white shadow-[0_4px_20px_rgba(139,92,246,0.25)] hover:shadow-[0_6px_28px_rgba(139,92,246,0.35)]",
       },
       size: {
         default: "h-10 px-4 py-2",

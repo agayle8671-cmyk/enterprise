@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { TactileButton } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Settings, User, Bell, Shield, Palette, Zap } from "lucide-react";
 
 export default function SettingsSOS() {
@@ -45,23 +46,56 @@ export default function SettingsSOS() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
+      {/* Header with System Status */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
       >
-        <h1 
-          className="text-5xl font-bold lowercase mb-2"
-          style={{ color: 'var(--color-sos-text)' }}
+        <div>
+          <h1 
+            className="text-5xl font-bold lowercase mb-2"
+            style={{ color: 'var(--color-sos-text)' }}
+          >
+            settings
+          </h1>
+          <p 
+            className="text-lg lowercase"
+            style={{ color: 'var(--color-sos-muted)' }}
+          >
+            configure your sovereign os experience
+          </p>
+        </div>
+        
+        {/* System Recommendations */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
         >
-          settings
-        </h1>
-        <p 
-          className="text-lg lowercase"
-          style={{ color: 'var(--color-sos-muted)' }}
-        >
-          configure your sovereign os experience
-        </p>
+          <div className="flex items-center gap-2 mb-2">
+            <Settings size={16} style={{ color: 'var(--color-sos-blue)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-blue)' }}>
+              System Recommendations
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "haptic feedback enabled: enhanced tactile experience active",
+                "magnetic cursor responding perfectly to interactions",
+                "all sensory systems calibrated for cognitive luxury",
+                "neo-tactile interface optimized for your workflow",
+                "system running smoothly: zero configuration issues"
+              ]}
+              typingSpeed={35}
+              deletingSpeed={18}
+              pauseTime={3400}
+            />
+          </div>
+        </div>
       </motion.div>
 
       {/* Settings Sections */}

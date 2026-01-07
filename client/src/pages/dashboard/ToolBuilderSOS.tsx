@@ -6,6 +6,7 @@
 
 import { motion } from "framer-motion";
 import { TactileButton } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Wrench, Plus, Code, Zap } from "lucide-react";
 
 export default function ToolBuilderSOS() {
@@ -20,20 +21,52 @@ export default function ToolBuilderSOS() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="space-y-4"
       >
-        <div>
-          <h1 className="text-5xl font-bold lowercase mb-2" style={{ color: 'var(--color-sos-text)' }}>
-            tool builder
-          </h1>
-          <p className="text-lg lowercase" style={{ color: 'var(--color-sos-muted)' }}>
-            create custom tools and automations
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-5xl font-bold lowercase mb-2" style={{ color: 'var(--color-sos-text)' }}>
+              tool builder
+            </h1>
+            <p className="text-lg lowercase" style={{ color: 'var(--color-sos-muted)' }}>
+              create custom tools and automations
+            </p>
+          </div>
+          <TactileButton variant="primary">
+            <Plus size={18} className="mr-2" />
+            new tool
+          </TactileButton>
         </div>
-        <TactileButton variant="primary">
-          <Plus size={18} className="mr-2" />
-          new tool
-        </TactileButton>
+        
+        {/* Live Tool Analytics */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Zap size={16} style={{ color: 'var(--color-sos-soul)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-soul)' }}>
+              Tool Performance
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "lead qualifier: 234 uses, 89% accuracy rate",
+                "proposal generator saved 47 hours this month",
+                "roi calculator ready for deployment and testing",
+                "3 tools active, processing 1,200+ operations daily",
+                "automation suite efficiency up 34% this quarter"
+              ]}
+              typingSpeed={42}
+              deletingSpeed={21}
+              pauseTime={3000}
+            />
+          </div>
+        </div>
       </motion.div>
 
       <div className="grid md:grid-cols-3 gap-6">

@@ -6,6 +6,7 @@
 
 import { motion } from "framer-motion";
 import { TactileButton } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Package, Plus, DollarSign, Zap, Star } from "lucide-react";
 
 export default function OfferArchitectSOS() {
@@ -38,20 +39,52 @@ export default function OfferArchitectSOS() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="space-y-4"
       >
-        <div>
-          <h1 className="text-5xl font-bold lowercase mb-2" style={{ color: 'var(--color-sos-text)' }}>
-            offer architect
-          </h1>
-          <p className="text-lg lowercase" style={{ color: 'var(--color-sos-muted)' }}>
-            design irresistible high-value offers
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-5xl font-bold lowercase mb-2" style={{ color: 'var(--color-sos-text)' }}>
+              offer architect
+            </h1>
+            <p className="text-lg lowercase" style={{ color: 'var(--color-sos-muted)' }}>
+              design irresistible high-value offers
+            </p>
+          </div>
+          <TactileButton variant="primary">
+            <Plus size={18} className="mr-2" />
+            new offer
+          </TactileButton>
         </div>
-        <TactileButton variant="primary">
-          <Plus size={18} className="mr-2" />
-          new offer
-        </TactileButton>
+        
+        {/* Live Offer Performance */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign size={16} style={{ color: 'var(--color-sos-green)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-green)' }}>
+              Offer Intelligence
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "premium package: 23% conversion rate, $15k average",
+                "mid-ticket automation: highest velocity at 31% conversion",
+                "entry intensive converting 45% - excellent lead magnet",
+                "total offer portfolio value: $26,500 average deal size",
+                "optimal pricing: test $12k tier for premium segment"
+              ]}
+              typingSpeed={38}
+              deletingSpeed={19}
+              pauseTime={3200}
+            />
+          </div>
+        </div>
       </motion.div>
 
       <div className="grid md:grid-cols-3 gap-6">

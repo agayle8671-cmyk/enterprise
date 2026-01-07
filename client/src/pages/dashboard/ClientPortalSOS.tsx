@@ -6,6 +6,7 @@
 
 import { motion } from "framer-motion";
 import { TactileButton } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Users, FileText, MessageSquare } from "lucide-react";
 
 export default function ClientPortalSOS() {
@@ -20,7 +21,7 @@ export default function ClientPortalSOS() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="space-y-4"
       >
         <div>
           <h1 className="text-5xl font-bold lowercase mb-2" style={{ color: 'var(--color-sos-text)' }}>
@@ -29,6 +30,36 @@ export default function ClientPortalSOS() {
           <p className="text-lg lowercase" style={{ color: 'var(--color-sos-muted)' }}>
             manage client relationships
           </p>
+        </div>
+        
+        {/* Live Client Intelligence */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Users size={16} style={{ color: 'var(--color-sos-green)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-green)' }}>
+              Client Intelligence
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "acme corp: 3 active projects, all on schedule",
+                "techstart inc: high-value client, 98% satisfaction rating",
+                "2 clients ready for upsell opportunities this week",
+                "all deliverables on track, zero overdue items",
+                "client retention rate: 94% this quarter"
+              ]}
+              typingSpeed={40}
+              deletingSpeed={20}
+              pauseTime={2800}
+            />
+          </div>
         </div>
       </motion.div>
 

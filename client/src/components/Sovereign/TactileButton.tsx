@@ -74,16 +74,16 @@ export function TactileButton({
   };
 
   const sizeClasses = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg'
+    sm: 'px-4 py-2 text-sm rounded-lg',
+    md: 'px-6 py-3 text-base rounded-xl',
+    lg: 'px-8 py-4 text-lg rounded-2xl'
   };
 
   const variantClasses = {
-    default: 'bg-[var(--color-sos-base)] text-[var(--color-sos-text)]',
-    primary: 'bg-[var(--color-sos-soul)] text-white',
-    secondary: 'bg-[var(--color-sos-panel)] text-[var(--color-sos-text)]',
-    ghost: 'bg-transparent text-[var(--color-sos-text)] border border-[var(--color-sos-shadow)]'
+    default: 'bg-[var(--color-sos-base)] text-[var(--color-sos-text)] hover:bg-[var(--color-sos-panel)]',
+    primary: 'bg-[var(--color-sos-soul)] text-white hover:brightness-110',
+    secondary: 'bg-[var(--color-sos-panel)] text-[var(--color-sos-text)] hover:bg-[var(--color-sos-base)]',
+    ghost: 'bg-transparent text-[var(--color-sos-text)] border border-[var(--color-sos-shadow)] hover:bg-[var(--color-sos-panel)]'
   };
 
   return (
@@ -94,7 +94,7 @@ export function TactileButton({
       onClick={handleInteraction}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={cn(
-        "relative font-sans font-medium rounded-xl",
+        "relative font-sans font-medium lowercase",
         "border border-white/40",
         "transition-all duration-200",
         sizeClasses[size],
@@ -102,7 +102,7 @@ export function TactileButton({
         className
       )}
       style={{
-        boxShadow: 'var(--shadow-tactile-sm)',
+        boxShadow: 'var(--shadow-tactile-md)',
       }}
       onMouseDown={(e) => {
         e.currentTarget.style.boxShadow = 'var(--shadow-tactile-inset)';

@@ -149,13 +149,21 @@
   --glass-sovereign-border: rgba(255, 255, 255, 0.1);
   --glass-sovereign-blur: 20px;
 
-  /* ========== NEUMORPHISM 2.0 SHADOWS (Architectural Lighting) ========== */
-  /* Light source from top-left, creating tactile depth */
-  --shadow-tactile-sm: 4px 4px 8px #BEC8E4, -4px -4px 8px #FFFFFF;
-  --shadow-tactile-md: 8px 8px 16px #BEC8E4, -8px -8px 16px #FFFFFF;
-  --shadow-tactile-lg: 12px 12px 24px #BEC8E4, -12px -12px 24px #FFFFFF;
-  --shadow-tactile-inset: inset 6px 6px 12px #BEC8E4, inset -6px -6px 12px #FFFFFF;
-  --shadow-agent-glow: 0 0 15px rgba(255, 79, 0, 0.4);
+  /* ========== NEUMORPHISM 2.0 SHADOWS (Softer, Diffuse - Cognitive Luxury) ========== */
+  /* Light source from top-left, creating gentle tactile depth with claymorphic feel */
+  --shadow-tactile-sm: 3px 3px 10px rgba(190, 200, 228, 0.3), 
+                       -3px -3px 10px rgba(255, 255, 255, 0.8),
+                       inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  --shadow-tactile-md: 6px 6px 18px rgba(190, 200, 228, 0.35), 
+                       -6px -6px 18px rgba(255, 255, 255, 0.9),
+                       inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --shadow-tactile-lg: 10px 10px 30px rgba(190, 200, 228, 0.4), 
+                       -10px -10px 30px rgba(255, 255, 255, 1),
+                       inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --shadow-tactile-inset: inset 5px 5px 15px rgba(190, 200, 228, 0.25), 
+                          inset -5px -5px 15px rgba(255, 255, 255, 0.7);
+  --shadow-agent-glow: 0 0 20px rgba(255, 79, 0, 0.35), 
+                       0 0 40px rgba(255, 79, 0, 0.15);
 
   /* ========== SPRING PHYSICS (Antigravity) ========== */
   --spring-config-stiffness: 150;

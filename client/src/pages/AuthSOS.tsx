@@ -12,6 +12,7 @@ import {
   MagneticCursor,
   TactileButton,
 } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Mail, Lock, ArrowLeft, Sparkles } from "lucide-react";
 
 export default function AuthSOS() {
@@ -37,7 +38,7 @@ export default function AuthSOS() {
       <SOSNoiseOverlay />
       <MagneticCursor />
 
-      {/* Back Button */}
+      {/* Navigation Buttons */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -49,6 +50,21 @@ export default function AuthSOS() {
         >
           <ArrowLeft size={18} className="mr-2" />
           back
+        </TactileButton>
+      </motion.div>
+
+      {/* Quick Dashboard Access */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute top-8 right-8"
+      >
+        <TactileButton
+          variant="secondary"
+          onClick={() => setLocation("/dashboard")}
+        >
+          skip to dashboard
+          <ArrowRight size={18} className="ml-2" />
         </TactileButton>
       </motion.div>
 
@@ -83,12 +99,29 @@ export default function AuthSOS() {
             >
               sovereign os
             </h1>
-            <p 
+            <div 
               className="text-sm lowercase mt-2"
               style={{ color: 'var(--color-sos-muted)' }}
             >
-              {isLogin ? 'welcome back' : 'create your account'}
-            </p>
+              <TypewriterText
+                phrases={
+                  isLogin 
+                    ? [
+                        "welcome back to cognitive luxury",
+                        "your agents are ready to work",
+                        "enter the architecture of focus"
+                      ]
+                    : [
+                        "join the cognitive luxury revolution",
+                        "elevate your freelancing practice",
+                        "experience sovereign intelligence"
+                      ]
+                }
+                typingSpeed={45}
+                deletingSpeed={25}
+                pauseTime={2500}
+              />
+            </div>
           </div>
 
           {/* Form */}

@@ -6,6 +6,7 @@
 
 import { motion } from "framer-motion";
 import { TactileButton } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { FileText, Plus, Send, Clock, CheckCircle, XCircle, DollarSign } from "lucide-react";
 
 export default function ProposalsSOS() {
@@ -77,30 +78,62 @@ export default function ProposalsSOS() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
+      {/* Header with Live Proposal Insights */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="space-y-4"
       >
-        <div>
-          <h1 
-            className="text-5xl font-bold lowercase mb-2"
-            style={{ color: 'var(--color-sos-text)' }}
-          >
-            proposals
-          </h1>
-          <p 
-            className="text-lg lowercase"
-            style={{ color: 'var(--color-sos-muted)' }}
-          >
-            track and manage client proposals
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 
+              className="text-5xl font-bold lowercase mb-2"
+              style={{ color: 'var(--color-sos-text)' }}
+            >
+              proposals
+            </h1>
+            <p 
+              className="text-lg lowercase"
+              style={{ color: 'var(--color-sos-muted)' }}
+            >
+              track and manage client proposals
+            </p>
+          </div>
+          <TactileButton variant="primary">
+            <Plus size={18} className="mr-2" />
+            new proposal
+          </TactileButton>
         </div>
-        <TactileButton variant="primary">
-          <Plus size={18} className="mr-2" />
-          new proposal
-        </TactileButton>
+        
+        {/* Live Proposal Intelligence */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <FileText size={16} style={{ color: 'var(--color-sos-blue)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-blue)' }}>
+              Proposal Intelligence
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "acme corp proposal: 75% win probability based on engagement",
+                "innovation labs responded - schedule follow-up recommended",
+                "optimal send time for techstart inc: tomorrow 10am",
+                "high-value opportunities: $205k in active negotiations",
+                "conversion rate up 18% this quarter - strong momentum"
+              ]}
+              typingSpeed={42}
+              deletingSpeed={20}
+              pauseTime={3200}
+            />
+          </div>
+        </div>
       </motion.div>
 
       {/* Stats */}

@@ -6,6 +6,7 @@
 
 import { motion } from "framer-motion";
 import { TactileButton } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Clock, TrendingDown, TrendingUp, AlertCircle, Download, Calendar } from "lucide-react";
 
 export default function TimeAuditSOS() {
@@ -43,35 +44,67 @@ export default function TimeAuditSOS() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
+      {/* Header with Live Time Insights */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="space-y-4"
       >
-        <div>
-          <h1 
-            className="text-5xl font-bold lowercase mb-2"
-            style={{ color: 'var(--color-sos-text)' }}
-          >
-            time audit
-          </h1>
-          <p 
-            className="text-lg lowercase"
-            style={{ color: 'var(--color-sos-muted)' }}
-          >
-            understand where your time goes
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 
+              className="text-5xl font-bold lowercase mb-2"
+              style={{ color: 'var(--color-sos-text)' }}
+            >
+              time audit
+            </h1>
+            <p 
+              className="text-lg lowercase"
+              style={{ color: 'var(--color-sos-muted)' }}
+            >
+              understand where your time goes
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <TactileButton variant="secondary">
+              <Calendar size={18} className="mr-2" />
+              this week
+            </TactileButton>
+            <TactileButton variant="ghost">
+              <Download size={18} className="mr-2" />
+              export
+            </TactileButton>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <TactileButton variant="secondary">
-            <Calendar size={18} className="mr-2" />
-            this week
-          </TactileButton>
-          <TactileButton variant="ghost">
-            <Download size={18} className="mr-2" />
-            export
-          </TactileButton>
+        
+        {/* Live Time Analysis */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Clock size={16} style={{ color: 'var(--color-sos-soul)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-soul)' }}>
+              Time Intelligence
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "you could save 18 hours this week with automation",
+                "meeting time down 22% - excellent progress this month",
+                "peak productivity hours: 9am-11am daily",
+                "inbox sentinel could eliminate 8 hours of email work",
+                "client work efficiency up 12% with agent assistance"
+              ]}
+              typingSpeed={38}
+              deletingSpeed={18}
+              pauseTime={3400}
+            />
+          </div>
         </div>
       </motion.div>
 

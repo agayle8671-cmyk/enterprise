@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { TactileButton, AgentThought, type AgentStage } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Bot, Play, Pause, Settings, TrendingUp, Activity, Zap, Plus } from "lucide-react";
 
 export default function AgentsSOS() {
@@ -57,30 +58,62 @@ export default function AgentsSOS() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
+      {/* Header with Typewriter Insight */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="space-y-4"
       >
-        <div>
-          <h1 
-            className="text-5xl font-bold lowercase mb-2"
-            style={{ color: 'var(--color-sos-text)' }}
-          >
-            agents
-          </h1>
-          <p 
-            className="text-lg lowercase"
-            style={{ color: 'var(--color-sos-muted)' }}
-          >
-            autonomous ai working on your behalf
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 
+              className="text-5xl font-bold lowercase mb-2"
+              style={{ color: 'var(--color-sos-text)' }}
+            >
+              agents
+            </h1>
+            <p 
+              className="text-lg lowercase"
+              style={{ color: 'var(--color-sos-muted)' }}
+            >
+              autonomous ai working on your behalf
+            </p>
+          </div>
+          <TactileButton variant="primary">
+            <Plus size={18} className="mr-2" />
+            deploy new agent
+          </TactileButton>
         </div>
-        <TactileButton variant="primary">
-          <Plus size={18} className="mr-2" />
-          deploy new agent
-        </TactileButton>
+        
+        {/* Live Agent Activity Feed */}
+        <div className="p-4 rounded-xl border border-white/40"
+          style={{
+            background: 'var(--color-sos-panel)',
+            boxShadow: 'var(--shadow-tactile-sm)'
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Bot size={16} style={{ color: 'var(--color-sos-soul)' }} />
+            <span className="text-xs font-mono uppercase tracking-wider" 
+              style={{ color: 'var(--color-sos-soul)' }}>
+              Live Agent Feed
+            </span>
+          </div>
+          <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+            <TypewriterText
+              phrases={[
+                "content alchemist: generating social media campaign...",
+                "inbox sentinel: triaged 23 emails, flagged 3 urgent",
+                "dossier: researching competitor analysis for acme corp",
+                "closer: negotiating terms with 2 high-value prospects",
+                "all agents coordinating seamlessly across your workflow"
+              ]}
+              typingSpeed={45}
+              deletingSpeed={22}
+              pauseTime={2800}
+            />
+          </div>
+        </div>
       </motion.div>
 
       {/* Stats Overview */}

@@ -12,6 +12,7 @@ import {
   AgentThoughtStream,
   type AgentStage,
 } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import {
   Bot,
   TrendingUp,
@@ -116,29 +117,68 @@ export default function HomeSOS() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
+      {/* Header with Live Typewriter Status */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-2"
+        className="space-y-4"
       >
-        <h1 
-          className="text-5xl font-bold lowercase"
-          style={{ color: 'var(--color-sos-text)' }}
-        >
-          welcome back
-        </h1>
-        <p 
-          className="text-lg lowercase"
-          style={{ color: 'var(--color-sos-muted)' }}
-        >
-          {new Date().toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          }).toLowerCase()}
-        </p>
+        <div className="flex items-end justify-between">
+          <div>
+            <h1 
+              className="text-5xl font-bold lowercase"
+              style={{ color: 'var(--color-sos-text)' }}
+            >
+              welcome back
+            </h1>
+            <p 
+              className="text-lg lowercase mt-2"
+              style={{ color: 'var(--color-sos-muted)' }}
+            >
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              }).toLowerCase()}
+            </p>
+          </div>
+          
+          {/* Live System Status with Typewriter */}
+          <div className="p-4 rounded-xl border border-white/40 min-w-[320px]"
+            style={{
+              background: 'var(--color-sos-panel)',
+              boxShadow: 'var(--shadow-tactile-sm)'
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" 
+                  style={{ backgroundColor: 'var(--color-sos-green)' }} />
+                <span className="relative inline-flex rounded-full h-2 w-2" 
+                  style={{ backgroundColor: 'var(--color-sos-green)' }} />
+              </span>
+              <span className="text-xs font-mono uppercase tracking-wider" 
+                style={{ color: 'var(--color-sos-green)' }}>
+                System Active
+              </span>
+            </div>
+            <div className="text-sm lowercase" style={{ color: 'var(--color-sos-text)' }}>
+              <TypewriterText
+                phrases={[
+                  "processing inbox: 12 new messages analyzed",
+                  "content alchemist drafting blog post #3",
+                  "monitoring 5 active proposals for responses",
+                  "time audit: you've saved 8.5 hours today",
+                  "all agents operating at peak efficiency"
+                ]}
+                typingSpeed={40}
+                deletingSpeed={20}
+                pauseTime={3000}
+              />
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Stats Grid */}

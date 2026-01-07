@@ -17,6 +17,7 @@ import {
   TactileButton,
   AgentThought,
 } from "@/components/Sovereign";
+import { TypewriterText } from "@/components/TypewriterText";
 import { Bot, Zap, Shield, Sparkles, ArrowRight, CheckCircle } from "lucide-react";
 
 export default function LandingSOSv2() {
@@ -65,6 +66,23 @@ export default function LandingSOSv2() {
       <SOSNoiseOverlay />
       <MagneticCursor />
 
+      {/* Quick Access Button - Top Right */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="fixed top-8 right-8 z-50"
+      >
+        <TactileButton
+          variant="secondary"
+          size="md"
+          onClick={() => setLocation("/dashboard")}
+        >
+          skip to dashboard
+          <ArrowRight size={16} className="ml-2" />
+        </TactileButton>
+      </motion.div>
+
       {/* Hero Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-8 pt-24 pb-32">
         <motion.div
@@ -99,14 +117,24 @@ export default function LandingSOSv2() {
             <span style={{ color: 'var(--color-sos-soul)' }}>for agentic ai</span>
           </h1>
 
-          {/* Subheadline */}
-          <p 
+          {/* Subheadline with Typewriter */}
+          <div 
             className="text-xl md:text-2xl max-w-3xl mx-auto lowercase"
             style={{ color: 'var(--color-sos-muted)' }}
           >
-            the first operating system designed for humans directing autonomous agents.
-            neo-tactile interactions meet transparent reasoning.
-          </p>
+            <TypewriterText
+              phrases={[
+                "the first operating system designed for cognitive luxury",
+                "where calm technology meets autonomous intelligence",
+                "neo-tactile interactions meet transparent reasoning",
+                "reduce cognitive load. elevate your thinking.",
+                "the architecture of focus for sovereign minds"
+              ]}
+              typingSpeed={60}
+              deletingSpeed={30}
+              pauseTime={3000}
+            />
+          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 justify-center items-center pt-8">
@@ -128,18 +156,46 @@ export default function LandingSOSv2() {
             </TactileButton>
           </div>
 
-          {/* Agent Thought Demo */}
+          {/* Agent Thought Demo with Live Typewriter */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
             className="pt-12 relative"
           >
-            <AgentThought
-              thought="analyzing your workflow patterns to optimize productivity..."
-              stage="reasoning"
-              className="mx-auto max-w-xl"
-            />
+            <div className="mx-auto max-w-2xl p-6 rounded-2xl border border-white/40"
+              style={{
+                background: 'var(--color-sos-panel)',
+                boxShadow: 'var(--shadow-tactile-md)'
+              }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" 
+                    style={{ backgroundColor: 'var(--color-sos-soul)' }} />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5" 
+                    style={{ backgroundColor: 'var(--color-sos-soul)' }} />
+                </span>
+                <span className="text-xs font-mono uppercase tracking-wider" 
+                  style={{ color: 'var(--color-sos-soul)' }}>
+                  Agent Reasoning Live
+                </span>
+              </div>
+              <div className="text-lg lowercase" style={{ color: 'var(--color-sos-text)' }}>
+                <TypewriterText
+                  phrases={[
+                    "analyzing your workflow patterns to optimize productivity...",
+                    "identifying high-value tasks that require human creativity...",
+                    "delegating repetitive work to autonomous agents...",
+                    "creating space for deep, focused thinking...",
+                    "building your cognitive luxury environment..."
+                  ]}
+                  typingSpeed={50}
+                  deletingSpeed={25}
+                  pauseTime={2500}
+                />
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </section>
