@@ -1,20 +1,39 @@
 /**
- * Client Portal - Sovereign OS (S.O.S.) Design
+ * Client Portal - ALTOS Design
  * 
  * Manage client relationships and deliverables
  */
 
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { TactileButton } from "@/components/Sovereign";
 import { TypewriterText } from "@/components/TypewriterText";
 import { Users, FileText, MessageSquare } from "lucide-react";
 
 export default function ClientPortalSOS() {
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
   const clients = [
-    { name: "acme corp", projects: 3, status: "active", value: "$45k" },
-    { name: "techstart inc", projects: 1, status: "active", value: "$120k" },
-    { name: "innovation labs", projects: 2, status: "completed", value: "$85k" },
+    { id: 1, name: "acme corp", projects: 3, status: "active", value: "$45k" },
+    { id: 2, name: "techstart inc", projects: 1, status: "active", value: "$120k" },
+    { id: 3, name: "innovation labs", projects: 2, status: "completed", value: "$85k" },
   ];
+
+  const openFiles = (clientName: string) => {
+    toast({
+      title: "OPENING FILES",
+      description: `Loading documents for ${clientName}...`,
+    });
+  };
+
+  const startChat = (clientName: string) => {
+    toast({
+      title: "STARTING CHAT",
+      description: `Opening conversation with ${clientName}...`,
+    });
+  };
 
   return (
     <div className="p-8 space-y-8">
@@ -31,7 +50,7 @@ export default function ClientPortalSOS() {
             manage client relationships
           </p>
         </div>
-        
+
         {/* Live Client Intelligence */}
         <div className="p-4 rounded-xl border border-white/40"
           style={{
@@ -41,7 +60,7 @@ export default function ClientPortalSOS() {
         >
           <div className="flex items-center gap-2 mb-2">
             <Users size={16} style={{ color: 'var(--color-sos-green)' }} />
-            <span className="text-xs font-mono uppercase tracking-wider" 
+            <span className="text-xs font-mono uppercase tracking-wider"
               style={{ color: 'var(--color-sos-green)' }}>
               Client Intelligence
             </span>
@@ -84,11 +103,21 @@ export default function ClientPortalSOS() {
               {client.projects} projects • {client.status} • {client.value}
             </p>
             <div className="flex gap-2">
-              <TactileButton variant="secondary" className="flex-1" size="sm">
+              <TactileButton
+                variant="secondary"
+                className="flex-1"
+                size="sm"
+                onClick={() => openFiles(client.name)}
+              >
                 <FileText size={14} className="mr-1" />
                 files
               </TactileButton>
-              <TactileButton variant="secondary" className="flex-1" size="sm">
+              <TactileButton
+                variant="secondary"
+                className="flex-1"
+                size="sm"
+                onClick={() => startChat(client.name)}
+              >
                 <MessageSquare size={14} className="mr-1" />
                 chat
               </TactileButton>

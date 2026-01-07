@@ -1,14 +1,49 @@
 /**
- * Help Center - Sovereign OS (S.O.S.) Design
+ * Help Center - ALTOS Design
  * 
  * Documentation and support resources
  */
 
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { TactileButton } from "@/components/Sovereign";
 import { HelpCircle, Book, Video, MessageCircle } from "lucide-react";
 
 export default function HelpCenterSOS() {
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
+  const handleResourceClick = (resourceType: string, resourceTitle: string) => {
+    switch (resourceType) {
+      case 'documentation':
+        toast({
+          title: "OPENING GUIDE",
+          description: "Loading getting started documentation...",
+        });
+        // Could navigate to docs page
+        break;
+      case 'video':
+        toast({
+          title: "LAUNCHING TUTORIALS",
+          description: "Opening video tutorial library...",
+        });
+        window.open('https://www.youtube.com', '_blank');
+        break;
+      case 'support':
+        toast({
+          title: "CONTACT SUPPORT",
+          description: "Opening support chat...",
+        });
+        break;
+      default:
+        toast({
+          title: resourceTitle.toUpperCase(),
+          description: `Opening ${resourceTitle}...`,
+        });
+    }
+  };
+
   const resources = [
     { title: "getting started guide", type: "documentation", icon: Book },
     { title: "video tutorials", type: "video", icon: Video },
@@ -40,11 +75,12 @@ export default function HelpCenterSOS() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="p-6 rounded-2xl border border-white/40 text-center cursor-pointer"
+              className="p-6 rounded-2xl border border-white/40 text-center cursor-pointer hover:border-[var(--color-sos-blue)] transition-colors"
               style={{
                 background: 'var(--color-sos-panel)',
                 boxShadow: 'var(--shadow-tactile-md)'
               }}
+              onClick={() => handleResourceClick(resource.type, resource.title)}
               data-magnetic="true"
             >
               <Icon size={32} style={{ color: 'var(--color-sos-blue)', margin: '0 auto 16px' }} />

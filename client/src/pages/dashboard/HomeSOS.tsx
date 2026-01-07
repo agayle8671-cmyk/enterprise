@@ -1,11 +1,13 @@
 /**
- * Home Dashboard - Sovereign OS (S.O.S.) Design
+ * Home Dashboard - ALTOS Design
  * 
  * Main dashboard with Cognitive Luxury aesthetic
  */
 
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 import {
   TactileButton,
   AgentThought,
@@ -25,6 +27,8 @@ import {
 } from "lucide-react";
 
 export default function HomeSOS() {
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [agentActive, setAgentActive] = useState(false);
   const [thoughts, setThoughts] = useState<Array<{
     id: string;
@@ -107,7 +111,7 @@ export default function HomeSOS() {
           ...t,
           timestamp: Date.now()
         }]);
-        
+
         if (index === taskThoughts.length - 1) {
           setTimeout(() => setAgentActive(false), 1000);
         }
@@ -125,25 +129,25 @@ export default function HomeSOS() {
       >
         <div className="flex items-end justify-between">
           <div>
-            <h1 
+            <h1
               className="text-5xl font-bold lowercase"
               style={{ color: 'var(--color-sos-text)' }}
             >
               welcome back
             </h1>
-            <p 
+            <p
               className="text-lg lowercase mt-2"
               style={{ color: 'var(--color-sos-muted)' }}
             >
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              {new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               }).toLowerCase()}
             </p>
           </div>
-          
+
           {/* Live System Status with Typewriter */}
           <div className="p-4 rounded-xl border border-white/40 min-w-[320px]"
             style={{
@@ -153,12 +157,12 @@ export default function HomeSOS() {
           >
             <div className="flex items-center gap-2 mb-2">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" 
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                   style={{ backgroundColor: 'var(--color-sos-green)' }} />
-                <span className="relative inline-flex rounded-full h-2 w-2" 
+                <span className="relative inline-flex rounded-full h-2 w-2"
                   style={{ backgroundColor: 'var(--color-sos-green)' }} />
               </span>
-              <span className="text-xs font-mono uppercase tracking-wider" 
+              <span className="text-xs font-mono uppercase tracking-wider"
                 style={{ color: 'var(--color-sos-green)' }}>
                 System Active
               </span>
@@ -198,7 +202,7 @@ export default function HomeSOS() {
               }}
             >
               <div className="flex items-start justify-between mb-4">
-                <div 
+                <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
                   style={{
                     background: 'var(--color-sos-base)',
@@ -209,19 +213,19 @@ export default function HomeSOS() {
                   <Icon size={24} />
                 </div>
               </div>
-              <p 
+              <p
                 className="text-xs uppercase tracking-wider font-mono mb-2"
                 style={{ color: 'var(--color-sos-muted)' }}
               >
                 {stat.label}
               </p>
-              <p 
+              <p
                 className="text-3xl font-bold font-mono mb-1"
                 style={{ color: 'var(--color-sos-text)' }}
               >
                 {stat.value}
               </p>
-              <p 
+              <p
                 className="text-xs lowercase"
                 style={{ color: 'var(--color-sos-muted)' }}
               >
@@ -246,13 +250,13 @@ export default function HomeSOS() {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 
+              <h2
                 className="text-2xl font-semibold lowercase mb-1"
                 style={{ color: 'var(--color-sos-text)' }}
               >
                 agent workspace
               </h2>
-              <p 
+              <p
                 className="text-sm lowercase"
                 style={{ color: 'var(--color-sos-muted)' }}
               >
@@ -272,7 +276,7 @@ export default function HomeSOS() {
           {/* Agent Thoughts */}
           <div className="min-h-[300px]">
             {thoughts.length === 0 ? (
-              <div 
+              <div
                 className="h-[300px] flex items-center justify-center rounded-xl border-2 border-dashed"
                 style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
               >
@@ -302,7 +306,7 @@ export default function HomeSOS() {
             boxShadow: 'var(--shadow-tactile-md)'
           }}
         >
-          <h2 
+          <h2
             className="text-2xl font-semibold lowercase mb-6"
             style={{ color: 'var(--color-sos-text)' }}
           >
@@ -323,11 +327,11 @@ export default function HomeSOS() {
                 }}
               >
                 <div className="flex items-start gap-3">
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{
-                      background: activity.status === 'completed' 
-                        ? 'var(--color-sos-green)' 
+                      background: activity.status === 'completed'
+                        ? 'var(--color-sos-green)'
                         : 'var(--color-sos-soul)'
                     }}
                   >
@@ -338,13 +342,13 @@ export default function HomeSOS() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p 
+                    <p
                       className="text-sm lowercase font-medium mb-1"
                       style={{ color: 'var(--color-sos-text)' }}
                     >
                       {activity.title}
                     </p>
-                    <p 
+                    <p
                       className="text-xs lowercase"
                       style={{ color: 'var(--color-sos-muted)' }}
                     >
@@ -368,7 +372,7 @@ export default function HomeSOS() {
           boxShadow: 'var(--shadow-tactile-md)'
         }}
       >
-        <h2 
+        <h2
           className="text-2xl font-semibold lowercase mb-6"
           style={{ color: 'var(--color-sos-text)' }}
         >
@@ -376,19 +380,31 @@ export default function HomeSOS() {
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <TactileButton variant="secondary" className="justify-start">
+          <TactileButton variant="secondary" className="justify-start" onClick={() => {
+            toast({ title: "LAUNCHING AGENT", description: "Opening agent deployment..." });
+            setLocation('/dashboard/agents');
+          }}>
             <Bot size={18} className="mr-2" />
             launch agent
           </TactileButton>
-          <TactileButton variant="secondary" className="justify-start">
+          <TactileButton variant="secondary" className="justify-start" onClick={() => {
+            toast({ title: "TIME AUDIT", description: "Opening time analysis..." });
+            setLocation('/dashboard/time-audit');
+          }}>
             <Activity size={18} className="mr-2" />
             time audit
           </TactileButton>
-          <TactileButton variant="secondary" className="justify-start">
+          <TactileButton variant="secondary" className="justify-start" onClick={() => {
+            toast({ title: "NEW PROPOSAL", description: "Opening proposal builder..." });
+            setLocation('/dashboard/proposals');
+          }}>
             <TrendingUp size={18} className="mr-2" />
             new proposal
           </TactileButton>
-          <TactileButton variant="secondary" className="justify-start">
+          <TactileButton variant="secondary" className="justify-start" onClick={() => {
+            toast({ title: "BUILD TOOL", description: "Opening tool builder..." });
+            setLocation('/dashboard/tool-builder');
+          }}>
             <Zap size={18} className="mr-2" />
             build tool
           </TactileButton>
