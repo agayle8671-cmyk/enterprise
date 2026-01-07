@@ -87,7 +87,7 @@ export default function SovereignOS() {
             className="text-5xl font-bold lowercase"
             style={{ color: 'var(--color-sos-text)' }}
           >
-            sovereign os
+            ALTOS
           </h1>
           <p 
             className="text-lg font-sans lowercase"

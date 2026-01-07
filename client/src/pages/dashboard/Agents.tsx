@@ -108,37 +108,49 @@ export default function Agents() {
     const { tier, canAccessAgent } = useSubscription();
     const [activeAgentId, setActiveAgentId] = useState<number | null>(null);
 
-    // Mock Data for frontend-only mode
-    const MOCK_AGENTS: Agent[] = [
-        { id: 1, name: "Inbox Sentinel", role: "Administrative", status: "active", uptime: "99.9%", color: "#00F0FF", timeSaved: 124, createdAt: "2024-01-01" },
-        { id: 2, name: "The Dossier", role: "Research", status: "active", uptime: "98.5%", color: "#7000FF", timeSaved: 45, createdAt: "2024-01-02" },
-        { id: 3, name: "Content Alchemist", role: "Marketing", status: "active", uptime: "97.0%", color: "#BBFF00", timeSaved: 89, createdAt: "2024-01-03" },
-        { id: 4, name: "The Closer", role: "Sales", status: "paused", uptime: "99.1%", color: "#FF3366", timeSaved: 12, createdAt: "2024-01-04" },
-        { id: 5, name: "Offer Architect", role: "Strategy", status: "active", uptime: "99.9%", color: "#00F0FF", timeSaved: 67, createdAt: "2024-01-05" },
+    // Default agent templates (seeded on first load if DB is empty)
+    const DEFAULT_AGENTS: Omit<Agent, 'id' | 'createdAt'>[] = [
+        { name: "Inbox Sentinel", role: "Administrative", status: "active", uptime: "99.9%", color: "#00F0FF", timeSaved: 124 },
+        { name: "The Dossier", role: "Research", status: "active", uptime: "98.5%", color: "#7000FF", timeSaved: 45 },
+        { name: "Content Alchemist", role: "Marketing", status: "active", uptime: "97.0%", color: "#BBFF00", timeSaved: 89 },
+        { name: "The Closer", role: "Sales", status: "paused", uptime: "99.1%", color: "#FF3366", timeSaved: 12 },
+        { name: "Offer Architect", role: "Strategy", status: "active", uptime: "99.9%", color: "#00F0FF", timeSaved: 67 },
     ];
 
-    // Fetch agents (using mock data for stability)
-    const { data: agents, isLoading } = useQuery<Agent[]>({
-        queryKey: ['agents-mock'],
+    // Fetch agents from real API with fallback
+    const { data: agents, isLoading, error } = useQuery<Agent[]>({
+        queryKey: ['agents'],
         queryFn: async () => {
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            return MOCK_AGENTS;
+            try {
+                const res = await fetch('/api/agents');
+                if (!res.ok) throw new Error('Failed to fetch agents');
+                const data = await res.json();
+                // If no agents in DB yet, return defaults for display
+                if (!data || data.length === 0) {
+                    return DEFAULT_AGENTS.map((a, i) => ({ ...a, id: i + 1, createdAt: new Date().toISOString() }));
+                }
+                return data;
+            } catch (e) {
+                console.warn('Using fallback agent data:', e);
+                return DEFAULT_AGENTS.map((a, i) => ({ ...a, id: i + 1, createdAt: new Date().toISOString() }));
+            }
         }
     });
 
-    // Toggle agent mutation (mock)
+    // Toggle agent status via real API
     const toggleAgent = useMutation({
         mutationFn: async ({ id, status }: { id: number; status: string }) => {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            return { success: true };
+            const newStatus = status === 'active' ? 'paused' : 'active';
+            const res = await fetch(`/api/agents/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            if (!res.ok) throw new Error('Failed to toggle agent');
+            return res.json();
         },
         onSuccess: () => {
-            // In a real app we'd invalidate queries, but here we'd ideally update local state.
-            // For this fix, we relying on the random/mock nature or acceptable staleness
-            // To make it interactive, we might need state, but let's stick to simple loading fix first.
-            queryClient.invalidateQueries({ queryKey: ['agents-mock'] });
+            queryClient.invalidateQueries({ queryKey: ['agents'] });
         },
     });
 

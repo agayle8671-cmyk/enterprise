@@ -63,7 +63,7 @@ export default function SettingsSOS() {
             className="text-lg lowercase"
             style={{ color: 'var(--color-sos-muted)' }}
           >
-            configure your sovereign os experience
+            configure your altos experience
           </p>
         </div>
         

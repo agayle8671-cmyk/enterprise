@@ -1,5 +1,5 @@
 /**
- * Auth Page - Sovereign OS (S.O.S.) Design
+ * Auth Page - ALTOS (The Architecture of Focus)
  * 
  * Authentication with Cognitive Luxury aesthetic
  */
@@ -94,11 +94,17 @@ export default function AuthSOS() {
               <Sparkles size={32} color="white" />
             </div>
             <h1 
-              className="text-3xl font-bold lowercase"
-              style={{ color: 'var(--color-sos-text)' }}
+              className="text-4xl font-bold uppercase tracking-tight"
+              style={{ color: 'var(--color-sos-text)', letterSpacing: '-0.02em' }}
             >
-              sovereign os
+              ALTOS
             </h1>
+            <p 
+              className="text-xs font-light lowercase mt-1"
+              style={{ color: 'var(--color-sos-soul)' }}
+            >
+              the architecture of focus
+            </p>
             <div 
               className="text-sm lowercase mt-2"
               style={{ color: 'var(--color-sos-muted)' }}

@@ -1,11 +1,11 @@
 /**
- * Dashboard Layout - Sovereign OS (S.O.S.) Design
+ * Dashboard Layout - ALTOS (The Architecture of Focus)
  * 
  * Cognitive Luxury layout with:
  * - Ceramic White background
- * - Neumorphic sidebar
- * - Lowercase naive headers
+ * - Neo-tactile claymorphic sidebar
  * - Magnetic interactions
+ * - Progressive disclosure
  */
 
 import { useState } from "react";
@@ -112,16 +112,16 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
                 </div>
                 <div>
                   <h1
-                    className="text-lg font-bold lowercase"
-                    style={{ color: 'var(--color-sos-text)' }}
+                    className="text-lg font-bold uppercase tracking-tight"
+                    style={{ color: 'var(--color-sos-text)', letterSpacing: '-0.02em' }}
                   >
-                    sovereign os
+                    ALTOS
                   </h1>
                   <p
                     className="text-xs lowercase"
                     style={{ color: 'var(--color-sos-muted)' }}
                   >
-                    cognitive luxury
+                    the architecture of focus
                   </p>
                 </div>
               </div>

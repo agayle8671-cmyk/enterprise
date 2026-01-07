@@ -279,7 +279,7 @@ export default function Founding50SOS() {
         className="text-center max-w-2xl mx-auto"
       >
         <p className="text-sm italic lowercase" style={{ color: 'var(--color-sos-muted)' }}>
-          "sovereign os has completely transformed how i run my agency.
+          "altos has completely transformed how i run my agency.
           the ai agents save me 20+ hours per week."
         </p>
         <p className="text-xs mt-2 uppercase tracking-wider" style={{ color: 'var(--color-sos-text)' }}>
