@@ -84,7 +84,7 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
             animate={{ x: 0 }}
             exit={{ x: -300 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed left-0 top-0 h-screen w-72 p-6 border-r border-white/20 overflow-y-auto z-40 lg:relative"
+            className="fixed left-0 top-0 h-screen w-72 p-6 border-r border-white/20 overflow-y-auto z-40"
             style={{
               background: 'var(--color-sos-panel)',
               boxShadow: 'var(--shadow-tactile-md)'
