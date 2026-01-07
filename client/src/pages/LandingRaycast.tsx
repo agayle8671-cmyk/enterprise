@@ -66,6 +66,11 @@ export default function LandingRaycast() {
             </div>
 
             <div className="flex items-center gap-3">
+              <Link href="/dashboard">
+                <button className="px-4 py-2 text-sm text-[#989898] hover:text-[#EDEDED] transition-colors">
+                  Dashboard
+                </button>
+              </Link>
               <Link href="/auth">
                 <button className="px-4 py-2 text-sm text-[#989898] hover:text-[#EDEDED] transition-colors">
                   Sign In
@@ -124,10 +129,15 @@ export default function LandingRaycast() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-              <Link href="/auth">
+              <Link href="/dashboard">
                 <button className="w-full sm:w-auto px-6 py-3 rounded-lg bg-gradient-to-r from-[#FF6363] to-[#8B5CF6] text-white font-medium shadow-xl shadow-[#FF6363]/30 hover:shadow-2xl hover:shadow-[#FF6363]/40 transition-all flex items-center gap-2 justify-center">
-                  Start Free Trial
+                  View Dashboard
                   <ArrowRight className="h-5 w-5" />
+                </button>
+              </Link>
+              <Link href="/auth">
+                <button className="w-full sm:w-auto px-6 py-3 rounded-lg bg-white/5 border border-white/10 text-[#EDEDED] font-medium hover:bg-white/10 transition-all flex items-center gap-2 justify-center">
+                  Start Free Trial
                 </button>
               </Link>
               <button className="w-full sm:w-auto px-6 py-3 rounded-lg bg-white/5 border border-white/10 text-[#EDEDED] font-medium hover:bg-white/10 transition-all flex items-center gap-2 justify-center">
