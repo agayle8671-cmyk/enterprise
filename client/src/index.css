@@ -136,6 +136,19 @@
    ============================================================================= */
 
 @layer base {
+  /* Light Mode */
+  .light {
+    --color-void: #FFFFFF;
+    --color-structure: #F5F5F5;
+    --color-acid: #00AA00;
+    --color-alarm: #CC0000;
+    --color-text-primary: rgba(0, 0, 0, 0.9);
+    --color-text-muted: rgba(0, 0, 0, 0.6);
+    --color-aurora-cyan: #0088CC;
+    --color-aurora-purple: #5500CC;
+  }
+  
+
 
   *,
   *::before,

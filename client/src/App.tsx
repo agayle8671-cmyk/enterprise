@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SubscriptionProvider } from "@/lib/subscription";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/LandingSovereign";
+import Landing from "@/pages/LandingBloomberg";
 import Auth from "@/pages/AuthRaycast";
 import DashboardLayout from "@/components/layout/DashboardLayoutRaycast";
 import Home from "@/pages/dashboard/HomeSovereign";

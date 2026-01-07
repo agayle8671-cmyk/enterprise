@@ -35,3 +35,9 @@ export {
   ScanlineOverlay, 
   GrainOverlay 
 } from "./CinematicBackground";
+export { 
+  NewsCard, 
+  NewsGrid, 
+  NewsFeed 
+} from "./NewsCard";
+export { ThemeToggle } from "./ThemeToggle";
