@@ -21,6 +21,7 @@ import ClientPortal from "@/pages/dashboard/ClientPortal";
 import HelpCenter from "@/pages/dashboard/HelpCenter";
 import Settings from "@/pages/dashboard/SettingsRaycast";
 import SovereignDashboard from "@/pages/dashboard/SovereignDashboard";
+import SovereignShowcase from "@/pages/dashboard/SovereignShowcase";
 
 function Router() {
   return (
@@ -100,6 +101,10 @@ function Router() {
         <DashboardLayout>
           <SovereignDashboard />
         </DashboardLayout>
+      </Route>
+
+      <Route path="/dashboard/sovereign-showcase">
+        <SovereignShowcase />
       </Route>
 
       {/* Catch-all */}
