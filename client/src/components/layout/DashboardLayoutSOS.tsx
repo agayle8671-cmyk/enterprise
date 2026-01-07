@@ -57,9 +57,9 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
   const isActive = (path: string) => location === path;
 
   return (
-    <div 
+    <div
       className="min-h-screen relative"
-      style={{ 
+      style={{
         background: 'var(--color-sos-base)',
         color: 'var(--color-sos-text)'
       }}
@@ -92,7 +92,7 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
           >
             {/* Logo */}
             <div className="mb-8">
-              <div 
+              <div
                 className="flex items-center gap-3 p-4 rounded-2xl cursor-pointer"
                 data-magnetic="true"
                 onClick={() => setLocation("/dashboard")}
@@ -101,7 +101,7 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
                   boxShadow: 'var(--shadow-tactile-sm)'
                 }}
               >
-                <div 
+                <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
                     background: 'var(--color-sos-soul)',
@@ -111,13 +111,13 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
                   <Sparkles size={20} color="white" />
                 </div>
                 <div>
-                  <h1 
+                  <h1
                     className="text-lg font-bold lowercase"
                     style={{ color: 'var(--color-sos-text)' }}
                   >
                     sovereign os
                   </h1>
-                  <p 
+                  <p
                     className="text-xs lowercase"
                     style={{ color: 'var(--color-sos-muted)' }}
                   >
@@ -129,17 +129,17 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
 
             {/* Navigation */}
             <nav className="space-y-2">
-              <p 
+              <p
                 className="text-xs uppercase tracking-wider font-mono mb-4 px-3"
                 style={{ color: 'var(--color-sos-muted)' }}
               >
                 navigation
               </p>
-              
+
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.path);
-                
+
                 return (
                   <motion.button
                     key={item.path}
@@ -181,7 +181,7 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
             </div>
 
             {/* User Info */}
-            <div 
+            <div
               className="mt-8 p-4 rounded-xl border border-white/20"
               style={{
                 background: 'var(--color-sos-base)',
@@ -189,20 +189,20 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
               }}
             >
               <div className="flex items-center gap-3">
-                <div 
+                <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
                   style={{ background: 'var(--color-sos-blue)' }}
                 >
                   U
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p 
+                  <p
                     className="text-sm font-medium lowercase truncate"
                     style={{ color: 'var(--color-sos-text)' }}
                   >
                     user@example.com
                   </p>
-                  <p 
+                  <p
                     className="text-xs lowercase"
                     style={{ color: 'var(--color-sos-muted)' }}
                   >
@@ -216,11 +216,20 @@ export default function DashboardLayoutSOS({ children }: DashboardLayoutSOSProps
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="lg:ml-0 min-h-screen">
-        <div className="relative z-10">
+      <main
+        className="min-h-screen transition-all duration-300"
+        style={{
+          marginLeft: sidebarOpen ? '18rem' : '0',
+          paddingTop: '1.5rem',
+          paddingRight: '1.5rem',
+          paddingBottom: '1.5rem',
+          paddingLeft: sidebarOpen ? '1.5rem' : '4rem'
+        }}
+      >
+        <div className="relative z-10 max-w-7xl mx-auto">
           {children}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -30,18 +30,18 @@ export function TactileButton({
   playSound = true,
   ...props
 }: TactileButtonProps) {
-  
+
   const handleInteraction = (e: React.MouseEvent<HTMLButtonElement>) => {
     // Haptic Confirmation
     if (navigator.vibrate) {
       navigator.vibrate(hapticPattern);
     }
-    
+
     // Acoustic Confirmation (simple click sound using AudioContext)
     if (playSound) {
       playClickSound();
     }
-    
+
     // Call original onClick handler
     if (onClick) {
       onClick(e);
@@ -54,17 +54,17 @@ export function TactileButton({
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       // Simulate mechanical keyboard "thock" - low frequency, short duration
       oscillator.frequency.value = 150;
       oscillator.type = 'sine';
-      
+
       gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
-      
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.05);
     } catch (error) {
@@ -123,7 +123,7 @@ export function TactileButton({
 /**
  * TactileIconButton - Circular icon button variant
  */
-interface TactileIconButtonProps extends Omit<TactileButtonProps, 'size'> {
+interface TactileIconButtonProps extends Omit<TactileButtonProps, 'size' | 'children'> {
   icon: React.ReactNode;
   size?: number;
 }
